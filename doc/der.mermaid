@@ -1,0 +1,119 @@
+erDiagram
+    ROL {
+        int id PK
+        string nombre
+    }
+    USUARIO {
+        int id PK
+        string nombre
+        string email
+        string password
+        int rol_id FK
+    }
+    UNIDAD_ACADEMICA {
+        int id PK
+        string nombre
+        string tipo
+        string contacto
+        int administrador_id FK
+    }
+    ESTUDIANTE {
+        int id PK
+        int usuario_id FK
+        int unidad_academica_id FK
+        string programa
+        string carnet
+        string estado_expediente
+    }
+    FORMULARIO_INGRESO {
+        int id PK
+        int estudiante_id FK
+        string tipo_formulario
+        string estado
+        datetime fecha_envio
+    }
+    EJE1_BIENES_SERVICIOS {
+        int id PK
+        int estudiante_id FK
+        string tipo
+        string descripcion
+        string beneficiarios
+        date fecha
+    }
+    EJE2_PUBLICACIONES {
+        int id PK
+        int estudiante_id FK
+        string titulo
+        string tipo
+        string autores
+        string medio_publicacion
+    }
+    EJE3_TRANSFERENCIA {
+        int id PK
+        int estudiante_id FK
+        string actividad
+        string comunidad
+        date fecha
+    }
+    EJE4_TERRITORIO {
+        int id PK
+        int estudiante_id FK
+        decimal latitud
+        decimal longitud
+        string departamento
+        string municipio
+        string comunidad
+    }
+    EJE5_ACTORES {
+        int id PK
+        int estudiante_id FK
+        int institucion_receptora_id FK
+        string contraparte
+        string comunidad_beneficiada
+    }
+    INSTITUCION_RECEPTORA {
+        int id PK
+        string nombre
+        string tipo
+        string contacto
+    }
+    EJE6_SEGUIMIENTO {
+        int id PK
+        int estudiante_id FK
+        string indicador
+        string avance
+        string evaluacion_impacto
+        date fecha
+    }
+    BITACORA {
+        int id PK
+        int usuario_id FK
+        string modulo
+        string tipo_cambio
+        datetime fecha_hora
+        string detalle
+    }
+    ADJUNTO {
+        int id PK
+        string entidad_tipo
+        int entidad_id
+        string ruta_archivo
+        datetime fecha_subida
+    }
+
+    ROL ||--o{ USUARIO : tiene
+    USUARIO ||--o| ESTUDIANTE : es
+    UNIDAD_ACADEMICA ||--o{ ESTUDIANTE : agrupa
+    UNIDAD_ACADEMICA ||--o| USUARIO : administra
+    ESTUDIANTE ||--o{ FORMULARIO_INGRESO : completa
+    ESTUDIANTE ||--o{ EJE1_BIENES_SERVICIOS : registra
+    ESTUDIANTE ||--o{ EJE2_PUBLICACIONES : registra
+    ESTUDIANTE ||--o{ EJE3_TRANSFERENCIA : registra
+    ESTUDIANTE ||--o{ EJE4_TERRITORIO : registra
+    ESTUDIANTE ||--o{ EJE5_ACTORES : registra
+    ESTUDIANTE ||--o{ EJE6_SEGUIMIENTO : registra
+    EJE5_ACTORES }o--|| INSTITUCION_RECEPTORA : involucra
+    USUARIO ||--o{ BITACORA : genera
+    FORMULARIO_INGRESO ||--o{ ADJUNTO : contiene
+    EJE1_BIENES_SERVICIOS ||--o{ ADJUNTO : contiene
+    EJE2_PUBLICACIONES ||--o{ ADJUNTO : contiene
