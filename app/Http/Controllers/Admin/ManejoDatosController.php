@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\TipoCatalogo;
 use App\Http\Controllers\Controller;
 use App\Models\Catalogo;
+use App\Models\Departamento;
+use App\Models\Municipio;
+use App\Models\UnidadAcademica;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -30,6 +33,32 @@ class ManejoDatosController extends Controller
                 'activos' => (int) ($conteos[$catalogo->value]->activos ?? 0),
                 'href' => route('admin.catalogos.index', $catalogo, absolute: false),
             ])->values(),
+            'territorio' => [
+                [
+                    'clave' => 'departamentos',
+                    'etiqueta' => 'Departamentos',
+                    'descripcion' => 'Los departamentos del país, con su cabecera y una coordenada de referencia.',
+                    'total' => Departamento::count(),
+                    'activos' => null,
+                    'href' => route('admin.departamentos.index', absolute: false),
+                ],
+                [
+                    'clave' => 'municipios',
+                    'etiqueta' => 'Municipios',
+                    'descripcion' => 'Los municipios de cada departamento. Los estudiantes eligen su municipio de este catálogo.',
+                    'total' => Municipio::count(),
+                    'activos' => null,
+                    'href' => route('admin.municipios.index', absolute: false),
+                ],
+                [
+                    'clave' => 'unidades',
+                    'etiqueta' => 'Unidades académicas',
+                    'descripcion' => 'Facultades, escuelas y centros universitarios, con la ubicación de su edificio.',
+                    'total' => UnidadAcademica::count(),
+                    'activos' => UnidadAcademica::where('activa', true)->count(),
+                    'href' => route('admin.unidades.index', absolute: false),
+                ],
+            ],
         ]);
     }
 }

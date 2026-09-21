@@ -46,7 +46,10 @@ export type Campo = {
         | 'url'
         | 'email';
     requerido?: boolean;
-    opciones?: Opcion[];
+    /** Opciones de una lista; pueden calcularse a partir de los demás valores (listas dependientes). */
+    opciones?: Opcion[] | ((valores: Valores) => Opcion[]);
+    /** Nombre del campo del que depende: al cambiar ese campo, este se vacía. */
+    dependeDe?: string;
     ayuda?: string;
     placeholder?: string;
     filas?: number;
@@ -80,11 +83,13 @@ const LIMITE_TEXTO = 40000;
 
 function CampoFormulario({
     campo,
+    opciones,
     valor,
     error,
     onChange,
 }: {
     campo: Campo;
+    opciones?: Opcion[];
     valor: string;
     error?: string;
     onChange: (valor: string) => void;
@@ -151,7 +156,7 @@ function CampoFormulario({
                                 Sin especificar
                             </SelectItem>
                         )}
-                        {campo.opciones?.map((opcion) => (
+                        {opciones?.map((opcion) => (
                             <SelectItem key={opcion.value} value={opcion.value}>
                                 {opcion.label}
                             </SelectItem>
@@ -313,10 +318,30 @@ export default function PasoCrud<T extends { id: number }>({
                                 <CampoFormulario
                                     key={campo.name}
                                     campo={campo}
+                                    opciones={
+                                        typeof campo.opciones === 'function'
+                                            ? campo.opciones(formulario.data)
+                                            : campo.opciones
+                                    }
                                     valor={formulario.data[campo.name] ?? ''}
                                     error={formulario.errors[campo.name]}
                                     onChange={(valor) =>
-                                        formulario.setData(campo.name, valor)
+                                        formulario.setData((previos) => ({
+                                            ...previos,
+                                            [campo.name]: valor,
+                                            ...Object.fromEntries(
+                                                campos
+                                                    .filter(
+                                                        (otro) =>
+                                                            otro.dependeDe ===
+                                                            campo.name,
+                                                    )
+                                                    .map((otro) => [
+                                                        otro.name,
+                                                        '',
+                                                    ]),
+                                            ),
+                                        }))
                                     }
                                 />
                             ),

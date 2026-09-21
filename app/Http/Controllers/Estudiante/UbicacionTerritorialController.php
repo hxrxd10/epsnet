@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Estudiante\UbicacionTerritorialRequest;
 use App\Models\Departamento;
 use App\Models\Expediente;
+use App\Models\Municipio;
 use App\Models\UbicacionTerritorial;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
@@ -20,24 +21,32 @@ class UbicacionTerritorialController extends Controller
     {
         return $this->paso($expediente, Eje::Territorio, [
             'registros' => $expediente->ubicaciones()
-                ->with('departamento')->orderByDesc('id')
+                ->with(['departamento', 'municipio'])->orderByDesc('id')
                 ->get()
                 ->map(fn (UbicacionTerritorial $registro): array => [
                     'id' => $registro->id,
                     'departamento_id' => $registro->departamento_id,
                     'departamento' => $registro->departamento->nombre,
-                    'municipio' => $registro->municipio,
+                    'municipio_id' => $registro->municipio_id,
+                    'municipio' => $registro->municipio?->nombre,
                     'comunidad' => $registro->comunidad,
                     'latitud' => $registro->latitud,
                     'longitud' => $registro->longitud,
                     'referencia' => $registro->referencia,
                 ])
                 ->values(),
-            'googleMaps' => [
-                'key' => config('services.google_maps.key'),
-                'mapId' => config('services.google_maps.map_id'),
-            ],
-            'departamentos' => Departamento::orderBy('nombre')->get(['id', 'nombre'])->map(fn (Departamento $departamento): array => ['value' => (string) $departamento->id, 'label' => $departamento->nombre])->values(),
+            'googleMaps' => $this->googleMaps(),
+            'departamentos' => Departamento::orderBy('nombre')->get(['id', 'nombre', 'latitud', 'longitud'])->map(fn (Departamento $departamento): array => [
+                'value' => (string) $departamento->id,
+                'label' => $departamento->nombre,
+            ])->values(),
+            'municipios' => Municipio::orderBy('nombre')->get(['id', 'departamento_id', 'nombre', 'latitud', 'longitud'])->map(fn (Municipio $municipio): array => [
+                'value' => (string) $municipio->id,
+                'label' => $municipio->nombre,
+                'departamento_id' => (string) $municipio->departamento_id,
+                'latitud' => $municipio->latitud,
+                'longitud' => $municipio->longitud,
+            ])->values(),
         ]);
     }
 

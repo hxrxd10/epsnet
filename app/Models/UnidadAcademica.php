@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $correo_contacto
  * @property string|null $telefono_contacto
  * @property string|null $direccion
+ * @property string|null $latitud
+ * @property string|null $longitud
  * @property int|null $administrador_id
  * @property bool $activa
  */
@@ -33,6 +35,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'correo_contacto',
     'telefono_contacto',
     'direccion',
+    'latitud',
+    'longitud',
     'administrador_id',
     'activa',
 ])]
@@ -48,6 +52,8 @@ class UnidadAcademica extends Model
     {
         return [
             'tipo' => TipoUnidadAcademica::class,
+            'latitud' => 'decimal:7',
+            'longitud' => 'decimal:7',
             'activa' => 'boolean',
         ];
     }

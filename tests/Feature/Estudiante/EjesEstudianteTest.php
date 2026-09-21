@@ -6,6 +6,7 @@ use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\InstitucionReceptora;
+use App\Models\Municipio;
 use App\Models\PublicacionInvestigacion;
 use App\Models\SeguimientoImpacto;
 use App\Models\TransferenciaConocimiento;
@@ -45,9 +46,9 @@ dataset('ejes', [
         'numero_participantes' => 25,
         'fecha' => '2026-03-05',
     ]],
-    'territorio' => ['territorio', 'ubicaciones', UbicacionTerritorial::class, 'municipio', fn (): array => [
-        'departamento_id' => Departamento::factory()->create()->id,
-        'municipio' => 'San Juan Sacatepéquez',
+    'territorio' => ['territorio', 'ubicaciones', UbicacionTerritorial::class, 'municipio_id', fn (): array => [
+        'municipio_id' => ($municipio = Municipio::factory()->create())->id,
+        'departamento_id' => $municipio->departamento_id,
         'comunidad' => 'Aldea Sacsuy',
         'latitud' => 14.7167,
         'longitud' => -90.6,
@@ -182,7 +183,7 @@ it('exige los campos obligatorios de cada eje', function (string $segmento, arra
     'bienes y servicios' => ['bienes-servicios', ['tipo', 'descripcion', 'fecha']],
     'publicaciones' => ['publicaciones', ['titulo', 'tipo', 'autores']],
     'transferencias' => ['transferencias', ['tipo_actividad', 'actividad', 'comunidad', 'fecha']],
-    'territorio' => ['territorio', ['departamento_id', 'municipio']],
+    'territorio' => ['territorio', ['departamento_id', 'municipio_id']],
     'actores' => ['actores', ['institucion_nombre', 'contraparte', 'comunidad_beneficiada']],
     'seguimiento' => ['seguimiento', ['tipo_registro', 'indicador', 'fecha']],
 ]);
@@ -236,21 +237,29 @@ it('entrega al paso de territorio la configuración de Google Maps', function ()
             ->where('googleMaps.mapId', 'MAPA_PRUEBA'));
 });
 
-it('ofrece los departamentos como opciones para ubicar el EPS', function () {
-    Departamento::factory()->count(3)->create();
+it('ofrece los departamentos y los municipios del catálogo para ubicar el EPS', function () {
+    $sacatepequez = Departamento::factory()->create();
+    Municipio::factory()->for($sacatepequez)->create(['nombre' => 'Antigua Guatemala']);
+    Municipio::factory()->for($sacatepequez)->create(['nombre' => 'Jocotenango']);
+    Municipio::factory()->create(['nombre' => 'Flores']);
+    Departamento::factory()->count(2)->create();
     $expediente = expedienteDelEstudiante();
 
     $this->get(route('estudiante.expedientes.territorio.index', $expediente))
-        ->assertInertia(fn (Assert $page) => $page->has('departamentos', 3));
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('departamentos', 4)
+            ->has('municipios', 3)
+            ->where('municipios.0.label', 'Antigua Guatemala')
+            ->where('municipios.0.departamento_id', (string) $sacatepequez->id));
 });
 
 it('valida la ubicación dentro del territorio de Guatemala', function (array $cambios, array $errores) {
     $expediente = expedienteDelEstudiante();
-    $departamento = Departamento::factory()->create();
+    $municipio = Municipio::factory()->create();
 
     $this->post(route('estudiante.expedientes.territorio.store', $expediente), [
-        'departamento_id' => $departamento->id,
-        'municipio' => 'Antigua Guatemala',
+        'departamento_id' => $municipio->departamento_id,
+        'municipio_id' => $municipio->id,
         ...$cambios,
     ])->assertSessionHasErrors($errores);
 
@@ -261,20 +270,35 @@ it('valida la ubicación dentro del territorio de Guatemala', function (array $c
     'latitud fuera del país' => [['latitud' => 40.7, 'longitud' => -90.7], ['latitud' => 'La latitud debe estar dentro del territorio de Guatemala (entre 13.5 y 18.5).']],
     'longitud fuera del país' => [['latitud' => 14.5, 'longitud' => -74.0], ['longitud' => 'La longitud debe estar dentro del territorio de Guatemala (entre -92.5 y -88).']],
     'departamento inexistente' => [['departamento_id' => 9999], ['departamento_id' => 'La opción elegida en el departamento no es válida.']],
+    'municipio inexistente' => [['municipio_id' => 9999], ['municipio_id' => 'El municipio no pertenece al departamento elegido.']],
+    'municipio sin elegir' => [['municipio_id' => ''], ['municipio_id' => 'Ingresa el municipio.']],
 ]);
+
+it('no acepta un municipio que pertenece a otro departamento', function () {
+    $expediente = expedienteDelEstudiante();
+    $municipio = Municipio::factory()->create();
+
+    $this->post(route('estudiante.expedientes.territorio.store', $expediente), [
+        'departamento_id' => Departamento::factory()->create()->id,
+        'municipio_id' => $municipio->id,
+    ])->assertSessionHasErrors(['municipio_id' => 'El municipio no pertenece al departamento elegido.']);
+
+    expect($expediente->ubicaciones()->count())->toBe(0);
+});
 
 it('guarda la ubicación con la referencia territorial cuando no hay coordenadas exactas', function () {
     $expediente = expedienteDelEstudiante();
-    $departamento = Departamento::factory()->create();
+    $municipio = Municipio::factory()->create();
 
     $this->post(route('estudiante.expedientes.territorio.store', $expediente), [
-        'departamento_id' => $departamento->id,
-        'municipio' => 'Antigua Guatemala',
+        'departamento_id' => $municipio->departamento_id,
+        'municipio_id' => $municipio->id,
         'referencia' => 'Cerca del parque central',
     ])->assertSessionHasNoErrors();
 
     expect($expediente->ubicaciones()->sole())
-        ->departamento_id->toBe($departamento->id)
+        ->departamento_id->toBe($municipio->departamento_id)
+        ->municipio_id->toBe($municipio->id)
         ->latitud->toBeNull()
         ->referencia->toBe('Cerca del parque central');
 });

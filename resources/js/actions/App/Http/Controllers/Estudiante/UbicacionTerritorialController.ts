@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::index
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:19
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:20
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 export const index = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::index
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:19
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:20
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 index.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ index.url = (args: { expediente: string | number | { id: string | number } } | [
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::index
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:19
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:20
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 index.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ index.get = (args: { expediente: string | number | { id: string | number } } | [
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::index
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:19
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:20
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 index.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ index.head = (args: { expediente: string | number | { id: string | number } } | 
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::index
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:19
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:20
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 const indexForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const indexForm = (args: { expediente: string | number | { id: string | number }
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::index
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:19
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:20
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 indexForm.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ indexForm.get = (args: { expediente: string | number | { id: string | number } }
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::index
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:19
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:20
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 indexForm.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -106,7 +106,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::store
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:44
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:53
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 export const store = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -121,7 +121,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::store
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:44
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:53
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 store.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -154,7 +154,7 @@ store.url = (args: { expediente: string | number | { id: string | number } } | [
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::store
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:44
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:53
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 store.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -164,7 +164,7 @@ store.post = (args: { expediente: string | number | { id: string | number } } | 
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::store
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:44
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:53
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 const storeForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -174,7 +174,7 @@ const storeForm = (args: { expediente: string | number | { id: string | number }
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::store
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:44
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:53
 * @route '/estudiante/expedientes/{expediente}/territorio'
 */
 storeForm.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -186,7 +186,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::update
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:51
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:60
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 export const update = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -201,7 +201,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::update
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:51
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:60
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 update.url = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions) => {
@@ -229,7 +229,7 @@ update.url = (args: { expediente: string | number | { id: string | number }, reg
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::update
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:51
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:60
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 update.put = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -239,7 +239,7 @@ update.put = (args: { expediente: string | number | { id: string | number }, reg
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::update
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:51
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:60
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 update.patch = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -249,7 +249,7 @@ update.patch = (args: { expediente: string | number | { id: string | number }, r
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::update
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:51
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:60
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 const updateForm = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -264,7 +264,7 @@ const updateForm = (args: { expediente: string | number | { id: string | number 
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::update
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:51
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:60
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 updateForm.put = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -279,7 +279,7 @@ updateForm.put = (args: { expediente: string | number | { id: string | number },
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::update
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:51
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:60
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 updateForm.patch = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -296,7 +296,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::destroy
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:58
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:67
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 export const destroy = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -311,7 +311,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::destroy
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:58
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:67
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 destroy.url = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions) => {
@@ -339,7 +339,7 @@ destroy.url = (args: { expediente: string | number | { id: string | number }, re
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::destroy
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:58
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:67
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 destroy.delete = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -349,7 +349,7 @@ destroy.delete = (args: { expediente: string | number | { id: string | number },
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::destroy
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:58
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:67
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 const destroyForm = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -364,7 +364,7 @@ const destroyForm = (args: { expediente: string | number | { id: string | number
 
 /**
 * @see \App\Http\Controllers\Estudiante\UbicacionTerritorialController::destroy
-* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:58
+* @see app/Http/Controllers/Estudiante/UbicacionTerritorialController.php:67
 * @route '/estudiante/expedientes/{expediente}/territorio/{registro}'
 */
 destroyForm.delete = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

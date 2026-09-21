@@ -106,7 +106,7 @@ Este documento cubre los 13 módulos funcionales a desarrollar en Laravel, organ
 
 **Requerimientos funcionales**
 - RF-16: El sistema debe permitir capturar la ubicación geográfica donde se desarrolla el EPS, mediante selección en mapa o ingreso manual.
-- RF-17: El sistema debe registrar el contexto territorial (departamento, municipio, comunidad).
+- RF-17: El sistema debe registrar el contexto territorial (departamento, municipio, comunidad). El departamento y el municipio se eligen de los catálogos administrados por DIGEU, cada uno con una coordenada de referencia; las unidades académicas registran además las coordenadas de su edificio.
 
 **Criterios de aceptación**
 - Cuando no se dispone de ubicación exacta, el sistema permite registrar la referencia territorial más cercana.

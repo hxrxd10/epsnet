@@ -8,6 +8,7 @@ import PasoCrud from '@/components/estudiante/paso-crud';
 import type { Campo } from '@/components/estudiante/paso-crud';
 import ResumenRegistro from '@/components/estudiante/resumen-registro';
 import SelectorUbicacion from '@/components/estudiante/selector-ubicacion';
+import type { OpcionMunicipio } from '@/components/estudiante/selector-ubicacion';
 import EstudianteLayout from '@/layouts/estudiante-layout';
 import type { Opcion, PasoProps } from '@/types/estudiante';
 
@@ -15,7 +16,8 @@ type Registro = {
     id: number;
     departamento_id: number;
     departamento: string;
-    municipio: string;
+    municipio_id: number | null;
+    municipio: string | null;
     comunidad: string | null;
     latitud: string | null;
     longitud: string | null;
@@ -25,6 +27,10 @@ type Registro = {
 type Props = PasoProps & {
     registros: Registro[];
     departamentos: Opcion[];
+    municipios: (OpcionMunicipio & {
+        latitud: string | null;
+        longitud: string | null;
+    })[];
     googleMaps: { key: string | null; mapId: string };
 };
 
@@ -34,6 +40,7 @@ export default function Territorio({
     pasos,
     registros,
     departamentos,
+    municipios,
     googleMaps,
 }: Props) {
     const campos: Campo[] = [
@@ -41,24 +48,39 @@ export default function Territorio({
             name: 'mapa',
             label: 'Ubicación en el mapa',
             tipo: 'text',
-            render: ({ valores, establecer }) => (
-                <SelectorUbicacion
-                    apiKey={googleMaps.key}
-                    mapId={googleMaps.mapId}
-                    latitud={valores.latitud ?? ''}
-                    longitud={valores.longitud ?? ''}
-                    departamentos={departamentos}
-                    onSeleccionar={(seleccion) =>
-                        establecer(
-                            Object.fromEntries(
-                                Object.entries(seleccion).filter(
-                                    ([, valor]) => valor !== undefined,
-                                ),
-                            ) as Record<string, string>,
-                        )
-                    }
-                />
-            ),
+            render: ({ valores, establecer }) => {
+                const municipio = municipios.find(
+                    (item) => item.value === valores.municipio_id,
+                );
+
+                return (
+                    <SelectorUbicacion
+                        apiKey={googleMaps.key}
+                        mapId={googleMaps.mapId}
+                        latitud={valores.latitud ?? ''}
+                        longitud={valores.longitud ?? ''}
+                        departamentos={departamentos}
+                        municipios={municipios}
+                        centro={
+                            municipio?.latitud && municipio.longitud
+                                ? {
+                                      lat: Number(municipio.latitud),
+                                      lng: Number(municipio.longitud),
+                                  }
+                                : null
+                        }
+                        onSeleccionar={(seleccion) =>
+                            establecer(
+                                Object.fromEntries(
+                                    Object.entries(seleccion).filter(
+                                        ([, valor]) => valor !== undefined,
+                                    ),
+                                ) as Record<string, string>,
+                            )
+                        }
+                    />
+                );
+            },
         },
         {
             name: 'departamento_id',
@@ -69,11 +91,17 @@ export default function Territorio({
             ancho: 'mitad',
         },
         {
-            name: 'municipio',
+            name: 'municipio_id',
             label: 'Municipio',
-            tipo: 'text',
+            tipo: 'select',
             requerido: true,
-            max: 150,
+            dependeDe: 'departamento_id',
+            placeholder: 'Selecciona un municipio',
+            opciones: (valores) =>
+                municipios.filter(
+                    (municipio) =>
+                        municipio.departamento_id === valores.departamento_id,
+                ),
             ancho: 'mitad',
         },
         {
@@ -121,7 +149,7 @@ export default function Territorio({
                 campos={campos}
                 valoresIniciales={{
                     departamento_id: '',
-                    municipio: '',
+                    municipio_id: '',
                     comunidad: '',
                     latitud: '',
                     longitud: '',
@@ -129,7 +157,7 @@ export default function Territorio({
                 }}
                 aFormulario={(registro) => ({
                     departamento_id: registro.departamento_id.toString(),
-                    municipio: registro.municipio,
+                    municipio_id: registro.municipio_id?.toString() ?? '',
                     comunidad: registro.comunidad ?? '',
                     latitud: registro.latitud ?? '',
                     longitud: registro.longitud ?? '',

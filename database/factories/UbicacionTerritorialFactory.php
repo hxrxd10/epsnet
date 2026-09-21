@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Departamento;
 use App\Models\Expediente;
+use App\Models\Municipio;
 use App\Models\UbicacionTerritorial;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,8 +21,8 @@ class UbicacionTerritorialFactory extends Factory
     {
         return [
             'expediente_id' => Expediente::factory(),
-            'departamento_id' => Departamento::factory(),
-            'municipio' => fake()->city(),
+            'municipio_id' => Municipio::factory(),
+            'departamento_id' => fn (array $atributos): int => Municipio::findOrFail($atributos['municipio_id'])->departamento_id,
             'comunidad' => fake()->streetName(),
             'latitud' => fake()->latitude(13.7, 17.8),
             'longitud' => fake()->longitude(-92.2, -88.2),

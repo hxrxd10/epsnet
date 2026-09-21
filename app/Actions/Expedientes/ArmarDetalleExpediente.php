@@ -51,10 +51,10 @@ class ArmarDetalleExpediente
                     [$r->comunidad, $r->fecha->toDateString(), $r->numero_participantes !== null ? "{$r->numero_participantes} participantes" : null],
                     ['Actividad' => $r->actividad],
                 )),
-            Eje::Territorio => $expediente->ubicaciones()->with('departamento')->orderBy('id')->get()
+            Eje::Territorio => $expediente->ubicaciones()->with(['departamento', 'municipio'])->orderBy('id')->get()
                 ->map(fn ($r): array => $this->registro(
                     $r->departamento->nombre,
-                    collect([$r->municipio, $r->comunidad])->filter()->implode(' · '),
+                    collect([$r->municipio?->nombre, $r->comunidad])->filter()->implode(' · '),
                     [$r->latitud !== null && $r->longitud !== null ? "{$r->latitud}, {$r->longitud}" : null],
                     ['Referencia territorial' => $r->referencia],
                 )),

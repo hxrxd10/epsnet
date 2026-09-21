@@ -89,8 +89,8 @@ class CierreExpedienteController extends Controller
             Eje::BienesServicios => $expediente->bienesServicios()->orderBy('fecha')->pluck('descripcion'),
             Eje::Publicaciones => $expediente->publicaciones()->orderBy('id')->pluck('titulo'),
             Eje::Transferencia => $expediente->transferencias()->orderBy('fecha')->pluck('actividad'),
-            Eje::Territorio => $expediente->ubicaciones()->with('departamento')->orderBy('id')->get()
-                ->map(fn ($ubicacion): string => "{$ubicacion->departamento->nombre} · {$ubicacion->municipio}"),
+            Eje::Territorio => $expediente->ubicaciones()->with(['departamento', 'municipio'])->orderBy('id')->get()
+                ->map(fn ($ubicacion): string => collect([$ubicacion->departamento->nombre, $ubicacion->municipio?->nombre])->filter()->implode(' · ')),
             Eje::Actores => $expediente->actores()->with('institucionReceptora')->orderBy('id')->get()
                 ->map(fn ($actor): string => "{$actor->institucionReceptora->nombre} · {$actor->contraparte}"),
             Eje::Seguimiento => $expediente->seguimientos()->orderBy('fecha')->pluck('indicador'),

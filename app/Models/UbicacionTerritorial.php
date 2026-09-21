@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property int $expediente_id
  * @property int $departamento_id
- * @property string $municipio
+ * @property int|null $municipio_id
  * @property string|null $comunidad
  * @property string|null $latitud
  * @property string|null $longitud
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'expediente_id',
     'departamento_id',
-    'municipio',
+    'municipio_id',
     'comunidad',
     'latitud',
     'longitud',
@@ -60,5 +60,13 @@ class UbicacionTerritorial extends Model
     public function departamento(): BelongsTo
     {
         return $this->belongsTo(Departamento::class);
+    }
+
+    /**
+     * @return BelongsTo<Municipio, $this>
+     */
+    public function municipio(): BelongsTo
+    {
+        return $this->belongsTo(Municipio::class);
     }
 }

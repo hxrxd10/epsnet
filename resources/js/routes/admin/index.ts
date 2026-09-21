@@ -1,9 +1,12 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import departamentos from './departamentos'
+import municipios from './municipios'
+import unidades from './unidades'
 import usuarios from './usuarios'
 import catalogos from './catalogos'
 /**
 * @see \App\Http\Controllers\Admin\ManejoDatosController::datos
-* @see app/Http/Controllers/Admin/ManejoDatosController.php:16
+* @see app/Http/Controllers/Admin/ManejoDatosController.php:19
 * @route '/admin/datos'
 */
 export const datos = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -18,7 +21,7 @@ datos.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ManejoDatosController::datos
-* @see app/Http/Controllers/Admin/ManejoDatosController.php:16
+* @see app/Http/Controllers/Admin/ManejoDatosController.php:19
 * @route '/admin/datos'
 */
 datos.url = (options?: RouteQueryOptions) => {
@@ -27,7 +30,7 @@ datos.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\ManejoDatosController::datos
-* @see app/Http/Controllers/Admin/ManejoDatosController.php:16
+* @see app/Http/Controllers/Admin/ManejoDatosController.php:19
 * @route '/admin/datos'
 */
 datos.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -37,7 +40,7 @@ datos.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Admin\ManejoDatosController::datos
-* @see app/Http/Controllers/Admin/ManejoDatosController.php:16
+* @see app/Http/Controllers/Admin/ManejoDatosController.php:19
 * @route '/admin/datos'
 */
 datos.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -47,7 +50,7 @@ datos.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Admin\ManejoDatosController::datos
-* @see app/Http/Controllers/Admin/ManejoDatosController.php:16
+* @see app/Http/Controllers/Admin/ManejoDatosController.php:19
 * @route '/admin/datos'
 */
 const datosForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -57,7 +60,7 @@ const datosForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\Admin\ManejoDatosController::datos
-* @see app/Http/Controllers/Admin/ManejoDatosController.php:16
+* @see app/Http/Controllers/Admin/ManejoDatosController.php:19
 * @route '/admin/datos'
 */
 datosForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -67,7 +70,7 @@ datosForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Admin\ManejoDatosController::datos
-* @see app/Http/Controllers/Admin/ManejoDatosController.php:16
+* @see app/Http/Controllers/Admin/ManejoDatosController.php:19
 * @route '/admin/datos'
 */
 datosForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -84,6 +87,9 @@ datos.form = datosForm
 
 const admin = {
     datos: Object.assign(datos, datos),
+    departamentos: Object.assign(departamentos, departamentos),
+    municipios: Object.assign(municipios, municipios),
+    unidades: Object.assign(unidades, unidades),
     usuarios: Object.assign(usuarios, usuarios),
     catalogos: Object.assign(catalogos, catalogos),
 }

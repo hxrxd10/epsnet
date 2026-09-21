@@ -12,6 +12,7 @@ import type { LucideIcon } from 'lucide-react';
 import { dashboard, documentacion } from '@/routes';
 import { datos } from '@/routes/admin';
 import { index as usuarios } from '@/routes/admin/usuarios';
+import { index as estadisticas } from '@/routes/estadisticas';
 import { acceso } from '@/routes/estudiante';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
 import { index as repositorio } from '@/routes/repositorio';
@@ -30,7 +31,8 @@ export default function Dashboard() {
         {
             icono: BarChart3,
             titulo: 'Estadísticas',
-            texto: 'Aquí verás las estadísticas de los EPS de todo el país. Estarán disponibles muy pronto.',
+            texto: 'Explora en el mapa lo que la red de EPS ha hecho en cada departamento.',
+            href: estadisticas(),
         },
         {
             icono: BookMarked,

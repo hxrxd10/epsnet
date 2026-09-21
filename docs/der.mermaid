@@ -15,7 +15,26 @@ erDiagram
         string nombre
         string tipo
         string contacto
+        string direccion
+        decimal latitud
+        decimal longitud
         int administrador_id FK
+    }
+    DEPARTAMENTO {
+        int id PK
+        string codigo
+        string nombre
+        string cabecera
+        decimal latitud
+        decimal longitud
+    }
+    MUNICIPIO {
+        int id PK
+        int departamento_id FK
+        string codigo
+        string nombre
+        decimal latitud
+        decimal longitud
     }
     ESTUDIANTE {
         int id PK
@@ -60,8 +79,8 @@ erDiagram
         int estudiante_id FK
         decimal latitud
         decimal longitud
-        string departamento
-        string municipio
+        int departamento_id FK
+        int municipio_id FK
         string comunidad
     }
     EJE5_ACTORES {
@@ -112,6 +131,9 @@ erDiagram
     ESTUDIANTE ||--o{ EJE4_TERRITORIO : registra
     ESTUDIANTE ||--o{ EJE5_ACTORES : registra
     ESTUDIANTE ||--o{ EJE6_SEGUIMIENTO : registra
+    DEPARTAMENTO ||--o{ MUNICIPIO : contiene
+    DEPARTAMENTO ||--o{ EJE4_TERRITORIO : ubica
+    MUNICIPIO ||--o{ EJE4_TERRITORIO : ubica
     EJE5_ACTORES }o--|| INSTITUCION_RECEPTORA : involucra
     USUARIO ||--o{ BITACORA : genera
     FORMULARIO_INGRESO ||--o{ ADJUNTO : contiene

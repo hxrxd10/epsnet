@@ -8,11 +8,51 @@ type CatalogoResumen = {
     etiqueta: string;
     descripcion: string;
     total: number;
-    activos: number;
+    activos: number | null;
     href: string;
 };
 
-export default function Datos({ catalogos }: { catalogos: CatalogoResumen[] }) {
+function Tarjetas({ elementos }: { elementos: CatalogoResumen[] }) {
+    return (
+        <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {elementos.map((catalogo) => (
+                <li key={catalogo.clave}>
+                    <Link
+                        href={catalogo.href}
+                        className="border-sidebar-border/70 hover:bg-accent group flex h-full flex-col rounded-xl border p-6 transition-colors"
+                    >
+                        <Database className="text-muted-foreground size-6" />
+                        <h3 className="mt-4 font-semibold">
+                            {catalogo.etiqueta}
+                        </h3>
+                        <p className="text-muted-foreground mt-1 text-sm">
+                            {catalogo.descripcion}
+                        </p>
+                        <div className="mt-auto flex items-center justify-between pt-6 text-sm">
+                            <span className="text-muted-foreground">
+                                {catalogo.total}{' '}
+                                {catalogo.total === 1
+                                    ? 'elemento'
+                                    : 'elementos'}
+                                {catalogo.activos !== null &&
+                                    ` · ${catalogo.activos} activos`}
+                            </span>
+                            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                        </div>
+                    </Link>
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+export default function Datos({
+    catalogos,
+    territorio,
+}: {
+    catalogos: CatalogoResumen[];
+    territorio: CatalogoResumen[];
+}) {
     return (
         <>
             <Head title="Manejo de datos" />
@@ -28,34 +68,19 @@ export default function Datos({ catalogos }: { catalogos: CatalogoResumen[] }) {
                     </p>
                 </div>
 
-                <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {catalogos.map((catalogo) => (
-                        <li key={catalogo.clave}>
-                            <Link
-                                href={catalogo.href}
-                                className="border-sidebar-border/70 hover:bg-accent group flex h-full flex-col rounded-xl border p-6 transition-colors"
-                            >
-                                <Database className="text-muted-foreground size-6" />
-                                <h2 className="mt-4 font-semibold">
-                                    {catalogo.etiqueta}
-                                </h2>
-                                <p className="text-muted-foreground mt-1 text-sm">
-                                    {catalogo.descripcion}
-                                </p>
-                                <div className="mt-auto flex items-center justify-between pt-6 text-sm">
-                                    <span className="text-muted-foreground">
-                                        {catalogo.total}{' '}
-                                        {catalogo.total === 1
-                                            ? 'elemento'
-                                            : 'elementos'}{' '}
-                                        · {catalogo.activos} activos
-                                    </span>
-                                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                                </div>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                <section className="flex flex-col gap-3">
+                    <h2 className="text-muted-foreground font-mono text-[11px] tracking-[0.18em] uppercase">
+                        Catálogos del EPS
+                    </h2>
+                    <Tarjetas elementos={catalogos} />
+                </section>
+
+                <section className="flex flex-col gap-3">
+                    <h2 className="text-muted-foreground font-mono text-[11px] tracking-[0.18em] uppercase">
+                        Territorio y unidades académicas
+                    </h2>
+                    <Tarjetas elementos={territorio} />
+                </section>
             </div>
         </>
     );

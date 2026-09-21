@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        $this->call([RolSeeder::class, DepartamentoSeeder::class]);
+        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class]);
 
         // Solo en desarrollo: administrador de prueba (contraseña "password").
         if (app()->isLocal()) {

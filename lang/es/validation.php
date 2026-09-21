@@ -65,7 +65,7 @@ return [
         'comunidad' => 'la comunidad',
         'numero_participantes' => 'el número de participantes',
         'departamento_id' => 'el departamento',
-        'municipio' => 'el municipio',
+        'municipio_id' => 'el municipio',
         'latitud' => 'la latitud',
         'longitud' => 'la longitud',
         'referencia' => 'la referencia territorial',

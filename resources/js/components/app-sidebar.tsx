@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
+    BarChart3,
     BookMarked,
     BookOpen,
     Database,
@@ -22,12 +23,14 @@ import {
 import { dashboard, documentacion } from '@/routes';
 import { datos } from '@/routes/admin';
 import { index as usuarios } from '@/routes/admin/usuarios';
+import { index as estadisticas } from '@/routes/estadisticas';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
 import { index as repositorio } from '@/routes/repositorio';
 import type { NavItem } from '@/types';
 
 const plataforma: NavItem[] = [
     { title: 'Panel', href: dashboard(), icon: LayoutGrid },
+    { title: 'Estadísticas', href: estadisticas(), icon: BarChart3 },
     { title: 'Repositorio', href: repositorio(), icon: BookMarked },
     { title: 'Documentación', href: documentacion(), icon: BookOpen },
 ];

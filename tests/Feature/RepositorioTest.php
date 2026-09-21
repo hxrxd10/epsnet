@@ -5,6 +5,7 @@ use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\InstitucionReceptora;
+use App\Models\Municipio;
 use App\Models\UnidadAcademica;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -60,7 +61,8 @@ it('describe lo realizado con la evaluación de impacto o, si no hay, con lo pri
 
 it('muestra el estudiante, la carrera, la unidad y la ubicación', function () {
     $expediente = expedienteAprobado(['nombre_carrera' => 'Licenciatura en Pedagogía']);
-    $expediente->ubicaciones()->create(['departamento_id' => Departamento::factory()->create(['nombre' => 'Sacatepéquez'])->id, 'municipio' => 'Antigua Guatemala']);
+    $antigua = Municipio::factory()->for(Departamento::factory()->create(['nombre' => 'Sacatepéquez']))->create(['nombre' => 'Antigua Guatemala']);
+    $expediente->ubicaciones()->create(['departamento_id' => $antigua->departamento_id, 'municipio_id' => $antigua->id]);
     $this->actingAs(User::factory()->invitado()->create());
 
     $this->get(route('repositorio.index'))

@@ -8,8 +8,10 @@ use App\Models\PublicacionInvestigacion;
 use App\Models\UnidadAcademica;
 use App\Models\User;
 use Database\Seeders\DepartamentoSeeder;
+use Database\Seeders\MunicipioSeeder;
 use Database\Seeders\RolSeeder;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -20,7 +22,7 @@ it('crea todas las tablas del modelo de datos', function (string $tabla) {
     'formularios_ingreso', 'bienes_servicios', 'publicaciones_investigacion',
     'transferencias_conocimiento', 'ubicaciones_territoriales',
     'instituciones_receptoras', 'actores_participantes', 'seguimientos_impacto',
-    'bitacoras', 'adjuntos', 'adjunto_contenidos', 'catalogos',
+    'bitacoras', 'adjuntos', 'adjunto_contenidos', 'catalogos', 'municipios',
 ]);
 
 it('agrega el rol y el estado activo a los usuarios', function () {
@@ -154,4 +156,53 @@ it('conserva la bitácora al eliminar al usuario que la generó', function () {
         ->and($registro->usuario_id)->toBeNull()
         ->and($registro->usuario_nombre)->toBe($usuario->name)
         ->and($registro->fecha_hora)->not->toBeNull();
+});
+
+it('siembra los 340 municipios con su departamento y coordenadas, sin duplicarlos al repetir la siembra', function () {
+    $this->seed([DepartamentoSeeder::class, MunicipioSeeder::class]);
+    $this->seed(MunicipioSeeder::class);
+
+    expect(DB::table('municipios')->count())->toBe(340)
+        ->and(DB::table('municipios')->whereNull('latitud')->orWhereNull('longitud')->count())->toBe(0)
+        ->and(DB::table('departamentos')->join('municipios', 'departamentos.id', '=', 'municipios.departamento_id')->whereRaw('substr(municipios.codigo, 1, 2) != departamentos.codigo')->count())->toBe(0)
+        ->and(DB::table('municipios')->where('codigo', '0301')->value('nombre'))->toBe('Antigua Guatemala')
+        ->and(DB::table('municipios')->where('departamento_id', DB::table('departamentos')->where('codigo', '17')->value('id'))->count())->toBe(14);
+});
+
+it('no pisa las coordenadas que DIGEU afinó al repetir la siembra', function () {
+    $this->seed([DepartamentoSeeder::class, MunicipioSeeder::class]);
+    DB::table('municipios')->where('codigo', '0301')->update(['latitud' => 14.5, 'longitud' => -90.7]);
+
+    $this->seed(MunicipioSeeder::class);
+
+    expect((float) DB::table('municipios')->where('codigo', '0301')->value('latitud'))->toBe(14.5);
+});
+
+it('enlaza al catálogo los municipios escritos a mano y deja sin municipio los que no coinciden', function () {
+    $this->seed([DepartamentoSeeder::class, MunicipioSeeder::class]);
+    $migracion = 'database/migrations/2026_09_21_014352_replace_municipio_por_municipio_id_in_ubicaciones_territoriales_table.php';
+    Artisan::call('migrate:rollback', ['--path' => $migracion]);
+
+    expect(Schema::hasColumn('ubicaciones_territoriales', 'municipio'))->toBeTrue()
+        ->and(Schema::hasColumn('ubicaciones_territoriales', 'municipio_id'))->toBeFalse();
+
+    $sacatepequez = DB::table('departamentos')->where('codigo', '03')->value('id');
+    $expediente = Expediente::factory()->create();
+
+    foreach (['  antigua   GUATEMALA ', 'Aldea inventada'] as $texto) {
+        DB::table('ubicaciones_territoriales')->insert([
+            'expediente_id' => $expediente->id,
+            'departamento_id' => $sacatepequez,
+            'municipio' => $texto,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    Artisan::call('migrate', ['--path' => $migracion]);
+
+    $antigua = DB::table('municipios')->where('codigo', '0301')->value('id');
+
+    expect(Schema::hasColumn('ubicaciones_territoriales', 'municipio'))->toBeFalse()
+        ->and(DB::table('ubicaciones_territoriales')->orderBy('id')->pluck('municipio_id')->all())->toBe([$antigua, null]);
 });

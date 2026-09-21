@@ -13,8 +13,10 @@ export type SeleccionUbicacion = {
     latitud: string;
     longitud: string;
     departamento_id?: string;
-    municipio?: string;
+    municipio_id?: string;
 };
+
+export type OpcionMunicipio = Opcion & { departamento_id: string };
 
 type SelectorUbicacionProps = {
     apiKey: string | null;
@@ -22,6 +24,9 @@ type SelectorUbicacionProps = {
     latitud: string;
     longitud: string;
     departamentos: Opcion[];
+    municipios: OpcionMunicipio[];
+    /** Punto donde se centra el mapa mientras no haya una coordenada marcada (p. ej. el municipio elegido). */
+    centro?: LatLngLiteral | null;
     onSeleccionar: (seleccion: SeleccionUbicacion) => void;
 };
 
@@ -42,26 +47,39 @@ const normalizar = (texto: string) =>
         .replace(/ (department|departamento)$/, '')
         .trim();
 
-/** Deduce departamento y municipio a partir del resultado de la geocodificación inversa. */
+/** Deduce departamento y municipio del catálogo a partir del resultado de la geocodificación inversa. */
 function deducirDivision(
     resultados: ResultadoGeocodificacion[],
     departamentos: Opcion[],
-): Pick<SeleccionUbicacion, 'departamento_id' | 'municipio'> {
+    municipios: OpcionMunicipio[],
+): Pick<SeleccionUbicacion, 'departamento_id' | 'municipio_id'> {
     const componentes = resultados.flatMap((r) => r.address_components);
     const nivel = (tipo: string) =>
         componentes.find((c) => c.types.includes(tipo))?.long_name;
 
     const nombreDepartamento = nivel('administrative_area_level_1');
-    const municipio = nivel('administrative_area_level_2') ?? nivel('locality');
+    const nombreMunicipio = (
+        nivel('administrative_area_level_2') ?? nivel('locality')
+    )?.replace(/^Municipio de /i, '');
     const departamento = nombreDepartamento
         ? departamentos.find(
               (d) => normalizar(d.label) === normalizar(nombreDepartamento),
           )
         : undefined;
 
+    const municipio =
+        departamento && nombreMunicipio
+            ? municipios.find(
+                  (m) =>
+                      m.departamento_id === departamento.value &&
+                      normalizar(m.label) === normalizar(nombreMunicipio),
+              )
+            : undefined;
+
     return {
         departamento_id: departamento?.value,
-        municipio: municipio?.replace(/^Municipio de /i, ''),
+        // Sin coincidencia se vacía, para no dejar un municipio de otro departamento.
+        municipio_id: municipio?.value ?? (departamento ? '' : undefined),
     };
 }
 
@@ -71,6 +89,8 @@ export default function SelectorUbicacion({
     latitud,
     longitud,
     departamentos,
+    municipios,
+    centro,
     onSeleccionar,
 }: SelectorUbicacionProps) {
     const contenedor = useRef<HTMLDivElement>(null);
@@ -81,6 +101,7 @@ export default function SelectorUbicacion({
     >(null);
     const alSeleccionar = useRef(onSeleccionar);
     const departamentosActuales = useRef(departamentos);
+    const municipiosActuales = useRef(municipios);
     const [estado, setEstado] = useState<'cargando' | 'listo' | 'error'>(
         'cargando',
     );
@@ -88,6 +109,7 @@ export default function SelectorUbicacion({
     useEffect(() => {
         alSeleccionar.current = onSeleccionar;
         departamentosActuales.current = departamentos;
+        municipiosActuales.current = municipios;
     });
 
     useEffect(() => {
@@ -151,10 +173,11 @@ export default function SelectorUbicacion({
                             ...deducirDivision(
                                 results,
                                 departamentosActuales.current,
+                                municipiosActuales.current,
                             ),
                         });
                     } catch {
-                        // Sin geocodificación, el estudiante indica municipio y departamento a mano.
+                        // Sin geocodificación, el estudiante elige municipio y departamento a mano.
                     }
                 });
 
@@ -209,6 +232,27 @@ export default function SelectorUbicacion({
 
         instancia.setCenter(posicion);
     }, [estado, latitud, longitud]);
+
+    const centroLat = centro?.lat;
+    const centroLng = centro?.lng;
+
+    useEffect(() => {
+        const instancia = mapa.current;
+
+        if (
+            estado !== 'listo' ||
+            !instancia ||
+            centroLat === undefined ||
+            centroLng === undefined ||
+            Number.isFinite(Number.parseFloat(latitud))
+        ) {
+            return;
+        }
+
+        instancia.setCenter({ lat: centroLat, lng: centroLng });
+        instancia.setZoom(11);
+        // Solo se recentra al cambiar el municipio; una marca ya puesta manda sobre el centro.
+    }, [estado, centroLat, centroLng]);
 
     if (!apiKey) {
         return (

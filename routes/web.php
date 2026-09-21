@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\CatalogoController;
+use App\Http\Controllers\Admin\DepartamentoController;
 use App\Http\Controllers\Admin\ManejoDatosController;
+use App\Http\Controllers\Admin\MunicipioController;
+use App\Http\Controllers\Admin\UnidadAcademicaController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Auth\RegistroController;
+use App\Http\Controllers\EstadisticaController;
 use App\Http\Controllers\Panel\EstudianteController;
 use App\Http\Controllers\Panel\OrdenImpresionController as PanelOrdenImpresionController;
 use App\Http\Controllers\Panel\VerificacionExpedienteController;
@@ -20,6 +24,9 @@ Route::middleware(['guest', 'throttle:6,1'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::inertia('documentacion', 'documentacion')->name('documentacion');
+
+    Route::get('estadisticas', [EstadisticaController::class, 'index'])->name('estadisticas.index');
+    Route::get('estadisticas/departamentos/{departamento:codigo}', [EstadisticaController::class, 'departamento'])->name('estadisticas.departamento');
 
     Route::get('repositorio', [RepositorioController::class, 'index'])->name('repositorio.index');
     Route::get('repositorio/{expediente}', [RepositorioController::class, 'show'])->name('repositorio.show');
@@ -40,6 +47,10 @@ Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica'])->prefix('e
 // Manejo de datos: solo para administradores (DIGEU).
 Route::middleware(['auth', 'verified', 'rol:digeu'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('datos', [ManejoDatosController::class, 'index'])->name('datos');
+
+    Route::resource('departamentos', DepartamentoController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('municipios', MunicipioController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('unidades', UnidadAcademicaController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['unidades' => 'unidad']);
 
     Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::put('usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
