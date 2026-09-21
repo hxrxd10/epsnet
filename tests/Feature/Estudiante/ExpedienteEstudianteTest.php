@@ -5,8 +5,6 @@ use App\Enums\TipoUnidadAcademica;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Support\Facades\Http;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Support\RegistroAcademicoFalso;
 
@@ -32,11 +30,9 @@ it('lista las carreras del estudiante para elegir', function () {
 
 it('no consulta el servicio mientras la información de las carreras es reciente', function () {
     RegistroAcademicoFalso::iniciarSesion(Estudiante::factory()->create());
-    Http::fake();
-
     $this->get(route('estudiante.carreras'))->assertOk();
 
-    Http::assertNothingSent();
+    expect(RegistroAcademicoFalso::solicitudes())->toBeEmpty();
 });
 
 it('actualiza las carreras desde el registro académico cuando la información es antigua', function () {
@@ -55,7 +51,7 @@ it('conserva las carreras guardadas cuando el registro académico no responde', 
     $estudiante = Estudiante::factory()->create(['carnet' => RegistroAcademicoFalso::CARNET]);
     RegistroAcademicoFalso::iniciarSesion($estudiante);
     $estudiante->update(['ultima_consulta_at' => now()->subDays(2)]);
-    Http::fake([RegistroAcademicoFalso::URL => fn () => throw new ConnectionException('Sin conexión')]);
+    RegistroAcademicoFalso::fallar();
 
     $this->get(route('estudiante.carreras'))
         ->assertOk()

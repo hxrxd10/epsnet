@@ -5,6 +5,8 @@ namespace Tests\Support;
 use App\Models\Estudiante;
 use App\Models\User;
 use App\Services\RegistroAcademico\DetalleAcademico;
+use App\Services\RegistroAcademico\RegistroAcademicoClient;
+use App\Services\RegistroAcademico\TransporteRegistroAcademico;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -12,14 +14,12 @@ use Illuminate\Support\Facades\Http;
  */
 class RegistroAcademicoFalso
 {
-    public const string URL = 'https://rye.test/consulta';
-
     public const string CARNET = '201219511';
 
     public const string CUI = '2165914570101';
 
     /**
-     * Configura el cliente para que apunte al servicio falso.
+     * Configura las credenciales de prueba e impide llamadas reales al servicio.
      */
     public static function configurar(): void
     {
@@ -29,20 +29,48 @@ class RegistroAcademicoFalso
         config()->set('inertia.ssr.enabled', false);
 
         config()->set('services.registro_academico', [
-            'url' => self::URL,
+            'url' => 'https://rye.test/consulta?wsdl',
             'dependencia' => 'epsum',
             'login' => 'epsumWS',
             'password' => 'clave',
             'timeout' => 5,
         ]);
+
+        self::transporte(new TransporteFalso(self::xml()));
     }
 
     /**
-     * Responde a cualquier consulta con la respuesta de ejemplo.
+     * Responde a cualquier consulta con la respuesta de ejemplo (o el XML indicado).
      */
-    public static function responder(?string $xml = null): void
+    public static function responder(?string $xml = null): TransporteFalso
     {
-        Http::fake([self::URL => Http::response($xml ?? self::xml())]);
+        return self::transporte(new TransporteFalso($xml ?? self::xml()));
+    }
+
+    /**
+     * Simula que el servicio no puede consultarse.
+     */
+    public static function fallar(): TransporteFalso
+    {
+        return self::transporte(new TransporteFalso(falla: true));
+    }
+
+    /**
+     * Solicitudes enviadas hasta el momento al servicio falso.
+     *
+     * @return list<string>
+     */
+    public static function solicitudes(): array
+    {
+        return app(TransporteRegistroAcademico::class)->solicitudes;
+    }
+
+    private static function transporte(TransporteFalso $transporte): TransporteFalso
+    {
+        app()->instance(TransporteRegistroAcademico::class, $transporte);
+        app()->forgetInstance(RegistroAcademicoClient::class);
+
+        return $transporte;
     }
 
     public static function xml(string $carnet = self::CARNET, string $cui = self::CUI): string

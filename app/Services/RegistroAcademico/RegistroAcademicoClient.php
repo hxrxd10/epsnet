@@ -2,20 +2,19 @@
 
 namespace App\Services\RegistroAcademico;
 
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use SimpleXMLElement;
 
 /**
  * Cliente del servicio web de Registro y Estadística (RYE) de la USAC.
  *
- * Envía la SOLICITUD_DATOS_RYE con las credenciales de la dependencia y traduce la
- * RESP_CONSULTA_DATOS a objetos de dominio.
+ * Arma la SOLICITUD_DATOS_RYE con las credenciales de la dependencia, la envía por el transporte
+ * (operación `datosGenerales`) y traduce la RESP_CONSULTA_DATOS a objetos de dominio.
  */
 class RegistroAcademicoClient
 {
+    public function __construct(private TransporteRegistroAcademico $transporte) {}
+
     /**
      * @return DatosAcademicos|null null cuando el servicio no conoce el carné.
      *
@@ -23,25 +22,7 @@ class RegistroAcademicoClient
      */
     public function consultar(string $carnet): ?DatosAcademicos
     {
-        $url = config('services.registro_academico.url');
-
-        if (blank($url)) {
-            throw new RegistroAcademicoNoDisponible('El servicio de registro académico no está configurado.');
-        }
-
-        try {
-            $respuesta = Http::connectTimeout(3)
-                ->timeout((int) config('services.registro_academico.timeout'))
-                ->withBody($this->solicitud($carnet), 'text/xml; charset=UTF-8')
-                ->post($url)
-                ->throw();
-        } catch (ConnectionException|RequestException $excepcion) {
-            Log::warning('Falló la consulta al registro académico.', ['motivo' => $excepcion->getMessage()]);
-
-            throw new RegistroAcademicoNoDisponible('No se pudo consultar el registro académico.', previous: $excepcion);
-        }
-
-        return $this->interpretar($respuesta->body(), $carnet);
+        return $this->interpretar($this->transporte->datosGenerales($this->solicitud($carnet)), $carnet);
     }
 
     private function solicitud(string $carnet): string
@@ -64,7 +45,21 @@ class RegistroAcademicoClient
     {
         $documento = $this->cargarXml($cuerpo);
 
-        if ($documento->getName() !== 'RESP_CONSULTA_DATOS' || $this->texto($documento->CARNET) === null) {
+        if ($documento->getName() !== 'RESP_CONSULTA_DATOS') {
+            return null;
+        }
+
+        $estado = $this->texto($documento->STATUS);
+
+        if ($estado !== null && $estado !== '0' && $this->texto($documento->CARNET) === null) {
+            // El servicio responde "usuario no autorizado" (estado 3) también cuando no reconoce el
+            // carné, así que no se distingue de un carné inexistente. Se registra por si fallan las credenciales.
+            Log::warning('El registro académico no devolvió datos del estudiante.', ['estado' => $estado, 'mensaje' => $this->texto($documento->MSG)]);
+
+            return null;
+        }
+
+        if ($this->texto($documento->CARNET) === null) {
             return null;
         }
 
@@ -94,19 +89,56 @@ class RegistroAcademicoClient
             );
         }
 
+        [$nombre1, $nombre2, $nombre3, $apellido1, $apellido2] = $this->nombres($documento);
+
         return new DatosAcademicos(
             carnet: $carnet,
-            nombre1: (string) $this->texto($documento->NOMBRE1),
-            nombre2: $this->texto($documento->NOMBRE2),
-            nombre3: $this->texto($documento->NOMBRE3),
-            apellido1: (string) $this->texto($documento->APELLIDO1),
-            apellido2: $this->texto($documento->APELLIDO2),
+            nombre1: $nombre1,
+            nombre2: $nombre2,
+            nombre3: $nombre3,
+            apellido1: $apellido1,
+            apellido2: $apellido2,
             direccion: $this->texto($documento->DIRECCION),
             cui: (string) $this->texto($documento->CUI),
             codigoNacionalidad: $this->texto($documento->COD_NAC),
             nacionalidad: $this->texto($documento->NOM_NAC),
             carreras: $carreras,
         );
+    }
+
+    /**
+     * Nombres y apellidos del estudiante. El servicio puede traerlos separados (NOMBRE1…APELLIDO2) o
+     * en un solo campo NOMBRE; en ese caso se toman las dos últimas palabras como apellidos. La
+     * separación es aproximada, pero el nombre completo conserva el orden original del servicio.
+     *
+     * @return array{0: string, 1: string|null, 2: string|null, 3: string, 4: string|null}
+     */
+    private function nombres(SimpleXMLElement $documento): array
+    {
+        if ($this->texto($documento->NOMBRE1) !== null) {
+            return [
+                (string) $this->texto($documento->NOMBRE1),
+                $this->texto($documento->NOMBRE2),
+                $this->texto($documento->NOMBRE3),
+                (string) $this->texto($documento->APELLIDO1),
+                $this->texto($documento->APELLIDO2),
+            ];
+        }
+
+        $palabras = preg_split('/\s+/', (string) $this->texto($documento->NOMBRE), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $cantidad = count($palabras);
+
+        return match (true) {
+            $cantidad >= 3 => [
+                $palabras[0],
+                $cantidad >= 4 ? $palabras[1] : null,
+                $cantidad >= 5 ? implode(' ', array_slice($palabras, 2, $cantidad - 4)) : null,
+                $palabras[$cantidad - 2],
+                $palabras[$cantidad - 1],
+            ],
+            $cantidad === 2 => [$palabras[0], null, null, $palabras[1], null],
+            default => [$palabras[0] ?? '', null, null, '', null],
+        };
     }
 
     /**

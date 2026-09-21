@@ -36,11 +36,15 @@ return [
     ],
 
     'registro_academico' => [
+        // Dirección del WSDL del servicio (…/consultaEstudianteRyEv2.0.php?wsdl).
         'url' => env('REGISTRO_ACADEMICO_URL'),
         'dependencia' => env('REGISTRO_ACADEMICO_DEPENDENCIA', 'epsum'),
         'login' => env('REGISTRO_ACADEMICO_LOGIN', 'epsumWS'),
         'password' => env('REGISTRO_ACADEMICO_PASSWORD'),
         'timeout' => (int) env('REGISTRO_ACADEMICO_TIMEOUT', 10),
+        // Solo para la prueba en vivo (tests/Feature/Estudiante/RegistroAcademicoEnVivoTest.php).
+        'prueba_carnet' => env('REGISTRO_ACADEMICO_PRUEBA_CARNET'),
+        'prueba_dpi' => env('REGISTRO_ACADEMICO_PRUEBA_DPI'),
     ],
 
     'google_maps' => [

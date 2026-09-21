@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Expediente;
+use App\Services\RegistroAcademico\TransporteRegistroAcademico;
+use App\Services\RegistroAcademico\TransporteSoap;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -20,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(TransporteRegistroAcademico::class, TransporteSoap::class);
     }
 
     /**

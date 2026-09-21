@@ -4,9 +4,7 @@ use App\Enums\ClaveRol;
 use App\Models\Estudiante;
 use App\Models\Rol;
 use App\Models\User;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\TestResponse;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Support\RegistroAcademicoFalso;
@@ -116,7 +114,7 @@ describe('verificación de identidad', function () {
     });
 
     it('informa que el servicio no está disponible sin dejar avanzar', function () {
-        Http::fake([RegistroAcademicoFalso::URL => fn () => throw new ConnectionException('Sin conexión')]);
+        RegistroAcademicoFalso::fallar();
 
         verificarIdentidad()->assertSessionHasErrors(['acceso' => 'No pudimos consultar el registro académico en este momento. Intenta de nuevo en unos minutos.']);
 
@@ -124,11 +122,9 @@ describe('verificación de identidad', function () {
     });
 
     it('valida el formato del registro académico y del DPI sin consultar el servicio', function (array $datos, array $errores) {
-        Http::fake();
-
         verificarIdentidad($datos)->assertSessionHasErrors($errores);
 
-        Http::assertNothingSent();
+        expect(RegistroAcademicoFalso::solicitudes())->toBeEmpty();
     })->with([
         'vacíos' => [['registro_academico' => '', 'dpi' => ''], [
             'registro_academico' => 'Ingresa el registro académico.',
