@@ -1,11 +1,54 @@
 <?php
 
+use App\Http\Controllers\Admin\CatalogoController;
+use App\Http\Controllers\Admin\ManejoDatosController;
+use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Auth\RegistroController;
+use App\Http\Controllers\Panel\EstudianteController;
+use App\Http\Controllers\Panel\OrdenImpresionController as PanelOrdenImpresionController;
+use App\Http\Controllers\Panel\VerificacionExpedienteController;
+use App\Http\Controllers\RepositorioController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
 
+Route::middleware(['guest', 'throttle:6,1'])->group(function () {
+    Route::get('registro', [RegistroController::class, 'create'])->name('registro');
+    Route::post('registro', [RegistroController::class, 'store'])->name('registro.store');
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::inertia('documentacion', 'documentacion')->name('documentacion');
+
+    Route::get('repositorio', [RepositorioController::class, 'index'])->name('repositorio.index');
+    Route::get('repositorio/{expediente}', [RepositorioController::class, 'show'])->name('repositorio.show');
+});
+
+// Estudiantes y EPS: DIGEU ve todos y cada unidad académica los de su unidad.
+Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica'])->prefix('estudiantes')->name('panel.estudiantes.')->group(function () {
+    Route::get('/', [EstudianteController::class, 'index'])->name('index');
+
+    Route::middleware('can:consultar,expediente')->group(function () {
+        Route::get('{expediente}', [EstudianteController::class, 'show'])->name('show');
+        Route::get('{expediente}/orden-impresion', [PanelOrdenImpresionController::class, 'show'])->name('orden-impresion');
+        Route::post('{expediente}/verificacion', [VerificacionExpedienteController::class, 'store'])->name('verificacion.store');
+        Route::delete('{expediente}/verificacion', [VerificacionExpedienteController::class, 'destroy'])->name('verificacion.destroy');
+    });
+});
+
+// Manejo de datos: solo para administradores (DIGEU).
+Route::middleware(['auth', 'verified', 'rol:digeu'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('datos', [ManejoDatosController::class, 'index'])->name('datos');
+
+    Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+    Route::put('usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
+
+    Route::get('catalogos/{catalogo}', [CatalogoController::class, 'index'])->name('catalogos.index');
+    Route::post('catalogos/{catalogo}', [CatalogoController::class, 'store'])->name('catalogos.store');
+    Route::put('catalogos/{catalogo}/{item}', [CatalogoController::class, 'update'])->whereNumber('item')->name('catalogos.update');
+    Route::delete('catalogos/{catalogo}/{item}', [CatalogoController::class, 'destroy'])->whereNumber('item')->name('catalogos.destroy');
 });
 
 require __DIR__.'/settings.php';
+require __DIR__.'/estudiante.php';

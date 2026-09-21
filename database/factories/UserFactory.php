@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\ClaveRol;
+use App\Models\Rol;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -55,6 +57,36 @@ class UserFactory extends Factory
             'two_factor_secret' => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Usuario con el rol de estudiante.
+     */
+    public function estudiante(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'rol_id' => Rol::delSistema(ClaveRol::Estudiante)->id,
+        ]);
+    }
+
+    /**
+     * Usuario con el rol de invitado (solo consulta estadísticas).
+     */
+    public function invitado(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'rol_id' => Rol::delSistema(ClaveRol::Invitado)->id,
+        ]);
+    }
+
+    /**
+     * Usuario administrador (DIGEU).
+     */
+    public function administrador(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'rol_id' => Rol::delSistema(ClaveRol::Digeu)->id,
         ]);
     }
 }

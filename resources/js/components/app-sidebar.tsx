@@ -1,7 +1,13 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import {
+    BookMarked,
+    BookOpen,
+    Database,
+    LayoutGrid,
+    UserCog,
+    Users,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -13,31 +19,42 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, documentacion } from '@/routes';
+import { datos } from '@/routes/admin';
+import { index as usuarios } from '@/routes/admin/usuarios';
+import { index as estudiantes } from '@/routes/panel/estudiantes';
+import { index as repositorio } from '@/routes/repositorio';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
+const plataforma: NavItem[] = [
+    { title: 'Panel', href: dashboard(), icon: LayoutGrid },
+    { title: 'Repositorio', href: repositorio(), icon: BookMarked },
+    { title: 'Documentación', href: documentacion(), icon: BookOpen },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+const estudiantesYEps: NavItem = {
+    title: 'Estudiantes y EPS',
+    href: estudiantes(),
+    icon: Users,
+};
+
+/** Opciones de administración según el rol: DIGEU ve todas; una unidad académica, a sus estudiantes. */
+function opcionesDeAdministracion(rol: string | null): NavItem[] {
+    if (rol === 'digeu') {
+        return [
+            estudiantesYEps,
+            { title: 'Usuarios', href: usuarios(), icon: UserCog },
+            { title: 'Manejo de datos', href: datos(), icon: Database },
+        ];
+    }
+
+    return rol === 'unidad_academica' ? [estudiantesYEps] : [];
+}
 
 export function AppSidebar() {
+    const { rol } = usePage().props;
+    const administracion = opcionesDeAdministracion(rol);
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -53,11 +70,13 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={plataforma} />
+                {administracion.length > 0 && (
+                    <NavMain items={administracion} label="Administración" />
+                )}
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

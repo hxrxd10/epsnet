@@ -218,6 +218,87 @@ homeForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 home.form = homeForm
 
 /**
+* @see \App\Http\Controllers\Auth\RegistroController::registro
+* @see app/Http/Controllers/Auth/RegistroController.php:21
+* @route '/registro'
+*/
+export const registro = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: registro.url(options),
+    method: 'get',
+})
+
+registro.definition = {
+    methods: ["get","head"],
+    url: '/registro',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Auth\RegistroController::registro
+* @see app/Http/Controllers/Auth/RegistroController.php:21
+* @route '/registro'
+*/
+registro.url = (options?: RouteQueryOptions) => {
+    return registro.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Auth\RegistroController::registro
+* @see app/Http/Controllers/Auth/RegistroController.php:21
+* @route '/registro'
+*/
+registro.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: registro.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\Auth\RegistroController::registro
+* @see app/Http/Controllers/Auth/RegistroController.php:21
+* @route '/registro'
+*/
+registro.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: registro.url(options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\Auth\RegistroController::registro
+* @see app/Http/Controllers/Auth/RegistroController.php:21
+* @route '/registro'
+*/
+const registroForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: registro.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\Auth\RegistroController::registro
+* @see app/Http/Controllers/Auth/RegistroController.php:21
+* @route '/registro'
+*/
+registroForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: registro.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\Auth\RegistroController::registro
+* @see app/Http/Controllers/Auth/RegistroController.php:21
+* @route '/registro'
+*/
+registroForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: registro.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+registro.form = registroForm
+
+/**
 * @see \Inertia\Controller::__invoke
 * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
 * @route '/dashboard'
@@ -297,3 +378,84 @@ dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =
 })
 
 dashboard.form = dashboardForm
+
+/**
+* @see \Inertia\Controller::__invoke
+* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @route '/documentacion'
+*/
+export const documentacion = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: documentacion.url(options),
+    method: 'get',
+})
+
+documentacion.definition = {
+    methods: ["get","head"],
+    url: '/documentacion',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \Inertia\Controller::__invoke
+* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @route '/documentacion'
+*/
+documentacion.url = (options?: RouteQueryOptions) => {
+    return documentacion.definition.url + queryParams(options)
+}
+
+/**
+* @see \Inertia\Controller::__invoke
+* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @route '/documentacion'
+*/
+documentacion.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: documentacion.url(options),
+    method: 'get',
+})
+
+/**
+* @see \Inertia\Controller::__invoke
+* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @route '/documentacion'
+*/
+documentacion.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: documentacion.url(options),
+    method: 'head',
+})
+
+/**
+* @see \Inertia\Controller::__invoke
+* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @route '/documentacion'
+*/
+const documentacionForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: documentacion.url(options),
+    method: 'get',
+})
+
+/**
+* @see \Inertia\Controller::__invoke
+* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @route '/documentacion'
+*/
+documentacionForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: documentacion.url(options),
+    method: 'get',
+})
+
+/**
+* @see \Inertia\Controller::__invoke
+* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @route '/documentacion'
+*/
+documentacionForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: documentacion.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+documentacion.form = documentacionForm

@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { EstudianteSesion } from '@/types/estudiante';
 
 declare module 'react' {
     interface InputHTMLAttributes<T> {
@@ -11,6 +12,8 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            rol: string | null;
+            estudiante: EstudianteSesion | null;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

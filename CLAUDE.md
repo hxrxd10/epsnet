@@ -20,10 +20,10 @@ Arquitectura
 Principio de diseño: unificación de formato y consolidación de datos a nivel central (DIGEU), sin interferir con los procesos internos de cada unidad académica
 Stack y decisiones ya tomadas
 Laravel + Jetstream, sin Teams (el modelo es de roles jerárquicos fijos, no de equipos/organizaciones)
-RBAC vía Spatie Laravel-Permission (o middleware propio) — no Teams de Jetstream
+RBAC con la tabla `roles` y el middleware propio `rol:` (`EnsureUserHasRole`); no Spatie ni Teams de Jetstream. Roles: `digeu` (administrador), `unidad_academica`, `estudiante` e `invitado` (`App\Enums\ClaveRol`)
 Autenticación:
 Email verification: activado
-Registration (auto-registro público): desactivado — las cuentas las crea DIGEU (unidades académicas) o la unidad académica (estudiantes), nunca el usuario final
+Registro público abierto (`/registro`): quien crea una cuenta queda como `invitado` y solo consulta estadísticas. Un invitado (o quien aún no tiene cuenta) pasa a `estudiante` verificando una sola vez su registro académico y su DPI contra el servicio web de Registro y Estadística (`/estudiante/acceso`); el CUI no se almacena. Las cuentas de DIGEU y de unidades académicas las crea DIGEU
 Two-factor authentication: activado (al menos disponible; considerar obligatorio para el rol DIGEU)
 Passkeys: desactivado
 Password confirmation: activado

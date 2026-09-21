@@ -17,9 +17,14 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->call([RolSeeder::class, DepartamentoSeeder::class]);
+
+        // Solo en desarrollo: administrador de prueba (contraseña "password").
+        if (app()->isLocal()) {
+            User::factory()->administrador()->create([
+                'name' => 'Administrador DIGEU',
+                'email' => 'admin@epsnet.test',
+            ]);
+        }
     }
 }

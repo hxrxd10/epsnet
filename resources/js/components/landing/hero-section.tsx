@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import type { PointerEvent } from 'react';
 import { dashboard, login } from '@/routes';
+import { acceso } from '@/routes/estudiante';
 import GuatemalaMap from './guatemala-map';
 import Reveal from './reveal';
 
@@ -74,9 +75,9 @@ export default function HeroSection({
 
                     <Reveal delay={100}>
                         <h1 className="mt-8 text-[clamp(2.5rem,5.2vw,4.8rem)] leading-[0.95] font-semibold tracking-[-0.045em] text-balance">
-                            Docencia, investigación y extensión,{' '}
+                            Docencia e investigación en la extensión,{' '}
                             <span className="bg-gradient-to-b from-white to-white/35 bg-clip-text text-transparent">
-                                conectadas en todo el país.
+                                conectando en todo el país.
                             </span>
                         </h1>
                     </Reveal>
@@ -88,8 +89,8 @@ export default function HeroSection({
                             </strong>{' '}
                             es la red que une a los estudiantes en Ejercicio
                             Profesional Supervisado de la Universidad de San
-                            Carlos, desde Petén hasta el Pacífico, en un solo
-                            sistema unificado.
+                            Carlos, desde el norte del Petén hasta el sur de las
+                            costas del Pacífico, en un solo sistema.
                         </p>
                     </Reveal>
 
@@ -110,6 +111,14 @@ export default function HeroSection({
                             Conocer la red
                             <ArrowDown className="size-4 transition-transform group-hover:translate-y-0.5" />
                         </a>
+                        {!isAuthenticated && (
+                            <Link
+                                href={acceso()}
+                                className="inline-flex items-center gap-2 px-3 py-3.5 text-sm font-medium text-white/70 underline-offset-4 transition-colors hover:text-white hover:underline"
+                            >
+                                Soy estudiante: activar mi cuenta
+                            </Link>
+                        )}
                     </Reveal>
 
                     <Reveal delay={400}>

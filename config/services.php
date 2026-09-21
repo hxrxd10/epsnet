@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'registro_academico' => [
+        'url' => env('REGISTRO_ACADEMICO_URL'),
+        'dependencia' => env('REGISTRO_ACADEMICO_DEPENDENCIA', 'epsum'),
+        'login' => env('REGISTRO_ACADEMICO_LOGIN', 'epsumWS'),
+        'password' => env('REGISTRO_ACADEMICO_PASSWORD'),
+        'timeout' => (int) env('REGISTRO_ACADEMICO_TIMEOUT', 10),
+    ],
+
+    'google_maps' => [
+        'key' => env('GOOGLE_MAPS_API_KEY'),
+        'map_id' => env('GOOGLE_MAPS_MAP_ID', 'DEMO_MAP_ID'),
+    ],
+
 ];

@@ -41,7 +41,30 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'rol' => fn () => $request->user()?->rol?->clave,
+            'estudiante' => fn () => $this->estudiante($request),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+        ];
+    }
+
+    /**
+     * Datos mínimos del estudiante con sesión activa, para el asistente de llenado.
+     *
+     * @return array{carnet: string, nombre_completo: string}|null
+     */
+    protected function estudiante(Request $request): ?array
+    {
+        $usuario = $request->user();
+
+        if ($usuario === null || ! $usuario->esEstudiante()) {
+            return null;
+        }
+
+        $estudiante = $usuario->estudiante;
+
+        return $estudiante === null ? null : [
+            'carnet' => $estudiante->carnet,
+            'nombre_completo' => $estudiante->nombre_completo,
         ];
     }
 }
