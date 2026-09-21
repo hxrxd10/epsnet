@@ -9,7 +9,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 function iniciarComoAdministrador(): User
 {
-    $administrador = User::factory()->administrador()->create(['name' => 'Zoe Administradora']);
+    $administrador = User::factory()->administrador()->create(['name' => 'Zoe Administradora', 'email' => 'zoe@digeu.example']);
     test()->actingAs($administrador);
 
     return $administrador;

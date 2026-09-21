@@ -141,7 +141,7 @@ store.form = storeForm
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:68
 * @route '/admin/instituciones/{institucion}'
 */
-export const update = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -156,7 +156,7 @@ update.definition = {
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:68
 * @route '/admin/instituciones/{institucion}'
 */
-update.url = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+update.url = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { institucion: args }
     }
@@ -189,7 +189,7 @@ update.url = (args: { institucion: string | number | { id: string | number } } |
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:68
 * @route '/admin/instituciones/{institucion}'
 */
-update.put = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -199,7 +199,7 @@ update.put = (args: { institucion: string | number | { id: string | number } } |
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:68
 * @route '/admin/instituciones/{institucion}'
 */
-update.patch = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -209,7 +209,7 @@ update.patch = (args: { institucion: string | number | { id: string | number } }
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:68
 * @route '/admin/instituciones/{institucion}'
 */
-const updateForm = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const updateForm = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -224,7 +224,7 @@ const updateForm = (args: { institucion: string | number | { id: string | number
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:68
 * @route '/admin/instituciones/{institucion}'
 */
-updateForm.put = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.put = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -239,7 +239,7 @@ updateForm.put = (args: { institucion: string | number | { id: string | number }
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:68
 * @route '/admin/instituciones/{institucion}'
 */
-updateForm.patch = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.patch = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -256,7 +256,7 @@ update.form = updateForm
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:80
 * @route '/admin/instituciones/{institucion}'
 */
-export const destroy = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -271,7 +271,7 @@ destroy.definition = {
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:80
 * @route '/admin/instituciones/{institucion}'
 */
-destroy.url = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { institucion: args }
     }
@@ -304,7 +304,7 @@ destroy.url = (args: { institucion: string | number | { id: string | number } } 
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:80
 * @route '/admin/instituciones/{institucion}'
 */
-destroy.delete = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -314,7 +314,7 @@ destroy.delete = (args: { institucion: string | number | { id: string | number }
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:80
 * @route '/admin/instituciones/{institucion}'
 */
-const destroyForm = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -329,7 +329,7 @@ const destroyForm = (args: { institucion: string | number | { id: string | numbe
 * @see app/Http/Controllers/Admin/InstitucionAliadaController.php:80
 * @route '/admin/instituciones/{institucion}'
 */
-destroyForm.delete = (args: { institucion: string | number | { id: string | number } } | [institucion: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { institucion: number | { id: number } } | [institucion: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',

@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import DetalleEjes from '@/components/expediente/detalle-ejes';
 import type { EjeDetalle } from '@/components/expediente/detalle-ejes';
+import { formatearFecha } from '@/lib/fechas';
 import { dashboard } from '@/routes';
 import { index } from '@/routes/repositorio';
 
@@ -30,7 +31,7 @@ export default function RepositorioEps({ expediente, ejes }: Props) {
                     <p className="text-muted-foreground mt-1 text-sm">
                         {expediente.estudiante}
                         {expediente.aprobado &&
-                            ` · Aprobado el ${new Date(expediente.aprobado).toLocaleDateString('es-GT', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}`}
+                            ` · Aprobado el ${formatearFecha(expediente.aprobado)}`}
                     </p>
                 </div>
 

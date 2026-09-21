@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 * @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
-export const store = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const store = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
     method: 'post',
 })
@@ -19,7 +19,7 @@ store.definition = {
 * @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
-store.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+store.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -52,7 +52,7 @@ store.url = (args: { expediente: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
-store.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+store.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
     method: 'post',
 })
@@ -62,7 +62,7 @@ store.post = (args: { expediente: string | number | { id: string | number } } | 
 * @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
-const storeForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const storeForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
     method: 'post',
 })
@@ -72,7 +72,7 @@ const storeForm = (args: { expediente: string | number | { id: string | number }
 * @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
-storeForm.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+storeForm.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
     method: 'post',
 })
@@ -81,10 +81,10 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:50
 * @route '/estudiantes/{expediente}/verificacion'
 */
-export const destroy = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -96,10 +96,10 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:50
 * @route '/estudiantes/{expediente}/verificacion'
 */
-destroy.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -129,20 +129,20 @@ destroy.url = (args: { expediente: string | number | { id: string | number } } |
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:50
 * @route '/estudiantes/{expediente}/verificacion'
 */
-destroy.delete = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:50
 * @route '/estudiantes/{expediente}/verificacion'
 */
-const destroyForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -154,10 +154,10 @@ const destroyForm = (args: { expediente: string | number | { id: string | number
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:50
 * @route '/estudiantes/{expediente}/verificacion'
 */
-destroyForm.delete = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',

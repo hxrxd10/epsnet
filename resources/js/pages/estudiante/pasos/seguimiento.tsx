@@ -7,6 +7,7 @@ import {
 import PasoCrud from '@/components/estudiante/paso-crud';
 import type { Campo } from '@/components/estudiante/paso-crud';
 import ResumenRegistro from '@/components/estudiante/resumen-registro';
+import { formatearFecha } from '@/lib/fechas';
 import EstudianteLayout from '@/layouts/estudiante-layout';
 import type { Opcion, PasoProps } from '@/types/estudiante';
 
@@ -142,7 +143,7 @@ export default function Seguimiento({
                         etiqueta={registro.tipo_registro_etiqueta}
                         titulo={registro.indicador}
                         meta={[
-                            registro.fecha,
+                            formatearFecha(registro.fecha),
                             registro.porcentaje_avance !== null &&
                                 `${registro.porcentaje_avance}% de avance`,
                             registro.cumplimiento_etiqueta,

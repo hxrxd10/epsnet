@@ -141,7 +141,7 @@ store.form = storeForm
 * @see app/Http/Controllers/Admin/DepartamentoController.php:44
 * @route '/admin/departamentos/{departamento}'
 */
-export const update = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -156,7 +156,7 @@ update.definition = {
 * @see app/Http/Controllers/Admin/DepartamentoController.php:44
 * @route '/admin/departamentos/{departamento}'
 */
-update.url = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+update.url = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { departamento: args }
     }
@@ -189,7 +189,7 @@ update.url = (args: { departamento: string | number | { id: string | number } } 
 * @see app/Http/Controllers/Admin/DepartamentoController.php:44
 * @route '/admin/departamentos/{departamento}'
 */
-update.put = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -199,7 +199,7 @@ update.put = (args: { departamento: string | number | { id: string | number } } 
 * @see app/Http/Controllers/Admin/DepartamentoController.php:44
 * @route '/admin/departamentos/{departamento}'
 */
-update.patch = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -209,7 +209,7 @@ update.patch = (args: { departamento: string | number | { id: string | number } 
 * @see app/Http/Controllers/Admin/DepartamentoController.php:44
 * @route '/admin/departamentos/{departamento}'
 */
-const updateForm = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const updateForm = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -224,7 +224,7 @@ const updateForm = (args: { departamento: string | number | { id: string | numbe
 * @see app/Http/Controllers/Admin/DepartamentoController.php:44
 * @route '/admin/departamentos/{departamento}'
 */
-updateForm.put = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.put = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -239,7 +239,7 @@ updateForm.put = (args: { departamento: string | number | { id: string | number 
 * @see app/Http/Controllers/Admin/DepartamentoController.php:44
 * @route '/admin/departamentos/{departamento}'
 */
-updateForm.patch = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.patch = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -256,7 +256,7 @@ update.form = updateForm
 * @see app/Http/Controllers/Admin/DepartamentoController.php:56
 * @route '/admin/departamentos/{departamento}'
 */
-export const destroy = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -271,7 +271,7 @@ destroy.definition = {
 * @see app/Http/Controllers/Admin/DepartamentoController.php:56
 * @route '/admin/departamentos/{departamento}'
 */
-destroy.url = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { departamento: args }
     }
@@ -304,7 +304,7 @@ destroy.url = (args: { departamento: string | number | { id: string | number } }
 * @see app/Http/Controllers/Admin/DepartamentoController.php:56
 * @route '/admin/departamentos/{departamento}'
 */
-destroy.delete = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -314,7 +314,7 @@ destroy.delete = (args: { departamento: string | number | { id: string | number 
 * @see app/Http/Controllers/Admin/DepartamentoController.php:56
 * @route '/admin/departamentos/{departamento}'
 */
-const destroyForm = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -329,7 +329,7 @@ const destroyForm = (args: { departamento: string | number | { id: string | numb
 * @see app/Http/Controllers/Admin/DepartamentoController.php:56
 * @route '/admin/departamentos/{departamento}'
 */
-destroyForm.delete = (args: { departamento: string | number | { id: string | number } } | [departamento: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { departamento: number | { id: number } } | [departamento: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',

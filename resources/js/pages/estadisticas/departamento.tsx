@@ -4,6 +4,7 @@ import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadist
 import { METRICAS, formatearNumero } from '@/components/estadisticas/metricas';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { formatearFecha } from '@/lib/fechas';
 import { dashboard } from '@/routes';
 import { departamento as rutaDepartamento, index } from '@/routes/estadisticas';
 import { pdf } from '@/routes/estadisticas/departamento';
@@ -255,7 +256,7 @@ export default function EstadisticasDepartamento({
                                                                 {investigacion.medio &&
                                                                     ` · ${investigacion.medio}`}
                                                                 {investigacion.fecha &&
-                                                                    ` · ${investigacion.fecha}`}
+                                                                    ` · ${formatearFecha(investigacion.fecha)}`}
                                                             </p>
                                                             <p className="text-muted-foreground mt-1 text-xs">
                                                                 {

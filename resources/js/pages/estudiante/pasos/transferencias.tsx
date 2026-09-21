@@ -7,6 +7,7 @@ import {
 import PasoCrud from '@/components/estudiante/paso-crud';
 import type { Campo } from '@/components/estudiante/paso-crud';
 import ResumenRegistro from '@/components/estudiante/resumen-registro';
+import { formatearFecha } from '@/lib/fechas';
 import EstudianteLayout from '@/layouts/estudiante-layout';
 import type { Opcion, PasoProps } from '@/types/estudiante';
 
@@ -122,7 +123,7 @@ export default function Transferencias({
                         titulo={registro.actividad}
                         meta={[
                             registro.comunidad,
-                            registro.fecha,
+                            formatearFecha(registro.fecha),
                             registro.numero_participantes !== null &&
                                 `${registro.numero_participantes} participantes`,
                         ]}

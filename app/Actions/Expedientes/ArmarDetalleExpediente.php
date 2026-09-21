@@ -34,21 +34,21 @@ class ArmarDetalleExpediente
                 ->map(fn ($r): array => $this->registro(
                     $r->tipo->etiqueta(),
                     $r->catalogo?->nombre ?? str($r->descripcion)->squish()->limit(90)->toString(),
-                    [$r->fecha->toDateString(), $r->cantidad_beneficiarios !== null ? "{$r->cantidad_beneficiarios} beneficiarios" : null],
+                    [$r->fecha->format('d-m-Y'), $r->cantidad_beneficiarios !== null ? "{$r->cantidad_beneficiarios} beneficiarios" : null],
                     ['Descripción' => $r->descripcion, 'Beneficiarios' => $r->beneficiarios],
                 )),
             Eje::Publicaciones => $expediente->publicaciones()->orderBy('id')->get()
                 ->map(fn ($r): array => $this->registro(
                     $r->tipo->etiqueta(),
                     $r->titulo,
-                    [$r->autores, $r->medio_publicacion, $r->fecha_publicacion?->toDateString()],
+                    [$r->autores, $r->medio_publicacion, $r->fecha_publicacion?->format('d-m-Y')],
                     ['Resumen' => $r->resumen, 'Enlace' => $r->enlace],
                 )),
             Eje::Transferencia => $expediente->transferencias()->with('catalogo')->orderBy('fecha')->get()
                 ->map(fn ($r): array => $this->registro(
                     $r->tipo_actividad->etiqueta(),
                     $r->catalogo?->nombre ?? str($r->actividad)->squish()->limit(90)->toString(),
-                    [$r->comunidad, $r->fecha->toDateString(), $r->numero_participantes !== null ? "{$r->numero_participantes} participantes" : null],
+                    [$r->comunidad, $r->fecha->format('d-m-Y'), $r->numero_participantes !== null ? "{$r->numero_participantes} participantes" : null],
                     ['Actividad' => $r->actividad],
                 )),
             Eje::Territorio => $expediente->ubicaciones()->with(['departamento', 'municipio'])->orderBy('id')->get()
@@ -76,7 +76,7 @@ class ArmarDetalleExpediente
                 ->map(fn ($r): array => $this->registro(
                     $r->tipo_registro->etiqueta(),
                     $r->indicador,
-                    [$r->fecha->toDateString(), $r->porcentaje_avance !== null ? "{$r->porcentaje_avance}% de avance" : null, $r->cumplimiento?->etiqueta()],
+                    [$r->fecha->format('d-m-Y'), $r->porcentaje_avance !== null ? "{$r->porcentaje_avance}% de avance" : null, $r->cumplimiento?->etiqueta()],
                     ['Avance' => $r->avance, 'Observaciones' => $r->observaciones, 'Evaluación de impacto' => $r->evaluacion_impacto],
                 )),
         };

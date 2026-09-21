@@ -6,6 +6,7 @@ import { index as bitacora } from '@/routes/admin/bitacora';
 import { index as usuarios } from '@/routes/admin/usuarios';
 import { index as estadisticas } from '@/routes/estadisticas';
 import { acceso, carreras } from '@/routes/estudiante';
+import { index as bandeja } from '@/routes/panel/bandeja';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
 import { index as repositorio } from '@/routes/repositorio';
 
@@ -97,6 +98,15 @@ const GUIAS: Record<string, Guia> = {
                     'Tu unidad académica lo revisará y, al aprobarlo, aparecerá en el repositorio.',
                 ],
             },
+            {
+                titulo: 'Si no tienes orden de impresión',
+                pasos: [
+                    'Puede pasar que no haya un informe escrito y, por eso, no tengas orden de impresión. En ese caso no puedes completar tu EPS, pero sí enviarlo a aprobación.',
+                    'En el último paso usa "Enviar a aprobación de mi unidad". Necesitas haber registrado al menos un elemento en los ejes.',
+                    'Tu EPS llega a la bandeja de solicitudes de tu unidad académica, que las revisa en orden de llegada. El sistema te dice el lugar que ocupa tu solicitud.',
+                    'Cuando tu unidad lo aprueba, tu EPS queda verificado, aparece en el repositorio y cuenta para las estadísticas.',
+                ],
+            },
         ],
         accesos: [
             { titulo: 'Mis carreras y EPS', href: carreras().url },
@@ -119,6 +129,15 @@ const GUIAS: Record<string, Guia> = {
                 ],
             },
             {
+                titulo: 'Bandeja de solicitudes',
+                pasos: [
+                    'Cuando un estudiante sin orden de impresión envía su EPS a aprobación, le llega a tu bandeja de solicitudes. El menú muestra cuántas esperan.',
+                    'Las solicitudes van en orden de llegada: la que llegó primero está arriba, con su número de turno, la fecha y hora de envío y los días que lleva esperando.',
+                    'Abre una para revisar todo lo registrado y apruébala con el acepto; al aprobar vuelves a la bandeja para seguir con la siguiente.',
+                    'DIGEU ve las solicitudes de todas las unidades y puede filtrarlas por unidad.',
+                ],
+            },
+            {
                 titulo: 'Aprobar un EPS',
                 pasos: [
                     'Cuando el EPS esté completo, usa "Aprobar EPS". Si el estudiante no tiene orden de impresión (por ejemplo, porque no hay un informe escrito), también puedes aprobarlo: basta con que tenga información registrada y con tu acepto.',
@@ -136,6 +155,7 @@ const GUIAS: Record<string, Guia> = {
             },
         ],
         accesos: [
+            { titulo: 'Bandeja de solicitudes', href: bandeja().url },
             { titulo: 'Estudiantes y EPS', href: estudiantes().url },
             { titulo: 'Estadísticas', href: estadisticas().url },
             { titulo: 'Repositorio', href: repositorio().url },
@@ -151,6 +171,7 @@ const GUIAS: Record<string, Guia> = {
                 pasos: [
                     'En "Usuarios" das el rol de DIGEU o de unidad académica a quienes se registraron como invitados; a una unidad académica le asignas la unidad que administra (una persona por unidad).',
                     'En "Estudiantes y EPS" ves a todos los estudiantes de todas las unidades, con filtros por unidad y estado, y puedes aprobar EPS (con el acepto de que lo descrito se ejecutó).',
+                    'En "Bandeja de solicitudes" ves los EPS que los estudiantes enviaron a aprobación sin orden de impresión, de todas las unidades y en orden de llegada, para revisarlos y aprobarlos.',
                 ],
             },
             {
@@ -181,6 +202,7 @@ const GUIAS: Record<string, Guia> = {
             },
         ],
         accesos: [
+            { titulo: 'Bandeja de solicitudes', href: bandeja().url },
             { titulo: 'Usuarios', href: usuarios().url },
             { titulo: 'Manejo de datos', href: datos().url },
             { titulo: 'Bitácora', href: bitacora().url },

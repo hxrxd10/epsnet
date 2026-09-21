@@ -12,6 +12,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { InputFecha } from '@/components/ui/input-fecha';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -167,28 +168,41 @@ function CampoFormulario({
                 </Select>
             )}
 
-            {campo.tipo !== 'textarea' && campo.tipo !== 'select' && (
-                <Input
+            {campo.tipo === 'date' && (
+                <InputFecha
                     id={id}
                     value={valor}
-                    type={
-                        campo.tipo === 'decimal'
-                            ? 'number'
-                            : campo.tipo === 'text'
-                              ? 'text'
-                              : campo.tipo
-                    }
-                    step={campo.tipo === 'decimal' ? 'any' : undefined}
-                    min={campo.min}
-                    max={campo.maxNumero}
-                    maxLength={
-                        campo.tipo === 'text' ? (campo.max ?? 255) : undefined
-                    }
-                    placeholder={campo.placeholder}
                     aria-invalid={!!error}
-                    onChange={(evento) => onChange(evento.target.value)}
+                    onChange={onChange}
                 />
             )}
+
+            {campo.tipo !== 'textarea' &&
+                campo.tipo !== 'select' &&
+                campo.tipo !== 'date' && (
+                    <Input
+                        id={id}
+                        value={valor}
+                        type={
+                            campo.tipo === 'decimal'
+                                ? 'number'
+                                : campo.tipo === 'text'
+                                  ? 'text'
+                                  : campo.tipo
+                        }
+                        step={campo.tipo === 'decimal' ? 'any' : undefined}
+                        min={campo.min}
+                        max={campo.maxNumero}
+                        maxLength={
+                            campo.tipo === 'text'
+                                ? (campo.max ?? 255)
+                                : undefined
+                        }
+                        placeholder={campo.placeholder}
+                        aria-invalid={!!error}
+                        onChange={(evento) => onChange(evento.target.value)}
+                    />
+                )}
 
             {campo.ayuda && !error && (
                 <p className="text-brand/50 text-xs">{campo.ayuda}</p>

@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 * @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
-export const pdf = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const pdf = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: pdf.url(args, options),
     method: 'get',
 })
@@ -19,7 +19,7 @@ pdf.definition = {
 * @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
-pdf.url = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions) => {
+pdf.url = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { departamento: args }
     }
@@ -52,7 +52,7 @@ pdf.url = (args: { departamento: string | number | { codigo: string | number } }
 * @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
-pdf.get = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+pdf.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: pdf.url(args, options),
     method: 'get',
 })
@@ -62,7 +62,7 @@ pdf.get = (args: { departamento: string | number | { codigo: string | number } }
 * @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
-pdf.head = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+pdf.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: pdf.url(args, options),
     method: 'head',
 })
@@ -72,7 +72,7 @@ pdf.head = (args: { departamento: string | number | { codigo: string | number } 
 * @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
-const pdfForm = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const pdfForm = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: pdf.url(args, options),
     method: 'get',
 })
@@ -82,7 +82,7 @@ const pdfForm = (args: { departamento: string | number | { codigo: string | numb
 * @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
-pdfForm.get = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+pdfForm.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: pdf.url(args, options),
     method: 'get',
 })
@@ -92,7 +92,7 @@ pdfForm.get = (args: { departamento: string | number | { codigo: string | number
 * @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
-pdfForm.head = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+pdfForm.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: pdf.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',

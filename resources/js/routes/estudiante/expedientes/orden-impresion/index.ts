@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:20
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-export const show = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -19,7 +19,7 @@ show.definition = {
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:20
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-show.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+show.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -52,7 +52,7 @@ show.url = (args: { expediente: string | number | { id: string | number } } | [e
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:20
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-show.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -62,7 +62,7 @@ show.get = (args: { expediente: string | number | { id: string | number } } | [e
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:20
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-show.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
@@ -72,7 +72,7 @@ show.head = (args: { expediente: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:20
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-const showForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const showForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -82,7 +82,7 @@ const showForm = (args: { expediente: string | number | { id: string | number } 
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:20
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-showForm.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -92,7 +92,7 @@ showForm.get = (args: { expediente: string | number | { id: string | number } } 
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:20
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-showForm.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -109,7 +109,7 @@ show.form = showForm
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:29
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-export const store = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const store = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
     method: 'post',
 })
@@ -124,7 +124,7 @@ store.definition = {
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:29
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-store.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+store.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -157,7 +157,7 @@ store.url = (args: { expediente: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:29
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-store.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+store.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
     method: 'post',
 })
@@ -167,7 +167,7 @@ store.post = (args: { expediente: string | number | { id: string | number } } | 
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:29
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-const storeForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const storeForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
     method: 'post',
 })
@@ -177,7 +177,7 @@ const storeForm = (args: { expediente: string | number | { id: string | number }
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:29
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-storeForm.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+storeForm.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
     method: 'post',
 })
@@ -189,7 +189,7 @@ store.form = storeForm
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-export const destroy = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -204,7 +204,7 @@ destroy.definition = {
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-destroy.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -237,7 +237,7 @@ destroy.url = (args: { expediente: string | number | { id: string | number } } |
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-destroy.delete = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -247,7 +247,7 @@ destroy.delete = (args: { expediente: string | number | { id: string | number } 
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-const destroyForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -262,7 +262,7 @@ const destroyForm = (args: { expediente: string | number | { id: string | number
 * @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
-destroyForm.delete = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',

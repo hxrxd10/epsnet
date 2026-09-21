@@ -47,6 +47,9 @@ class DatosDemoSeeder extends Seeder
 {
     private const int TOTAL_EPS = 320;
 
+    /** EPS en progreso enviados a aprobación de la unidad de la cuenta de demostración. */
+    private const int SOLICITUDES_DEMO = 8;
+
     private const string PREFIJO_CARNET = 'DEMO-';
 
     /** Ciudad Universitaria, zona 12. */
@@ -223,9 +226,13 @@ class DatosDemoSeeder extends Seeder
 
         if (Estudiante::where('carnet', 'like', self::PREFIJO_CARNET.'%')->exists()) {
             $agregadas = $this->completarAliadas();
+            $solicitudes = $this->completarSolicitudes();
 
-            $agregadas > 0
-                ? $this->command?->info("Los datos de demostración ya estaban sembrados: se agregaron el catálogo de instituciones aliadas y {$agregadas} alianzas.")
+            $agregadas + $solicitudes > 0
+                ? $this->command?->info('Los datos de demostración ya estaban sembrados: '.implode(' y ', array_filter([
+                    $agregadas > 0 ? "se agregaron el catálogo de instituciones aliadas y {$agregadas} alianzas" : null,
+                    $solicitudes > 0 ? "se enviaron {$solicitudes} EPS a la bandeja de solicitudes" : null,
+                ])).'.')
                 : $this->command?->warn('Los datos de demostración ya están sembrados.');
 
             return;
@@ -365,14 +372,18 @@ class DatosDemoSeeder extends Seeder
             // estos cuentan para las estadísticas.
             $forzado = $codigos[$numero - 1] ?? null;
             $forzadoUnidad = $forzado === null ? ($numero - count($codigos) - 1) : null;
+            // Los siguientes EPS son solicitudes en la bandeja de la unidad de la cuenta de demostración.
+            $paraBandeja = $numero > count($codigos) + count($unidades) && $numero <= count($codigos) + count($unidades) + self::SOLICITUDES_DEMO;
             $candidatas = match (true) {
+                $paraBandeja => [0 => 1],
                 $forzado !== null => array_filter($pesosUnidades, fn (int $peso, int $indice): bool => isset($unidades[$indice]['perfil'][$forzado]), ARRAY_FILTER_USE_BOTH),
                 isset($unidades[$forzadoUnidad]) => [$forzadoUnidad => 1],
                 default => $pesosUnidades,
             };
             $unidad = $unidades[$this->ponderado($candidatas)];
             $carrera = $unidad['carreras'][array_rand($unidad['carreras'])];
-            $estado = $this->estado($forzado !== null || isset($unidades[$forzadoUnidad]));
+            $estado = $paraBandeja ? EstadoExpediente::Activo : $this->estado($forzado !== null || isset($unidades[$forzadoUnidad]), $unidad['indice'] === 1);
+            $conSolicitud = $paraBandeja || ($estado === EstadoExpediente::Activo && mt_rand(1, 100) <= 80);
             $orden = $this->fechaDeOrden();
             $fin = $orden->copy()->subDays(mt_rand(15, 60));
             $inicio = $fin->copy()->subDays(mt_rand(150, 240));
@@ -403,6 +414,7 @@ class DatosDemoSeeder extends Seeder
                 'completado_at' => $estado === EstadoExpediente::Activo ? null : $orden,
                 'verificado_at' => $estado === EstadoExpediente::Verificado ? $this->fechaDeAprobacion($orden) : null,
                 'verificado_por' => $estado === EstadoExpediente::Verificado ? $administrador : null,
+                'aprobacion_solicitada_at' => $conSolicitud ? $this->fechaDeSolicitud() : null,
                 'fecha_inicio_eps' => $inicio,
                 'fecha_fin_eps' => $fin,
             ]);
@@ -411,7 +423,7 @@ class DatosDemoSeeder extends Seeder
             $lugar = $ubicaciones[0];
             $completo = $estado !== EstadoExpediente::Activo;
 
-            $this->registrarBienesServicios($expediente->id, $catalogoBienes, $lugar, $inicio, $fin, $completo);
+            $this->registrarBienesServicios($expediente->id, $catalogoBienes, $lugar, $inicio, $fin, $completo, $conSolicitud);
             $this->registrarTransferencias($expediente->id, $catalogoAcciones, $lugar, $inicio, $fin, $completo);
             $this->registrarPublicaciones($expediente->id, $estudiante, $lugar, $inicio, $fin, $completo);
             $this->registrarActores($expediente->id, $lugar);
@@ -461,11 +473,11 @@ class DatosDemoSeeder extends Seeder
      * @param  list<array{id: int, nombre: string, categoria: string|null, peso: int}>  $catalogo
      * @param  array{municipio: Municipio, comunidad: string}  $lugar
      */
-    private function registrarBienesServicios(int $expedienteId, array $catalogo, array $lugar, CarbonInterface $inicio, CarbonInterface $fin, bool $completo): void
+    private function registrarBienesServicios(int $expedienteId, array $catalogo, array $lugar, CarbonInterface $inicio, CarbonInterface $fin, bool $completo, bool $conSolicitud = false): void
     {
         $pesos = array_map(fn (array $item): int => $item['peso'], $catalogo);
 
-        for ($i = mt_rand($completo ? 2 : 0, $completo ? 7 : 2); $i > 0; $i--) {
+        for ($i = mt_rand($completo ? 2 : ($conSolicitud ? 1 : 0), $completo ? 7 : 2); $i > 0; $i--) {
             $item = $catalogo[$this->ponderado($pesos)];
             $beneficiarios = (int) round(exp(mt_rand(20, 60) / 10));
             $tipo = $item['categoria'] === TipoBienServicio::Bien->value ? TipoBienServicio::Bien : TipoBienServicio::Servicio;
@@ -746,6 +758,35 @@ class DatosDemoSeeder extends Seeder
      * Demos sembradas antes de que existieran las instituciones aliadas: les agrega el catálogo y las alianzas de
      * sus EPS. No hace nada si ya hay alianzas.
      */
+    /**
+     * Demos sembradas antes de que existiera la bandeja: manda a aprobación a la mayoría de los EPS en progreso que
+     * tienen información registrada. No hace nada si ya hay solicitudes.
+     */
+    private function completarSolicitudes(): int
+    {
+        if (Expediente::query()->whereNotNull('aprobacion_solicitada_at')->exists()) {
+            return 0;
+        }
+
+        mt_srand(2027);
+        $this->hoy = now();
+        $enviadas = 0;
+
+        Expediente::query()
+            ->where('estado_expediente', EstadoExpediente::Activo)
+            ->whereHas('estudiante', fn ($consulta) => $consulta->where('carnet', 'like', self::PREFIJO_CARNET.'%'))
+            ->where(fn ($consulta) => $consulta->has('bienesServicios')->orHas('transferencias')->orHas('publicaciones'))
+            ->orderBy('id')
+            ->each(function (Expediente $expediente) use (&$enviadas): void {
+                if ($expediente->nombre_unidad === 'Facultad de Humanidades' || mt_rand(1, 100) <= 80) {
+                    $expediente->forceFill(['aprobacion_solicitada_at' => $this->fechaDeSolicitud()])->save();
+                    $enviadas++;
+                }
+            });
+
+        return $enviadas;
+    }
+
     private function completarAliadas(): int
     {
         if (Alianza::query()->exists()) {
@@ -777,15 +818,28 @@ class DatosDemoSeeder extends Seeder
         }
     }
 
-    private function estado(bool $paraEstadisticas = false): EstadoExpediente
+    /**
+     * @param  bool  $paraEstadisticas  El EPS debe contar en las estadísticas (nunca en progreso).
+     * @param  bool  $conMasPendientes  Unidad de la cuenta de demostración: más EPS en progreso para llenar su bandeja.
+     */
+    private function estado(bool $paraEstadisticas = false, bool $conMasPendientes = false): EstadoExpediente
     {
         $azar = mt_rand(1, $paraEstadisticas ? 90 : 100);
+        [$verificado, $completo] = $conMasPendientes && ! $paraEstadisticas ? [50, 70] : [66, 90];
 
         return match (true) {
-            $azar <= 66 => EstadoExpediente::Verificado,
-            $azar <= 90 => EstadoExpediente::Completo,
+            $azar <= $verificado => EstadoExpediente::Verificado,
+            $azar <= $completo => EstadoExpediente::Completo,
             default => EstadoExpediente::Activo,
         };
+    }
+
+    /**
+     * Cuándo envió el estudiante su EPS a aprobación: en los últimos veinte días.
+     */
+    private function fechaDeSolicitud(): CarbonInterface
+    {
+        return $this->hoy->copy()->subDays(mt_rand(0, 20))->subMinutes(mt_rand(5, 1300));
     }
 
     /**

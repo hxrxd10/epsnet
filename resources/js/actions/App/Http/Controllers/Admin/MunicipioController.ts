@@ -141,7 +141,7 @@ store.form = storeForm
 * @see app/Http/Controllers/Admin/MunicipioController.php:72
 * @route '/admin/municipios/{municipio}'
 */
-export const update = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -156,7 +156,7 @@ update.definition = {
 * @see app/Http/Controllers/Admin/MunicipioController.php:72
 * @route '/admin/municipios/{municipio}'
 */
-update.url = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+update.url = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { municipio: args }
     }
@@ -189,7 +189,7 @@ update.url = (args: { municipio: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Admin/MunicipioController.php:72
 * @route '/admin/municipios/{municipio}'
 */
-update.put = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -199,7 +199,7 @@ update.put = (args: { municipio: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Admin/MunicipioController.php:72
 * @route '/admin/municipios/{municipio}'
 */
-update.patch = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -209,7 +209,7 @@ update.patch = (args: { municipio: string | number | { id: string | number } } |
 * @see app/Http/Controllers/Admin/MunicipioController.php:72
 * @route '/admin/municipios/{municipio}'
 */
-const updateForm = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const updateForm = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -224,7 +224,7 @@ const updateForm = (args: { municipio: string | number | { id: string | number }
 * @see app/Http/Controllers/Admin/MunicipioController.php:72
 * @route '/admin/municipios/{municipio}'
 */
-updateForm.put = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.put = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -239,7 +239,7 @@ updateForm.put = (args: { municipio: string | number | { id: string | number } }
 * @see app/Http/Controllers/Admin/MunicipioController.php:72
 * @route '/admin/municipios/{municipio}'
 */
-updateForm.patch = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.patch = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -256,7 +256,7 @@ update.form = updateForm
 * @see app/Http/Controllers/Admin/MunicipioController.php:84
 * @route '/admin/municipios/{municipio}'
 */
-export const destroy = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -271,7 +271,7 @@ destroy.definition = {
 * @see app/Http/Controllers/Admin/MunicipioController.php:84
 * @route '/admin/municipios/{municipio}'
 */
-destroy.url = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { municipio: args }
     }
@@ -304,7 +304,7 @@ destroy.url = (args: { municipio: string | number | { id: string | number } } | 
 * @see app/Http/Controllers/Admin/MunicipioController.php:84
 * @route '/admin/municipios/{municipio}'
 */
-destroy.delete = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -314,7 +314,7 @@ destroy.delete = (args: { municipio: string | number | { id: string | number } }
 * @see app/Http/Controllers/Admin/MunicipioController.php:84
 * @route '/admin/municipios/{municipio}'
 */
-const destroyForm = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -329,7 +329,7 @@ const destroyForm = (args: { municipio: string | number | { id: string | number 
 * @see app/Http/Controllers/Admin/MunicipioController.php:84
 * @route '/admin/municipios/{municipio}'
 */
-destroyForm.delete = (args: { municipio: string | number | { id: string | number } } | [municipio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { municipio: number | { id: number } } | [municipio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',

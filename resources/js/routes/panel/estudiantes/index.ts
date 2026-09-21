@@ -86,7 +86,7 @@ index.form = indexForm
 * @see app/Http/Controllers/Panel/EstudianteController.php:82
 * @route '/estudiantes/{expediente}'
 */
-export const show = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -101,7 +101,7 @@ show.definition = {
 * @see app/Http/Controllers/Panel/EstudianteController.php:82
 * @route '/estudiantes/{expediente}'
 */
-show.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+show.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -134,7 +134,7 @@ show.url = (args: { expediente: string | number | { id: string | number } } | [e
 * @see app/Http/Controllers/Panel/EstudianteController.php:82
 * @route '/estudiantes/{expediente}'
 */
-show.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -144,7 +144,7 @@ show.get = (args: { expediente: string | number | { id: string | number } } | [e
 * @see app/Http/Controllers/Panel/EstudianteController.php:82
 * @route '/estudiantes/{expediente}'
 */
-show.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
@@ -154,7 +154,7 @@ show.head = (args: { expediente: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Panel/EstudianteController.php:82
 * @route '/estudiantes/{expediente}'
 */
-const showForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const showForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -164,7 +164,7 @@ const showForm = (args: { expediente: string | number | { id: string | number } 
 * @see app/Http/Controllers/Panel/EstudianteController.php:82
 * @route '/estudiantes/{expediente}'
 */
-showForm.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -174,7 +174,7 @@ showForm.get = (args: { expediente: string | number | { id: string | number } } 
 * @see app/Http/Controllers/Panel/EstudianteController.php:82
 * @route '/estudiantes/{expediente}'
 */
-showForm.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -191,7 +191,7 @@ show.form = showForm
 * @see app/Http/Controllers/Panel/OrdenImpresionController.php:14
 * @route '/estudiantes/{expediente}/orden-impresion'
 */
-export const ordenImpresion = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const ordenImpresion = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ordenImpresion.url(args, options),
     method: 'get',
 })
@@ -206,7 +206,7 @@ ordenImpresion.definition = {
 * @see app/Http/Controllers/Panel/OrdenImpresionController.php:14
 * @route '/estudiantes/{expediente}/orden-impresion'
 */
-ordenImpresion.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+ordenImpresion.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -239,7 +239,7 @@ ordenImpresion.url = (args: { expediente: string | number | { id: string | numbe
 * @see app/Http/Controllers/Panel/OrdenImpresionController.php:14
 * @route '/estudiantes/{expediente}/orden-impresion'
 */
-ordenImpresion.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+ordenImpresion.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: ordenImpresion.url(args, options),
     method: 'get',
 })
@@ -249,7 +249,7 @@ ordenImpresion.get = (args: { expediente: string | number | { id: string | numbe
 * @see app/Http/Controllers/Panel/OrdenImpresionController.php:14
 * @route '/estudiantes/{expediente}/orden-impresion'
 */
-ordenImpresion.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+ordenImpresion.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ordenImpresion.url(args, options),
     method: 'head',
 })
@@ -259,7 +259,7 @@ ordenImpresion.head = (args: { expediente: string | number | { id: string | numb
 * @see app/Http/Controllers/Panel/OrdenImpresionController.php:14
 * @route '/estudiantes/{expediente}/orden-impresion'
 */
-const ordenImpresionForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const ordenImpresionForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: ordenImpresion.url(args, options),
     method: 'get',
 })
@@ -269,7 +269,7 @@ const ordenImpresionForm = (args: { expediente: string | number | { id: string |
 * @see app/Http/Controllers/Panel/OrdenImpresionController.php:14
 * @route '/estudiantes/{expediente}/orden-impresion'
 */
-ordenImpresionForm.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+ordenImpresionForm.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: ordenImpresion.url(args, options),
     method: 'get',
 })
@@ -279,7 +279,7 @@ ordenImpresionForm.get = (args: { expediente: string | number | { id: string | n
 * @see app/Http/Controllers/Panel/OrdenImpresionController.php:14
 * @route '/estudiantes/{expediente}/orden-impresion'
 */
-ordenImpresionForm.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+ordenImpresionForm.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: ordenImpresion.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',

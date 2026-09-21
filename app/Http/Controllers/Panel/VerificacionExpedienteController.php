@@ -39,7 +39,9 @@ class VerificacionExpedienteController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'EPS aprobado: ya aparece en el repositorio.']);
 
-        return to_route('panel.estudiantes.show', $expediente);
+        return $request->boolean('desde_bandeja')
+            ? to_route('panel.bandeja.index')
+            : to_route('panel.estudiantes.show', $expediente);
     }
 
     /**

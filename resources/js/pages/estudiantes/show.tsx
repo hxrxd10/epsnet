@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { BadgeCheck, Download, FileText, Undo2 } from 'lucide-react';
 import { useState } from 'react';
 import DetalleEjes from '@/components/expediente/detalle-ejes';
@@ -17,7 +17,9 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { formatearFecha, formatearFechaHora } from '@/lib/fechas';
 import { dashboard } from '@/routes';
+import { index as bandeja } from '@/routes/panel/bandeja';
 import { index } from '@/routes/panel/estudiantes';
 import { destroy, store } from '@/routes/panel/estudiantes/verificacion';
 import type { EstadoExpediente } from '@/types/estudiante';
@@ -38,6 +40,7 @@ type Props = {
         completado_at: string | null;
         verificado_at: string | null;
         verificado_por: string | null;
+        solicitud_at: string | null;
     };
     orden_impresion: {
         nombre: string;
@@ -46,20 +49,15 @@ type Props = {
     } | null;
     ejes: EjeDetalle[];
     puedeVerificar: boolean;
+    desdeBandeja: boolean;
 };
-
-const fecha = (iso: string) =>
-    new Date(iso).toLocaleDateString('es-GT', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-    });
 
 export default function Estudiante({
     expediente,
     orden_impresion,
     ejes,
     puedeVerificar,
+    desdeBandeja,
 }: Props) {
     const [procesando, setProcesando] = useState(false);
     const [aprobando, setAprobando] = useState(false);
@@ -78,7 +76,10 @@ export default function Estudiante({
     }
 
     function confirmarAprobacion() {
-        enviar(store(expediente.id), { acepto: true });
+        enviar(store(expediente.id), {
+            acepto: true,
+            ...(desdeBandeja ? { desde_bandeja: true } : {}),
+        });
     }
 
     function enviar(
@@ -99,6 +100,27 @@ export default function Estudiante({
         <>
             <Head title={`EPS de ${expediente.estudiante}`} />
             <div className="flex flex-1 flex-col gap-8 p-4">
+                {expediente.solicitud_at && (
+                    <div className="border-sidebar-border/70 bg-muted flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4 text-sm">
+                        <p>
+                            <span className="font-medium">
+                                Solicitud de aprobación
+                            </span>{' '}
+                            enviada por el estudiante el{' '}
+                            {formatearFechaHora(expediente.solicitud_at)}, sin
+                            orden de impresión.
+                        </p>
+                        {desdeBandeja && (
+                            <Link
+                                href={bandeja()}
+                                className="underline underline-offset-4"
+                            >
+                                Volver a la bandeja
+                            </Link>
+                        )}
+                    </div>
+                )}
+
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <div className="flex flex-wrap items-center gap-3">
@@ -215,7 +237,7 @@ export default function Estudiante({
                         </p>
                         <p className="mt-1">
                             {expediente.completado_at
-                                ? fecha(expediente.completado_at)
+                                ? formatearFecha(expediente.completado_at)
                                 : 'Aún no'}
                         </p>
                     </div>
@@ -225,7 +247,7 @@ export default function Estudiante({
                         </p>
                         <p className="mt-1">
                             {expediente.verificado_at
-                                ? `${fecha(expediente.verificado_at)}${expediente.verificado_por ? ` por ${expediente.verificado_por}` : ''}`
+                                ? `${formatearFecha(expediente.verificado_at)}${expediente.verificado_por ? ` por ${expediente.verificado_por}` : ''}`
                                 : 'Pendiente'}
                         </p>
                         {expediente.verificado_at && (

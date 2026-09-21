@@ -3,6 +3,8 @@ import {
     AlertCircle,
     BadgeCheck,
     Download,
+    Inbox,
+    Send,
     FileText,
     Pencil,
     Trash2,
@@ -15,6 +17,7 @@ import {
     destroy as eliminarOrden,
     store as subirOrden,
 } from '@/actions/App/Http/Controllers/Estudiante/OrdenImpresionController';
+import { store as solicitarAprobacion } from '@/actions/App/Http/Controllers/Estudiante/SolicitudAprobacionController';
 import InputError from '@/components/input-error';
 import {
     Dialog,
@@ -25,6 +28,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
+import { formatearFecha, formatearFechaHora } from '@/lib/fechas';
 import EstudianteLayout from '@/layouts/estudiante-layout';
 import type { PasoProps } from '@/types/estudiante';
 
@@ -48,7 +52,13 @@ type Props = PasoProps & {
     total_registros: number;
     completado_at: string | null;
     orden_impresion: OrdenImpresion | null;
-    errors: { registros?: string; orden_impresion?: string };
+    puede_solicitar: boolean;
+    solicitud: { enviada_at: string; posicion: number; total: number } | null;
+    errors: {
+        registros?: string;
+        orden_impresion?: string;
+        solicitud?: string;
+    };
 };
 
 const VISIBLES = 3;
@@ -63,13 +73,6 @@ function tamano(bytes: number | null): string {
         : `${Math.max(1, Math.round(bytes / 1000))} KB`;
 }
 
-const fecha = (iso: string) =>
-    new Date(iso).toLocaleDateString('es-GT', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-    });
-
 export default function Cierre({
     expediente,
     eje,
@@ -78,6 +81,8 @@ export default function Cierre({
     total_registros,
     completado_at,
     orden_impresion,
+    puede_solicitar,
+    solicitud,
     errors,
 }: Props) {
     const entrada = useRef<HTMLInputElement>(null);
@@ -87,6 +92,7 @@ export default function Cierre({
     const [confirmandoBorrado, setConfirmandoBorrado] = useState(false);
     const [finalizando, setFinalizando] = useState(false);
     const [borrando, setBorrando] = useState(false);
+    const [enviando, setEnviando] = useState(false);
 
     const completo = expediente.estado !== 'activo';
 
@@ -114,6 +120,18 @@ export default function Cierre({
                 preserveScroll: true,
                 onStart: () => setFinalizando(true),
                 onFinish: () => setFinalizando(false),
+            },
+        );
+    }
+
+    function enviarAAprobacion() {
+        router.post(
+            solicitarAprobacion.url(expediente.id),
+            {},
+            {
+                preserveScroll: true,
+                onStart: () => setEnviando(true),
+                onFinish: () => setEnviando(false),
             },
         );
     }
@@ -151,7 +169,7 @@ export default function Cierre({
                             </p>
                             <p className="text-brand/65 mt-1 text-sm">
                                 {completado_at &&
-                                    `Guardado el ${fecha(completado_at)}. `}
+                                    `Guardado el ${formatearFecha(completado_at)}. `}
                                 Sus datos cuentan para las estadísticas. Puedes
                                 seguir corrigiendo tu información cuando
                                 quieras.
@@ -230,9 +248,12 @@ export default function Cierre({
                         Orden de impresión
                     </h2>
                     <p className="text-brand/60 mt-1 text-sm leading-relaxed">
-                        Es la evidencia que valida tu EPS: sin ella, lo que
-                        registraste no se cuenta en las estadísticas. Sube el
-                        archivo en PDF o imagen (JPG o PNG) de hasta 10 MB.
+                        Es la evidencia que valida tu EPS: con ella, tu EPS
+                        queda completo y cuenta en las estadísticas. Sube el
+                        archivo en PDF o imagen (JPG o PNG) de hasta 10 MB. Si
+                        no tienes una (por ejemplo, porque no hay un informe
+                        escrito), puedes enviar tu EPS a aprobación de tu unidad
+                        académica más abajo.
                     </p>
 
                     {orden_impresion && (
@@ -246,7 +267,9 @@ export default function Cierre({
                                     <p className="text-brand/55 text-xs">
                                         {tamano(orden_impresion.tamano_bytes)} ·
                                         subida el{' '}
-                                        {fecha(orden_impresion.subido_at)}
+                                        {formatearFecha(
+                                            orden_impresion.subido_at,
+                                        )}
                                     </p>
                                 </div>
                             </div>
@@ -352,6 +375,61 @@ export default function Cierre({
                         </button>
                     )}
                 </section>
+
+                {(solicitud || puede_solicitar) && (
+                    <section className="border-brand/10 rounded-3xl border bg-white p-6 shadow-[0_30px_80px_-40px_rgba(15,16,49,0.35)] sm:p-8">
+                        <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
+                            <Inbox className="size-5" />
+                            Aprobación de tu unidad académica
+                        </h2>
+
+                        {solicitud ? (
+                            <div className="mt-3 text-sm leading-relaxed">
+                                <p className="text-brand/70">
+                                    Enviaste tu EPS el{' '}
+                                    {formatearFechaHora(solicitud.enviada_at)}.
+                                    Está en la bandeja de tu unidad académica,
+                                    que las revisa en orden de llegada.
+                                </p>
+                                <p className="bg-brand/[0.05] mt-4 inline-block rounded-full px-4 py-1.5 font-medium">
+                                    Tu solicitud es la {solicitud.posicion} de{' '}
+                                    {solicitud.total} en espera
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                <p className="text-brand/60 mt-1 text-sm leading-relaxed">
+                                    Si no tienes orden de impresión (por
+                                    ejemplo, porque no hay un informe escrito),
+                                    envía tu EPS a tu unidad académica: le
+                                    llegará a su bandeja de solicitudes y lo
+                                    revisará en orden de llegada. Necesitas
+                                    haber registrado al menos un elemento en los
+                                    ejes.
+                                </p>
+                                <InputError
+                                    message={
+                                        errors.solicitud ?? errors.registros
+                                    }
+                                    className="mt-3"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={enviarAAprobacion}
+                                    disabled={enviando}
+                                    className="bg-brand mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.03] disabled:opacity-60"
+                                >
+                                    {enviando ? (
+                                        <Spinner />
+                                    ) : (
+                                        <Send className="size-4" />
+                                    )}
+                                    Enviar a aprobación de mi unidad
+                                </button>
+                            </>
+                        )}
+                    </section>
+                )}
             </div>
 
             <Dialog

@@ -44,7 +44,7 @@ class EstadisticaPdfController extends Controller
                 ->take(12)->values()->all(),
             'conBienes' => $departamentos->filter(fn (array $departamento): bool => $departamento['top_bienes_servicios'] !== [])->values()->all(),
             'mapa' => MapaEstadisticoSvg::dataUri($valores),
-        ])->download('estadisticas-epsnet-'.now()->format('Ymd').'.pdf');
+        ])->download('estadisticas-epsnet-'.now()->format('d-m-Y').'.pdf');
     }
 
     /**
@@ -63,7 +63,7 @@ class EstadisticaPdfController extends Controller
             'totalesDepartamento' => $detalle['metricas'],
             'municipios' => $detalle['municipios'],
             'mapa' => MapaEstadisticoSvg::dataUri([], $departamento->codigo, 300),
-        ])->download('estadisticas-'.Str::slug($departamento->nombre).'-'.now()->format('Ymd').'.pdf');
+        ])->download('estadisticas-'.Str::slug($departamento->nombre).'-'.now()->format('d-m-Y').'.pdf');
     }
 
     private function metrica(Request $request): MetricaEstadistica

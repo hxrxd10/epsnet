@@ -8,6 +8,7 @@ import PasoCrud from '@/components/estudiante/paso-crud';
 import ProgramaEps from '@/components/estudiante/programa-eps';
 import type { Campo } from '@/components/estudiante/paso-crud';
 import ResumenRegistro from '@/components/estudiante/resumen-registro';
+import { formatearFecha } from '@/lib/fechas';
 import EstudianteLayout from '@/layouts/estudiante-layout';
 import type { Opcion, PasoProps } from '@/types/estudiante';
 
@@ -128,7 +129,7 @@ export default function BienesServicios({
                         etiqueta={registro.tipo_etiqueta}
                         titulo={registro.descripcion}
                         meta={[
-                            registro.fecha,
+                            formatearFecha(registro.fecha),
                             registro.cantidad_beneficiarios !== null &&
                                 `${registro.cantidad_beneficiarios} beneficiarios`,
                         ]}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Expediente;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -43,8 +44,23 @@ class HandleInertiaRequests extends Middleware
             ],
             'rol' => fn () => $request->user()?->rol?->clave,
             'estudiante' => fn () => $this->estudiante($request),
+            'solicitudesPendientes' => fn () => $this->solicitudesPendientes($request),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /**
+     * Cuántas solicitudes de aprobación esperan al usuario (DIGEU o unidad académica), para el aviso de la bandeja.
+     */
+    protected function solicitudesPendientes(Request $request): int
+    {
+        $usuario = $request->user();
+
+        if ($usuario === null || ! ($usuario->esAdministrador() || $usuario->esUnidadAcademica())) {
+            return 0;
+        }
+
+        return Expediente::query()->visiblesPara($usuario)->pendientesDeAprobacion()->count();
     }
 
     /**

@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:16
 * @route '/estudiante/expedientes/{expediente}/alianzas'
 */
-export const store = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const store = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
     method: 'post',
 })
@@ -19,7 +19,7 @@ store.definition = {
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:16
 * @route '/estudiante/expedientes/{expediente}/alianzas'
 */
-store.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+store.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -52,7 +52,7 @@ store.url = (args: { expediente: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:16
 * @route '/estudiante/expedientes/{expediente}/alianzas'
 */
-store.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+store.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
     method: 'post',
 })
@@ -62,7 +62,7 @@ store.post = (args: { expediente: string | number | { id: string | number } } | 
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:16
 * @route '/estudiante/expedientes/{expediente}/alianzas'
 */
-const storeForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const storeForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
     method: 'post',
 })
@@ -72,7 +72,7 @@ const storeForm = (args: { expediente: string | number | { id: string | number }
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:16
 * @route '/estudiante/expedientes/{expediente}/alianzas'
 */
-storeForm.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+storeForm.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
     method: 'post',
 })
@@ -84,7 +84,7 @@ store.form = storeForm
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:23
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-export const update = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -99,7 +99,7 @@ update.definition = {
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:23
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-update.url = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions) => {
+update.url = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
             expediente: args[0],
@@ -127,7 +127,7 @@ update.url = (args: { expediente: string | number | { id: string | number }, reg
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:23
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-update.put = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -137,7 +137,7 @@ update.put = (args: { expediente: string | number | { id: string | number }, reg
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:23
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-update.patch = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -147,7 +147,7 @@ update.patch = (args: { expediente: string | number | { id: string | number }, r
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:23
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-const updateForm = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const updateForm = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -162,7 +162,7 @@ const updateForm = (args: { expediente: string | number | { id: string | number 
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:23
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-updateForm.put = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.put = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -177,7 +177,7 @@ updateForm.put = (args: { expediente: string | number | { id: string | number },
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:23
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-updateForm.patch = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.patch = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -194,7 +194,7 @@ update.form = updateForm
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:30
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-export const destroy = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -209,7 +209,7 @@ destroy.definition = {
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:30
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-destroy.url = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions) => {
+destroy.url = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
             expediente: args[0],
@@ -237,7 +237,7 @@ destroy.url = (args: { expediente: string | number | { id: string | number }, re
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:30
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-destroy.delete = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -247,7 +247,7 @@ destroy.delete = (args: { expediente: string | number | { id: string | number },
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:30
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-const destroyForm = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -262,7 +262,7 @@ const destroyForm = (args: { expediente: string | number | { id: string | number
 * @see app/Http/Controllers/Estudiante/AlianzaController.php:30
 * @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
-destroyForm.delete = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',

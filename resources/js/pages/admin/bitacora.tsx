@@ -7,6 +7,7 @@ import type { Pagina } from '@/components/paginacion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { InputFecha } from '@/components/ui/input-fecha';
 import {
     Select,
     SelectContent,
@@ -14,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { formatearFechaHora, formatearFechasEnTexto } from '@/lib/fechas';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import type { Opcion } from '@/types/estudiante';
@@ -59,19 +61,12 @@ const COLOR_TIPO: Record<string, string> = {
     retiro_aprobacion: 'bg-orange-500/15 text-orange-700 dark:text-orange-300',
 };
 
-const formatearFecha = (fecha: string): string => {
-    const [dia, hora] = fecha.split(' ');
-    const [anio, mes, diaMes] = dia.split('-');
-
-    return `${diaMes}/${mes}/${anio} ${hora.slice(0, 5)}`;
-};
-
 const mostrar = (valor: unknown): string =>
     valor === null || valor === undefined || valor === ''
         ? '—'
         : typeof valor === 'object'
           ? JSON.stringify(valor)
-          : String(valor);
+          : formatearFechasEnTexto(String(valor));
 
 function Cambios({ registro }: { registro: Registro }) {
     const anteriores = registro.anteriores ?? {};
@@ -218,23 +213,17 @@ export default function Bitacora({
                     </Select>
                     <label className="text-muted-foreground grid gap-1 text-xs">
                         Desde
-                        <Input
-                            type="date"
+                        <InputFecha
                             value={filtros.desde}
-                            onChange={(evento) =>
-                                filtrar({ desde: evento.target.value })
-                            }
+                            onChange={(iso) => filtrar({ desde: iso })}
                             className="w-40"
                         />
                     </label>
                     <label className="text-muted-foreground grid gap-1 text-xs">
                         Hasta
-                        <Input
-                            type="date"
+                        <InputFecha
                             value={filtros.hasta}
-                            onChange={(evento) =>
-                                filtrar({ hasta: evento.target.value })
-                            }
+                            onChange={(iso) => filtrar({ hasta: iso })}
                             className="w-40"
                         />
                     </label>
@@ -285,7 +274,7 @@ export default function Bitacora({
                                         className="border-b align-top last:border-0"
                                     >
                                         <td className="px-4 py-3 font-mono text-xs whitespace-nowrap">
-                                            {formatearFecha(registro.fecha)}
+                                            {formatearFechaHora(registro.fecha)}
                                         </td>
                                         <td className="px-4 py-3">
                                             <p className="font-medium">

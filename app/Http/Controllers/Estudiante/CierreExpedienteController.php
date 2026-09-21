@@ -37,6 +37,13 @@ class CierreExpedienteController extends Controller
             'resumen' => $resumen,
             'total_registros' => collect($resumen)->sum(fn (array $eje): int => count($eje['items'])),
             'completado_at' => $expediente->completado_at?->toIso8601String(),
+            'puede_solicitar' => $expediente->estado_expediente === EstadoExpediente::Activo
+                && $orden === null
+                && $expediente->aprobacion_solicitada_at === null,
+            'solicitud' => $expediente->posicionEnBandeja() === null ? null : [
+                'enviada_at' => $expediente->aprobacion_solicitada_at->toIso8601String(),
+                ...$expediente->posicionEnBandeja(),
+            ],
             'orden_impresion' => $orden === null ? null : [
                 'nombre' => $orden->nombre_original,
                 'mime_type' => $orden->mime_type,

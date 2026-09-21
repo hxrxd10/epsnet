@@ -11,6 +11,7 @@ use App\Http\Controllers\Estudiante\OrdenImpresionController;
 use App\Http\Controllers\Estudiante\ProgramaExpedienteController;
 use App\Http\Controllers\Estudiante\PublicacionInvestigacionController;
 use App\Http\Controllers\Estudiante\SeguimientoImpactoController;
+use App\Http\Controllers\Estudiante\SolicitudAprobacionController;
 use App\Http\Controllers\Estudiante\TransferenciaConocimientoController;
 use App\Http\Controllers\Estudiante\UbicacionTerritorialController;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,7 @@ Route::prefix('estudiante')->name('estudiante.')->group(function () {
                 ->only(['store', 'update', 'destroy'])
                 ->parameters(['alianzas' => 'registro']);
 
+            Route::post('expedientes/{expediente}/solicitud-aprobacion', [SolicitudAprobacionController::class, 'store'])->name('expedientes.solicitud.store');
             Route::put('expedientes/{expediente}/programa', [ProgramaExpedienteController::class, 'update'])->name('expedientes.programa.update');
 
             Route::get('expedientes/{expediente}/cierre', [CierreExpedienteController::class, 'index'])->name('expedientes.cierre.index');

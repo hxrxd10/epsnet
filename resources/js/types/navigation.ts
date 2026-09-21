@@ -11,4 +11,6 @@ export type NavItem = {
     href: NonNullable<InertiaLinkProps['href']>;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    /** Cantidad pendiente que se muestra junto al nombre (p. ej. solicitudes por revisar). */
+    badge?: number;
 };

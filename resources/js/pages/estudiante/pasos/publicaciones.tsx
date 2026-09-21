@@ -7,6 +7,7 @@ import {
 import PasoCrud from '@/components/estudiante/paso-crud';
 import type { Campo } from '@/components/estudiante/paso-crud';
 import ResumenRegistro from '@/components/estudiante/resumen-registro';
+import { formatearFecha } from '@/lib/fechas';
 import EstudianteLayout from '@/layouts/estudiante-layout';
 import type { Opcion, PasoProps } from '@/types/estudiante';
 
@@ -125,7 +126,7 @@ export default function Publicaciones({
                         meta={[
                             registro.autores,
                             registro.medio_publicacion,
-                            registro.fecha_publicacion,
+                            formatearFecha(registro.fecha_publicacion),
                         ]}
                         texto={registro.resumen}
                     />

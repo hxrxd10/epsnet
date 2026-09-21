@@ -251,3 +251,19 @@ describe('aprobación (doble verificación)', function () {
         expect($expediente->fresh()->estado_expediente)->toBe(EstadoExpediente::Activo);
     });
 });
+
+it('muestra en el detalle del EPS las fechas como dd-mm-aaaa', function () {
+    $unidad = UnidadAcademica::factory()->create();
+    $expediente = expedienteDeUnidad($unidad, ['estado_expediente' => EstadoExpediente::Completo]);
+    $expediente->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Jornada', 'fecha' => '2026-03-10']);
+    $expediente->transferencias()->create(['tipo_actividad' => 'taller', 'actividad' => 'Taller', 'comunidad' => 'Aldea', 'fecha' => '2026-04-05']);
+    $expediente->publicaciones()->create(['titulo' => 'Estudio', 'tipo' => 'tesis', 'autores' => 'A', 'fecha_publicacion' => '2026-05-20']);
+    $expediente->seguimientos()->create(['tipo_registro' => 'avance', 'indicador' => 'Avance', 'fecha' => '2026-06-15']);
+    $this->actingAs(usuarioDeUnidad($unidad));
+
+    $meta = $this->get(route('panel.estudiantes.show', $expediente))->inertiaProps('ejes');
+    $texto = json_encode($meta, JSON_UNESCAPED_UNICODE);
+
+    expect($texto)->toContain('10-03-2026')->toContain('05-04-2026')->toContain('20-05-2026')->toContain('15-06-2026')
+        ->not->toContain('2026-03-10')->not->toContain('2026-04-05')->not->toContain('2026-05-20')->not->toContain('2026-06-15');
+});

@@ -44,7 +44,7 @@ it('genera el PDF del país para cualquier rol con sesión', function (string $r
     $respuesta = $this->get(route('estadisticas.pdf', ['metrica' => 'bienes_servicios']))->assertOk();
 
     expect($respuesta->headers->get('content-type'))->toBe('application/pdf')
-        ->and($respuesta->headers->get('content-disposition'))->toContain('attachment')->toContain('estadisticas-epsnet-'.now()->format('Ymd').'.pdf')
+        ->and($respuesta->headers->get('content-disposition'))->toContain('attachment')->toContain('estadisticas-epsnet-'.now()->format('d-m-Y').'.pdf')
         ->and(substr($respuesta->getContent(), 0, 5))->toBe('%PDF-');
 })->with(['invitado', 'estudiante', 'administrador']);
 

@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 * @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:24
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-export const index = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const index = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(args, options),
     method: 'get',
 })
@@ -19,7 +19,7 @@ index.definition = {
 * @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:24
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-index.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+index.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -52,7 +52,7 @@ index.url = (args: { expediente: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:24
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-index.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+index.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(args, options),
     method: 'get',
 })
@@ -62,7 +62,7 @@ index.get = (args: { expediente: string | number | { id: string | number } } | [
 * @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:24
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-index.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+index.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(args, options),
     method: 'head',
 })
@@ -72,7 +72,7 @@ index.head = (args: { expediente: string | number | { id: string | number } } | 
 * @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:24
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-const indexForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const indexForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(args, options),
     method: 'get',
 })
@@ -82,7 +82,7 @@ const indexForm = (args: { expediente: string | number | { id: string | number }
 * @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:24
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-indexForm.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+indexForm.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(args, options),
     method: 'get',
 })
@@ -92,7 +92,7 @@ indexForm.get = (args: { expediente: string | number | { id: string | number } }
 * @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:24
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-indexForm.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+indexForm.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -106,10 +106,10 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::store
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:53
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:60
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-export const store = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const store = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
     method: 'post',
 })
@@ -121,10 +121,10 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::store
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:53
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:60
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-store.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+store.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { expediente: args }
     }
@@ -154,30 +154,30 @@ store.url = (args: { expediente: string | number | { id: string | number } } | [
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::store
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:53
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:60
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-store.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+store.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
     method: 'post',
 })
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::store
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:53
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:60
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-const storeForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const storeForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
     method: 'post',
 })
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::store
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:53
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:60
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
-storeForm.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+storeForm.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
     method: 'post',
 })

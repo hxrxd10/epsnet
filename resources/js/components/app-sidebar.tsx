@@ -4,6 +4,7 @@ import {
     BookMarked,
     BookOpen,
     Database,
+    Inbox,
     ScrollText,
     LayoutGrid,
     UserCog,
@@ -26,6 +27,7 @@ import { datos } from '@/routes/admin';
 import { index as bitacora } from '@/routes/admin/bitacora';
 import { index as usuarios } from '@/routes/admin/usuarios';
 import { index as estadisticas } from '@/routes/estadisticas';
+import { index as bandeja } from '@/routes/panel/bandeja';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
 import { index as repositorio } from '@/routes/repositorio';
 import type { NavItem } from '@/types';
@@ -44,9 +46,20 @@ const estudiantesYEps: NavItem = {
 };
 
 /** Opciones de administración según el rol: DIGEU ve todas; una unidad académica, a sus estudiantes. */
-function opcionesDeAdministracion(rol: string | null): NavItem[] {
+function opcionesDeAdministracion(
+    rol: string | null,
+    solicitudes: number,
+): NavItem[] {
+    const bandejaDeSolicitudes: NavItem = {
+        title: 'Bandeja de solicitudes',
+        href: bandeja(),
+        icon: Inbox,
+        badge: solicitudes,
+    };
+
     if (rol === 'digeu') {
         return [
+            bandejaDeSolicitudes,
             estudiantesYEps,
             { title: 'Usuarios', href: usuarios(), icon: UserCog },
             { title: 'Manejo de datos', href: datos(), icon: Database },
@@ -54,12 +67,14 @@ function opcionesDeAdministracion(rol: string | null): NavItem[] {
         ];
     }
 
-    return rol === 'unidad_academica' ? [estudiantesYEps] : [];
+    return rol === 'unidad_academica'
+        ? [bandejaDeSolicitudes, estudiantesYEps]
+        : [];
 }
 
 export function AppSidebar() {
-    const { rol } = usePage().props;
-    const administracion = opcionesDeAdministracion(rol);
+    const { rol, solicitudesPendientes } = usePage().props;
+    const administracion = opcionesDeAdministracion(rol, solicitudesPendientes);
 
     return (
         <Sidebar collapsible="icon" variant="inset">

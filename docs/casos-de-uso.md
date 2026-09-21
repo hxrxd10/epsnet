@@ -92,6 +92,19 @@ Actores del sistema:
 
 ---
 
+### CU-03b · Solicitud de aprobación sin orden de impresión (extensión)
+
+| Campo | Detalle |
+|---|---|
+| **Actor(es)** | Estudiante, Unidad Académica, DIGEU |
+| **Descripción** | Un estudiante que no tiene orden de impresión (por ejemplo, porque no hay un informe escrito) envía su EPS a aprobación de su unidad académica, que lo atiende desde una bandeja de solicitudes en orden de llegada. |
+| **Precondiciones** | El EPS está en progreso, no tiene orden de impresión y tiene al menos un registro en los ejes. |
+| **Flujo principal** | 1. El estudiante envía su EPS a aprobación desde el último paso.<br>2. El sistema registra la fecha y hora de llegada y anota el envío en la bitácora.<br>3. La solicitud aparece en la bandeja de la unidad (y de DIGEU), con el que llegó primero arriba.<br>4. La unidad revisa el EPS y lo aprueba confirmando el acepto de que lo descrito está comprobado y se ejecutó.<br>5. La solicitud sale de la bandeja y el EPS queda verificado. |
+| **Flujos alternativos** | 1a. El EPS ya fue enviado, ya está completo o aprobado, o no tiene registros → el sistema no permite el envío. |
+| **Postcondiciones** | El EPS queda verificado, publicado en el repositorio y cuenta para las estadísticas. |
+
+---
+
 ### CU-07 · Registro de Transferencia de Conocimiento (Eje 3)
 
 | Campo | Detalle |

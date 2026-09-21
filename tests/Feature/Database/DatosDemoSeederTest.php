@@ -111,3 +111,30 @@ it('completa las instituciones aliadas en una demo sembrada antes de que existie
 
     expect(DB::table('alianzas')->count())->toBe($total);
 });
+
+it('deja solicitudes en la bandeja de la unidad de demostración, con información y sin orden de impresión', function () {
+    $this->seed(DatosDemoSeeder::class);
+
+    $pendientes = Expediente::pendientesDeAprobacion();
+    $humanidades = User::where('email', 'unidad@epsnet.test')->sole()->unidadAcademica;
+
+    expect($pendientes->clone()->count())->toBeGreaterThan(10)
+        ->and($pendientes->clone()->where('unidad_academica_id', $humanidades->id)->count())->toBeGreaterThan(3)
+        ->and($pendientes->clone()->whereHas('ordenImpresion')->count())->toBe(0)
+        ->and($pendientes->clone()->where('aprobacion_solicitada_at', '>', now())->count())->toBe(0)
+        ->and($pendientes->clone()->get()->every(fn (Expediente $expediente): bool => $expediente->bienesServicios()->exists()))->toBeTrue();
+});
+
+it('completa la bandeja en una demo sembrada antes de que existiera, sin repetirlo', function () {
+    $this->seed(DatosDemoSeeder::class);
+    Expediente::query()->update(['aprobacion_solicitada_at' => null]);
+
+    $this->seed(DatosDemoSeeder::class);
+    $enviadas = Expediente::pendientesDeAprobacion()->count();
+
+    expect($enviadas)->toBeGreaterThan(10);
+
+    $this->seed(DatosDemoSeeder::class);
+
+    expect(Expediente::pendientesDeAprobacion()->count())->toBe($enviadas);
+});

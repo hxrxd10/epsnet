@@ -167,7 +167,7 @@ pdf.form = pdfForm
 * @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
-export const departamento = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const departamento = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: departamento.url(args, options),
     method: 'get',
 })
@@ -182,7 +182,7 @@ departamento.definition = {
 * @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
-departamento.url = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions) => {
+departamento.url = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { departamento: args }
     }
@@ -215,7 +215,7 @@ departamento.url = (args: { departamento: string | number | { codigo: string | n
 * @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
-departamento.get = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+departamento.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: departamento.url(args, options),
     method: 'get',
 })
@@ -225,7 +225,7 @@ departamento.get = (args: { departamento: string | number | { codigo: string | n
 * @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
-departamento.head = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+departamento.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: departamento.url(args, options),
     method: 'head',
 })
@@ -235,7 +235,7 @@ departamento.head = (args: { departamento: string | number | { codigo: string | 
 * @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
-const departamentoForm = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const departamentoForm = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: departamento.url(args, options),
     method: 'get',
 })
@@ -245,7 +245,7 @@ const departamentoForm = (args: { departamento: string | number | { codigo: stri
 * @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
-departamentoForm.get = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+departamentoForm.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: departamento.url(args, options),
     method: 'get',
 })
@@ -255,7 +255,7 @@ departamentoForm.get = (args: { departamento: string | number | { codigo: string
 * @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
-departamentoForm.head = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+departamentoForm.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: departamento.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',

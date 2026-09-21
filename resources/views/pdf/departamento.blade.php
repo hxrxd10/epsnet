@@ -72,7 +72,7 @@
                         <div class="apagado">
                             {{ $investigacion['autores'] }}
                             @if ($investigacion['medio']) · {{ $investigacion['medio'] }} @endif
-                            @if ($investigacion['fecha']) · {{ \Illuminate\Support\Carbon::parse($investigacion['fecha'])->format('d/m/Y') }} @endif
+                            @if ($investigacion['fecha']) · {{ \Illuminate\Support\Carbon::parse($investigacion['fecha'])->format('d-m-Y') }} @endif
                         </div>
                         <div class="apagado">{{ $investigacion['carrera'] }} · {{ $investigacion['unidad'] }}</div>
                     </div>

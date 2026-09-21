@@ -11,6 +11,7 @@ enum TipoCambioBitacora: string
     case Creacion = 'creacion';
     case Edicion = 'edicion';
     case Eliminacion = 'eliminacion';
+    case SolicitudAprobacion = 'solicitud_aprobacion';
     case Aprobacion = 'aprobacion';
     case RetiroAprobacion = 'retiro_aprobacion';
     case Acceso = 'acceso';
@@ -22,6 +23,7 @@ enum TipoCambioBitacora: string
             self::Creacion => 'Creó',
             self::Edicion => 'Editó',
             self::Eliminacion => 'Eliminó',
+            self::SolicitudAprobacion => 'Solicitó aprobación',
             self::Aprobacion => 'Aprobó',
             self::RetiroAprobacion => 'Retiró aprobación',
             self::Acceso => 'Acceso',

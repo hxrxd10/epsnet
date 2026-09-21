@@ -14,6 +14,7 @@ declare module '@inertiajs/core' {
             auth: Auth;
             rol: string | null;
             estudiante: EstudianteSesion | null;
+            solicitudesPendientes: number;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

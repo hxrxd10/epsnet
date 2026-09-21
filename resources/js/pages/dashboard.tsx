@@ -5,6 +5,7 @@ import {
     BookOpen,
     Database,
     GraduationCap,
+    Inbox,
     ScrollText,
     UserCog,
     Users,
@@ -16,6 +17,7 @@ import { index as bitacora } from '@/routes/admin/bitacora';
 import { index as usuarios } from '@/routes/admin/usuarios';
 import { index as estadisticas } from '@/routes/estadisticas';
 import { acceso } from '@/routes/estudiante';
+import { index as bandeja } from '@/routes/panel/bandeja';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
 import { index as repositorio } from '@/routes/repositorio';
 
@@ -47,6 +49,12 @@ export default function Dashboard() {
     if (rol === 'digeu') {
         tarjetas.push(
             {
+                icono: Inbox,
+                titulo: 'Bandeja de solicitudes',
+                texto: 'EPS que los estudiantes enviaron a aprobación sin orden de impresión, en orden de llegada.',
+                href: bandeja(),
+            },
+            {
                 icono: Users,
                 titulo: 'Estudiantes y EPS',
                 texto: 'Todos los estudiantes y sus EPS, de todas las unidades académicas.',
@@ -74,12 +82,20 @@ export default function Dashboard() {
     }
 
     if (rol === 'unidad_academica') {
-        tarjetas.push({
-            icono: Users,
-            titulo: 'Estudiantes y EPS',
-            texto: 'Los estudiantes de tu unidad académica y sus EPS: revísalos y apruébalos.',
-            href: estudiantes(),
-        });
+        tarjetas.push(
+            {
+                icono: Inbox,
+                titulo: 'Bandeja de solicitudes',
+                texto: 'EPS que tus estudiantes enviaron a aprobación sin orden de impresión, en orden de llegada.',
+                href: bandeja(),
+            },
+            {
+                icono: Users,
+                titulo: 'Estudiantes y EPS',
+                texto: 'Los estudiantes de tu unidad académica y sus EPS: revísalos y apruébalos.',
+                href: estudiantes(),
+            },
+        );
     }
 
     if (rol === 'invitado') {

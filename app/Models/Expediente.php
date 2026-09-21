@@ -37,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $completado_at
  * @property Carbon|null $verificado_at
  * @property int|null $verificado_por
+ * @property Carbon|null $aprobacion_solicitada_at
  * @property Carbon|null $fecha_inicio_eps
  * @property Carbon|null $fecha_fin_eps
  * @property array<string, mixed>|null $datos_epsum
@@ -57,6 +58,7 @@ use Illuminate\Support\Carbon;
     'completado_at',
     'verificado_at',
     'verificado_por',
+    'aprobacion_solicitada_at',
     'fecha_inicio_eps',
     'fecha_fin_eps',
     'datos_epsum',
@@ -88,6 +90,7 @@ class Expediente extends Model
             'estado_expediente' => EstadoExpediente::class,
             'completado_at' => 'datetime',
             'verificado_at' => 'datetime',
+            'aprobacion_solicitada_at' => 'datetime',
             'fecha_inicio_eps' => 'date',
             'fecha_fin_eps' => 'date',
             'datos_epsum' => 'array',
@@ -202,6 +205,18 @@ class Expediente extends Model
     }
 
     /**
+     * Solicitudes de aprobación en espera: EPS que el estudiante envió a su unidad y aún no se aprueban.
+     *
+     * @param  Builder<Expediente>  $query
+     */
+    #[Scope]
+    protected function pendientesDeAprobacion(Builder $query): void
+    {
+        $query->whereNotNull('aprobacion_solicitada_at')
+            ->where('estado_expediente', '!=', EstadoExpediente::Verificado->value);
+    }
+
+    /**
      * Expedientes que el usuario puede consultar: todos para DIGEU y los de su unidad para una
      * unidad académica; ninguno para el resto.
      *
@@ -224,6 +239,30 @@ class Expediente extends Model
     }
 
     /**
+     * Lugar de esta solicitud en la bandeja de su unidad (1 = la primera en llegar) y cuántas hay en espera;
+     * null si no hay una solicitud pendiente.
+     *
+     * @return array{posicion: int, total: int}|null
+     */
+    public function posicionEnBandeja(): ?array
+    {
+        if ($this->aprobacion_solicitada_at === null || $this->estado_expediente === EstadoExpediente::Verificado) {
+            return null;
+        }
+
+        $cola = self::query()->pendientesDeAprobacion()->where('unidad_academica_id', $this->unidad_academica_id);
+
+        return [
+            'posicion' => $cola->clone()->where(fn (Builder $consulta) => $consulta
+                ->where('aprobacion_solicitada_at', '<', $this->aprobacion_solicitada_at)
+                ->orWhere(fn (Builder $consulta) => $consulta
+                    ->where('aprobacion_solicitada_at', $this->aprobacion_solicitada_at)
+                    ->where('id', '<', $this->id)))->count() + 1,
+            'total' => $cola->count(),
+        ];
+    }
+
+    /**
      * Aprobación de la unidad académica (o DIGEU): el expediente queda verificado.
      */
     public function verificarPor(User $usuario): void
@@ -232,6 +271,7 @@ class Expediente extends Model
             'estado_expediente' => EstadoExpediente::Verificado,
             'verificado_at' => now(),
             'verificado_por' => $usuario->id,
+            'aprobacion_solicitada_at' => null,
         ]);
     }
 
@@ -278,7 +318,7 @@ class Expediente extends Model
      */
     protected function atributosNoAuditablesPropios(): array
     {
-        return ['eje_actual', 'datos_epsum'];
+        return ['eje_actual', 'datos_epsum', 'aprobacion_solicitada_at'];
     }
 
     /**

@@ -99,7 +99,9 @@ class EstudianteController extends Controller
                 'completado_at' => $expediente->completado_at?->toIso8601String(),
                 'verificado_at' => $expediente->verificado_at?->toIso8601String(),
                 'verificado_por' => $expediente->verificadoPor?->name,
+                'solicitud_at' => $expediente->estado_expediente === EstadoExpediente::Verificado ? null : $expediente->aprobacion_solicitada_at?->toIso8601String(),
             ],
+            'desdeBandeja' => $request->query('desde') === 'bandeja',
             'orden_impresion' => $expediente->ordenImpresion === null ? null : [
                 'nombre' => $expediente->ordenImpresion->nombre_original,
                 'tamano_bytes' => $expediente->ordenImpresion->tamano_bytes,

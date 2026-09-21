@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\EstadisticaController;
 use App\Http\Controllers\EstadisticaPdfController;
+use App\Http\Controllers\Panel\BandejaController;
 use App\Http\Controllers\Panel\EstudianteController;
 use App\Http\Controllers\Panel\OrdenImpresionController as PanelOrdenImpresionController;
 use App\Http\Controllers\Panel\VerificacionExpedienteController;
@@ -36,6 +37,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('repositorio', [RepositorioController::class, 'index'])->name('repositorio.index');
     Route::get('repositorio/{expediente}', [RepositorioController::class, 'show'])->name('repositorio.show');
 });
+
+// Bandeja de solicitudes de aprobación: DIGEU ve todas y cada unidad académica las suyas.
+Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica'])->get('bandeja', [BandejaController::class, 'index'])->name('panel.bandeja.index');
 
 // Estudiantes y EPS: DIGEU ve todos y cada unidad académica los de su unidad.
 Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica'])->prefix('estudiantes')->name('panel.estudiantes.')->group(function () {
