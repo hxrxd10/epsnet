@@ -1,0 +1,1 @@
+import{i as e,r as t}from"./wayfinder-C-XojDCB.js";import{t as n}from"./badge-BhxqhDNH.js";var r=e(),i=t();function a(e){let t=(0,r.c)(3),{estado:a,etiqueta:o}=e,s=a===`verificado`?`default`:a===`completo`?`secondary`:`outline`,c;return t[0]!==o||t[1]!==s?(c=(0,i.jsx)(n,{variant:s,children:o}),t[0]=o,t[1]=s,t[2]=c):c=t[2],c}export{a as t};
