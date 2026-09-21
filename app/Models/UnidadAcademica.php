@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use App\Enums\TipoUnidadAcademica;
 use Database\Factories\UnidadAcademicaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -43,7 +44,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class UnidadAcademica extends Model
 {
     /** @use HasFactory<UnidadAcademicaFactory> */
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -72,5 +73,15 @@ class UnidadAcademica extends Model
     public function expedientes(): HasMany
     {
         return $this->hasMany(Expediente::class);
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Unidades académicas';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'la unidad académica «'.$this->nombre.'»';
     }
 }

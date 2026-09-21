@@ -1,7 +1,8 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import departamento4cfa8c from './departamento'
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +17,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +26,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +36,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +46,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +56,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +66,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -81,8 +82,89 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 index.form = indexForm
 
 /**
+* @see \App\Http\Controllers\EstadisticaPdfController::pdf
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
+* @route '/estadisticas/pdf'
+*/
+export const pdf = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: pdf.url(options),
+    method: 'get',
+})
+
+pdf.definition = {
+    methods: ["get","head"],
+    url: '/estadisticas/pdf',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\EstadisticaPdfController::pdf
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
+* @route '/estadisticas/pdf'
+*/
+pdf.url = (options?: RouteQueryOptions) => {
+    return pdf.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\EstadisticaPdfController::pdf
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
+* @route '/estadisticas/pdf'
+*/
+pdf.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: pdf.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EstadisticaPdfController::pdf
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
+* @route '/estadisticas/pdf'
+*/
+pdf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: pdf.url(options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\EstadisticaPdfController::pdf
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
+* @route '/estadisticas/pdf'
+*/
+const pdfForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EstadisticaPdfController::pdf
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
+* @route '/estadisticas/pdf'
+*/
+pdfForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EstadisticaPdfController::pdf
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
+* @route '/estadisticas/pdf'
+*/
+pdfForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+pdf.form = pdfForm
+
+/**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 export const departamento = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +179,7 @@ departamento.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamento.url = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions) => {
@@ -130,7 +212,7 @@ departamento.url = (args: { departamento: string | number | { codigo: string | n
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamento.get = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -140,7 +222,7 @@ departamento.get = (args: { departamento: string | number | { codigo: string | n
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamento.head = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -150,7 +232,7 @@ departamento.head = (args: { departamento: string | number | { codigo: string | 
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 const departamentoForm = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -160,7 +242,7 @@ const departamentoForm = (args: { departamento: string | number | { codigo: stri
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamentoForm.get = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -170,7 +252,7 @@ departamentoForm.get = (args: { departamento: string | number | { codigo: string
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamentoForm.head = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -187,7 +269,8 @@ departamento.form = departamentoForm
 
 const estadisticas = {
     index: Object.assign(index, index),
-    departamento: Object.assign(departamento, departamento),
+    pdf: Object.assign(pdf, pdf),
+    departamento: Object.assign(departamento, departamento4cfa8c),
 }
 
 export default estadisticas

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use Database\Factories\UbicacionTerritorialFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -33,7 +34,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class UbicacionTerritorial extends Model
 {
     /** @use HasFactory<UbicacionTerritorialFactory> */
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -68,5 +69,15 @@ class UbicacionTerritorial extends Model
     public function municipio(): BelongsTo
     {
         return $this->belongsTo(Municipio::class);
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Territorio y geolocalización';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'la ubicación '.collect([$this->municipio?->nombre, $this->departamento?->nombre])->filter()->implode(', ').' del '.$this->expediente?->resumenBitacora();
     }
 }

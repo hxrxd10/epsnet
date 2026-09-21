@@ -7,6 +7,7 @@ import TransferenciaConocimientoController from './TransferenciaConocimientoCont
 import UbicacionTerritorialController from './UbicacionTerritorialController'
 import ActorParticipanteController from './ActorParticipanteController'
 import SeguimientoImpactoController from './SeguimientoImpactoController'
+import ProgramaExpedienteController from './ProgramaExpedienteController'
 import CierreExpedienteController from './CierreExpedienteController'
 import OrdenImpresionController from './OrdenImpresionController'
 
@@ -20,6 +21,7 @@ const Estudiante = {
     UbicacionTerritorialController: Object.assign(UbicacionTerritorialController, UbicacionTerritorialController),
     ActorParticipanteController: Object.assign(ActorParticipanteController, ActorParticipanteController),
     SeguimientoImpactoController: Object.assign(SeguimientoImpactoController, SeguimientoImpactoController),
+    ProgramaExpedienteController: Object.assign(ProgramaExpedienteController, ProgramaExpedienteController),
     CierreExpedienteController: Object.assign(CierreExpedienteController, CierreExpedienteController),
     OrdenImpresionController: Object.assign(OrdenImpresionController, OrdenImpresionController),
 }

@@ -2,15 +2,20 @@
 
 namespace App\Providers;
 
+use App\Enums\TipoCambioBitacora;
+use App\Models\Bitacora;
 use App\Models\Expediente;
 use App\Services\RegistroAcademico\TransporteRegistroAcademico;
 use App\Services\RegistroAcademico\TransporteSoap;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -33,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->configureRateLimiting();
         $this->configureMorphMap();
+        $this->configureBitacora();
     }
 
     /**
@@ -76,5 +82,16 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             'expediente' => Expediente::class,
         ]);
+    }
+
+    /**
+     * Anota en la bitácora cuándo entra y sale cada usuario; los cambios en los datos los anota `Auditable`.
+     */
+    protected function configureBitacora(): void
+    {
+        Event::listen(Login::class, fn (Login $evento) => Bitacora::registrar('Acceso al sistema', TipoCambioBitacora::Acceso, 'Inició sesión', actor: $evento->user));
+        Event::listen(Logout::class, fn (Logout $evento) => $evento->user === null
+            ? null
+            : Bitacora::registrar('Acceso al sistema', TipoCambioBitacora::Acceso, 'Cerró sesión', actor: $evento->user));
     }
 }

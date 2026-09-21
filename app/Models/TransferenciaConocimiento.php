@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use App\Enums\TipoActividadTransferencia;
 use Database\Factories\TransferenciaConocimientoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -35,7 +37,7 @@ use Illuminate\Support\Carbon;
 class TransferenciaConocimiento extends Model
 {
     /** @use HasFactory<TransferenciaConocimientoFactory> */
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -63,5 +65,15 @@ class TransferenciaConocimiento extends Model
     public function catalogo(): BelongsTo
     {
         return $this->belongsTo(Catalogo::class);
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Transferencia de conocimiento';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'la actividad «'.Str::limit($this->actividad, 70).'» del '.$this->expediente?->resumenBitacora();
     }
 }

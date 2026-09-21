@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\RepositorioController::index
-* @see app/Http/Controllers/RepositorioController.php:20
+* @see app/Http/Controllers/RepositorioController.php:21
 * @route '/repositorio'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\RepositorioController::index
-* @see app/Http/Controllers/RepositorioController.php:20
+* @see app/Http/Controllers/RepositorioController.php:21
 * @route '/repositorio'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RepositorioController::index
-* @see app/Http/Controllers/RepositorioController.php:20
+* @see app/Http/Controllers/RepositorioController.php:21
 * @route '/repositorio'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RepositorioController::index
-* @see app/Http/Controllers/RepositorioController.php:20
+* @see app/Http/Controllers/RepositorioController.php:21
 * @route '/repositorio'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\RepositorioController::index
-* @see app/Http/Controllers/RepositorioController.php:20
+* @see app/Http/Controllers/RepositorioController.php:21
 * @route '/repositorio'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\RepositorioController::index
-* @see app/Http/Controllers/RepositorioController.php:20
+* @see app/Http/Controllers/RepositorioController.php:21
 * @route '/repositorio'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RepositorioController::index
-* @see app/Http/Controllers/RepositorioController.php:20
+* @see app/Http/Controllers/RepositorioController.php:21
 * @route '/repositorio'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\RepositorioController::show
-* @see app/Http/Controllers/RepositorioController.php:78
+* @see app/Http/Controllers/RepositorioController.php:80
 * @route '/repositorio/{expediente}'
 */
 export const show = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\RepositorioController::show
-* @see app/Http/Controllers/RepositorioController.php:78
+* @see app/Http/Controllers/RepositorioController.php:80
 * @route '/repositorio/{expediente}'
 */
 show.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -130,7 +130,7 @@ show.url = (args: { expediente: string | number | { id: string | number } } | [e
 
 /**
 * @see \App\Http\Controllers\RepositorioController::show
-* @see app/Http/Controllers/RepositorioController.php:78
+* @see app/Http/Controllers/RepositorioController.php:80
 * @route '/repositorio/{expediente}'
 */
 show.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -140,7 +140,7 @@ show.get = (args: { expediente: string | number | { id: string | number } } | [e
 
 /**
 * @see \App\Http\Controllers\RepositorioController::show
-* @see app/Http/Controllers/RepositorioController.php:78
+* @see app/Http/Controllers/RepositorioController.php:80
 * @route '/repositorio/{expediente}'
 */
 show.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -150,7 +150,7 @@ show.head = (args: { expediente: string | number | { id: string | number } } | [
 
 /**
 * @see \App\Http\Controllers\RepositorioController::show
-* @see app/Http/Controllers/RepositorioController.php:78
+* @see app/Http/Controllers/RepositorioController.php:80
 * @route '/repositorio/{expediente}'
 */
 const showForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -160,7 +160,7 @@ const showForm = (args: { expediente: string | number | { id: string | number } 
 
 /**
 * @see \App\Http\Controllers\RepositorioController::show
-* @see app/Http/Controllers/RepositorioController.php:78
+* @see app/Http/Controllers/RepositorioController.php:80
 * @route '/repositorio/{expediente}'
 */
 showForm.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -170,7 +170,7 @@ showForm.get = (args: { expediente: string | number | { id: string | number } } 
 
 /**
 * @see \App\Http\Controllers\RepositorioController::show
-* @see app/Http/Controllers/RepositorioController.php:78
+* @see app/Http/Controllers/RepositorioController.php:80
 * @route '/repositorio/{expediente}'
 */
 showForm.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

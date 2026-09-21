@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use Database\Factories\MunicipioFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Municipio extends Model
 {
     /** @use HasFactory<MunicipioFactory> */
-    use HasFactory;
+    use Auditable, HasFactory;
 
     protected $table = 'municipios';
 
@@ -58,5 +59,15 @@ class Municipio extends Model
     public function estaEnUso(): bool
     {
         return $this->ubicaciones()->withTrashed()->exists();
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Municipios';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'el municipio «'.$this->nombre.'» ('.$this->codigo.')';
     }
 }

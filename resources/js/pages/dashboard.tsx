@@ -5,12 +5,14 @@ import {
     BookOpen,
     Database,
     GraduationCap,
+    ScrollText,
     UserCog,
     Users,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { dashboard, documentacion } from '@/routes';
 import { datos } from '@/routes/admin';
+import { index as bitacora } from '@/routes/admin/bitacora';
 import { index as usuarios } from '@/routes/admin/usuarios';
 import { index as estadisticas } from '@/routes/estadisticas';
 import { acceso } from '@/routes/estudiante';
@@ -61,6 +63,12 @@ export default function Dashboard() {
                 titulo: 'Manejo de datos',
                 texto: 'Administra los catálogos que usan los estudiantes en sus formularios.',
                 href: datos(),
+            },
+            {
+                icono: ScrollText,
+                titulo: 'Bitácora',
+                texto: 'Quién creó, editó o eliminó cada registro, con su correo, fecha y módulo.',
+                href: bitacora(),
             },
         );
     }

@@ -1,4 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import bitacora from './bitacora'
 import departamentos from './departamentos'
 import municipios from './municipios'
 import unidades from './unidades'
@@ -87,6 +88,7 @@ datos.form = datosForm
 
 const admin = {
     datos: Object.assign(datos, datos),
+    bitacora: Object.assign(bitacora, bitacora),
     departamentos: Object.assign(departamentos, departamentos),
     municipios: Object.assign(municipios, municipios),
     unidades: Object.assign(unidades, unidades),

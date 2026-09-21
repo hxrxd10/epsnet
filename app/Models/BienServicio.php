@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use App\Enums\TipoBienServicio;
 use Database\Factories\BienServicioFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -35,7 +37,7 @@ use Illuminate\Support\Carbon;
 class BienServicio extends Model
 {
     /** @use HasFactory<BienServicioFactory> */
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -63,5 +65,15 @@ class BienServicio extends Model
     public function catalogo(): BelongsTo
     {
         return $this->belongsTo(Catalogo::class);
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Bienes y servicios';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'el '.mb_strtolower($this->tipo->etiqueta()).' «'.Str::limit($this->descripcion, 70).'» del '.$this->expediente?->resumenBitacora();
     }
 }

@@ -4,7 +4,18 @@ import { useState } from 'react';
 import DetalleEjes from '@/components/expediente/detalle-ejes';
 import type { EjeDetalle } from '@/components/expediente/detalle-ejes';
 import EstadoBadge from '@/components/expediente/estado-expediente';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { dashboard } from '@/routes';
 import { index } from '@/routes/panel/estudiantes';
@@ -23,6 +34,7 @@ type Props = {
         unidad: string;
         estado: EstadoExpediente;
         estado_etiqueta: string;
+        es_epsum: boolean;
         completado_at: string | null;
         verificado_at: string | null;
         verificado_por: string | null;
@@ -50,17 +62,35 @@ export default function Estudiante({
     puedeVerificar,
 }: Props) {
     const [procesando, setProcesando] = useState(false);
+    const [aprobando, setAprobando] = useState(false);
+    const [acepto, setAcepto] = useState(false);
     const verificado = expediente.estado === 'verificado';
 
     function cambiarAprobacion() {
-        const accion = verificado
-            ? destroy(expediente.id)
-            : store(expediente.id);
+        if (!verificado) {
+            setAcepto(false);
+            setAprobando(true);
 
+            return;
+        }
+
+        enviar(destroy(expediente.id), {});
+    }
+
+    function confirmarAprobacion() {
+        enviar(store(expediente.id), { acepto: true });
+    }
+
+    function enviar(
+        accion: { url: string; method: 'post' | 'delete' },
+        datos: Record<string, boolean>,
+    ) {
         router.visit(accion.url, {
             method: accion.method,
+            data: datos,
             preserveScroll: true,
             onStart: () => setProcesando(true),
+            onSuccess: () => setAprobando(false),
             onFinish: () => setProcesando(false),
         });
     }
@@ -79,6 +109,9 @@ export default function Estudiante({
                                 estado={expediente.estado}
                                 etiqueta={expediente.estado_etiqueta}
                             />
+                            {expediente.es_epsum && (
+                                <Badge variant="outline">EPSUM</Badge>
+                            )}
                         </div>
                         <p className="text-muted-foreground mt-1 text-sm">
                             <span className="font-mono">
@@ -112,6 +145,50 @@ export default function Estudiante({
                     )}
                 </div>
 
+                <Dialog open={aprobando} onOpenChange={setAprobando}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Aprobar EPS</DialogTitle>
+                            <DialogDescription>
+                                {expediente.estudiante} · {expediente.carrera}.
+                                Al aprobarlo, el EPS aparece en el repositorio.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex items-start gap-3">
+                            <Checkbox
+                                id="acepto"
+                                checked={acepto}
+                                onCheckedChange={(marcado) =>
+                                    setAcepto(marcado === true)
+                                }
+                            />
+                            <Label
+                                htmlFor="acepto"
+                                className="leading-snug font-normal"
+                            >
+                                Acepto que los bienes y servicios y todo lo
+                                descrito en este EPS está comprobado y que se
+                                ejecutó.
+                            </Label>
+                        </div>
+                        <DialogFooter>
+                            <Button
+                                variant="outline"
+                                onClick={() => setAprobando(false)}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                disabled={!acepto || procesando}
+                                onClick={confirmarAprobacion}
+                            >
+                                {procesando ? <Spinner /> : <BadgeCheck />}
+                                Aprobar EPS
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
                 <section className="border-sidebar-border/70 grid gap-4 rounded-xl border p-5 text-sm sm:grid-cols-3">
                     <div>
                         <p className="text-muted-foreground font-mono text-[11px] tracking-wider uppercase">
@@ -132,6 +209,12 @@ export default function Estudiante({
                                 ? `${fecha(expediente.verificado_at)}${expediente.verificado_por ? ` por ${expediente.verificado_por}` : ''}`
                                 : 'Pendiente'}
                         </p>
+                        {expediente.verificado_at && (
+                            <p className="text-muted-foreground mt-1 text-xs">
+                                Confirmó que lo descrito está comprobado y que
+                                se ejecutó.
+                            </p>
+                        )}
                     </div>
                     <div>
                         <p className="text-muted-foreground font-mono text-[11px] tracking-wider uppercase">

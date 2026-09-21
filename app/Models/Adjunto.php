@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use Database\Factories\AdjuntoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -43,7 +44,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class Adjunto extends Model
 {
     /** @use HasFactory<AdjuntoFactory> */
-    use HasFactory;
+    use Auditable, HasFactory;
 
     public const string ORDEN_IMPRESION = 'orden_impresion';
 
@@ -105,5 +106,17 @@ class Adjunto extends Model
                 'Content-Length' => (string) strlen($bytes),
             ],
         );
+    }
+
+    public function moduloBitacora(): string
+    {
+        return $this->categoria === self::ORDEN_IMPRESION ? 'Orden de impresión' : 'Adjuntos';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        $entidad = $this->entidad;
+
+        return "el archivo «{$this->nombre_original}»".($entidad instanceof Expediente ? " del {$entidad->resumenBitacora()}" : '');
     }
 }

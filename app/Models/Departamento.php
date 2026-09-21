@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use Database\Factories\DepartamentoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Departamento extends Model
 {
     /** @use HasFactory<DepartamentoFactory> */
-    use HasFactory;
+    use Auditable, HasFactory;
 
     /**
      * @return HasMany<Municipio, $this>
@@ -37,5 +38,15 @@ class Departamento extends Model
     {
         return $this->municipios()->exists()
             || UbicacionTerritorial::withTrashed()->where('departamento_id', $this->id)->exists();
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Departamentos';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'el departamento «'.$this->nombre.'»';
     }
 }

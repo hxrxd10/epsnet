@@ -178,7 +178,7 @@ describe('aprobación (doble verificación)', function () {
         $coordinador = usuarioDeUnidad($unidad);
         $this->actingAs($coordinador);
 
-        $this->post(route('panel.estudiantes.verificacion.store', $expediente))
+        $this->post(route('panel.estudiantes.verificacion.store', $expediente), ['acepto' => true])
             ->assertRedirect(route('panel.estudiantes.show', $expediente));
 
         expect($expediente->fresh())
@@ -191,7 +191,7 @@ describe('aprobación (doble verificación)', function () {
         $expediente = expedienteDeUnidad(UnidadAcademica::factory()->create(), ['estado_expediente' => EstadoExpediente::Completo]);
         $this->actingAs(User::factory()->administrador()->create());
 
-        $this->post(route('panel.estudiantes.verificacion.store', $expediente));
+        $this->post(route('panel.estudiantes.verificacion.store', $expediente), ['acepto' => true]);
         expect($expediente->fresh()->estado_expediente)->toBe(EstadoExpediente::Verificado);
 
         $this->delete(route('panel.estudiantes.verificacion.destroy', $expediente));
@@ -200,6 +200,19 @@ describe('aprobación (doble verificación)', function () {
             ->verificado_at->toBeNull()
             ->verificado_por->toBeNull();
     });
+
+    it('exige confirmar que lo descrito está comprobado y se ejecutó', function (array $cuerpo) {
+        $expediente = expedienteDeUnidad(UnidadAcademica::factory()->create(), ['estado_expediente' => EstadoExpediente::Completo]);
+        $this->actingAs(User::factory()->administrador()->create());
+
+        $this->post(route('panel.estudiantes.verificacion.store', $expediente), $cuerpo)
+            ->assertSessionHasErrors(['acepto' => 'Confirma que lo descrito en el EPS está comprobado y que se ejecutó para poder aprobarlo.']);
+
+        expect($expediente->fresh()->estado_expediente)->toBe(EstadoExpediente::Completo);
+    })->with([
+        'sin el acepto' => [[]],
+        'con el acepto en falso' => [['acepto' => false]],
+    ]);
 
     it('no permite aprobar un EPS que el estudiante aún no completa', function () {
         $expediente = expedienteDeUnidad(UnidadAcademica::factory()->create());

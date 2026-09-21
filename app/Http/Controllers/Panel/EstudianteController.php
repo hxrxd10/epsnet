@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panel;
 use App\Actions\Expedientes\ArmarDetalleExpediente;
 use App\Enums\Eje;
 use App\Enums\EstadoExpediente;
+use App\Enums\ProgramaEps;
 use App\Http\Controllers\Controller;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
@@ -57,6 +58,7 @@ class EstudianteController extends Controller
                 'unidad' => $expediente->unidadAcademica->nombre,
                 'estado' => $expediente->estado_expediente->value,
                 'estado_etiqueta' => $expediente->estado_expediente->etiqueta(),
+                'es_epsum' => $expediente->programa === ProgramaEps::Epsum,
                 'registros' => collect(Eje::cases())->sum(fn (Eje $eje): int => (int) $expediente->getAttribute(str($eje->relacion())->snake().'_count')),
                 'actualizado' => $expediente->updated_at?->toDateString(),
             ])->values(),
@@ -93,6 +95,7 @@ class EstudianteController extends Controller
                 'unidad' => $expediente->unidadAcademica->nombre,
                 'estado' => $expediente->estado_expediente->value,
                 'estado_etiqueta' => $expediente->estado_expediente->etiqueta(),
+                'es_epsum' => $expediente->programa === ProgramaEps::Epsum,
                 'completado_at' => $expediente->completado_at?->toIso8601String(),
                 'verificado_at' => $expediente->verificado_at?->toIso8601String(),
                 'verificado_por' => $expediente->verificadoPor?->name,

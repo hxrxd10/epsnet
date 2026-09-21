@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BitacoraController;
 use App\Http\Controllers\Admin\CatalogoController;
 use App\Http\Controllers\Admin\DepartamentoController;
 use App\Http\Controllers\Admin\ManejoDatosController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin\UnidadAcademicaController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\EstadisticaController;
+use App\Http\Controllers\EstadisticaPdfController;
 use App\Http\Controllers\Panel\EstudianteController;
 use App\Http\Controllers\Panel\OrdenImpresionController as PanelOrdenImpresionController;
 use App\Http\Controllers\Panel\VerificacionExpedienteController;
@@ -26,7 +28,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('documentacion', 'documentacion')->name('documentacion');
 
     Route::get('estadisticas', [EstadisticaController::class, 'index'])->name('estadisticas.index');
+    Route::get('estadisticas/pdf', [EstadisticaPdfController::class, 'index'])->name('estadisticas.pdf');
     Route::get('estadisticas/departamentos/{departamento:codigo}', [EstadisticaController::class, 'departamento'])->name('estadisticas.departamento');
+    Route::get('estadisticas/departamentos/{departamento:codigo}/pdf', [EstadisticaPdfController::class, 'departamento'])->name('estadisticas.departamento.pdf');
 
     Route::get('repositorio', [RepositorioController::class, 'index'])->name('repositorio.index');
     Route::get('repositorio/{expediente}', [RepositorioController::class, 'show'])->name('repositorio.show');
@@ -47,6 +51,7 @@ Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica'])->prefix('e
 // Manejo de datos: solo para administradores (DIGEU).
 Route::middleware(['auth', 'verified', 'rol:digeu'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('datos', [ManejoDatosController::class, 'index'])->name('datos');
+    Route::get('bitacora', [BitacoraController::class, 'index'])->name('bitacora.index');
 
     Route::resource('departamentos', DepartamentoController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('municipios', MunicipioController::class)->only(['index', 'store', 'update', 'destroy']);

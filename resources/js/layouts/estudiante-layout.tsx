@@ -80,6 +80,11 @@ export default function EstudianteLayout({
                                 <span className="rounded-full border border-white/25 px-2.5 py-0.5 text-[10px] tracking-wider text-white/80">
                                     {expediente.estado_etiqueta}
                                 </span>
+                                {expediente.es_epsum && (
+                                    <span className="rounded-full border border-white/25 bg-white/10 px-2.5 py-0.5 text-[10px] tracking-wider text-white">
+                                        EPSUM
+                                    </span>
+                                )}
                             </p>
                         )}
                         <h1 className="text-[clamp(1.8rem,4vw,2.8rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance">

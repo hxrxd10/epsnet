@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::index
-* @see app/Http/Controllers/EstadisticaController.php:16
+* @see app/Http/Controllers/EstadisticaController.php:19
 * @route '/estadisticas'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 export const departamento = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ departamento.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamento.url = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions) => {
@@ -130,7 +130,7 @@ departamento.url = (args: { departamento: string | number | { codigo: string | n
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamento.get = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -140,7 +140,7 @@ departamento.get = (args: { departamento: string | number | { codigo: string | n
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamento.head = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -150,7 +150,7 @@ departamento.head = (args: { departamento: string | number | { codigo: string | 
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 const departamentoForm = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -160,7 +160,7 @@ const departamentoForm = (args: { departamento: string | number | { codigo: stri
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamentoForm.get = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -170,7 +170,7 @@ departamentoForm.get = (args: { departamento: string | number | { codigo: string
 
 /**
 * @see \App\Http\Controllers\EstadisticaController::departamento
-* @see app/Http/Controllers/EstadisticaController.php:30
+* @see app/Http/Controllers/EstadisticaController.php:33
 * @route '/estadisticas/departamentos/{departamento}'
 */
 departamentoForm.head = (args: { departamento: string | number | { codigo: string | number } } | [departamento: string | number | { codigo: string | number } ] | string | number | { codigo: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

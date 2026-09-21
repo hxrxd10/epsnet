@@ -7,6 +7,7 @@ use App\Http\Controllers\Estudiante\CierreExpedienteController;
 use App\Http\Controllers\Estudiante\CuentaController;
 use App\Http\Controllers\Estudiante\ExpedienteController;
 use App\Http\Controllers\Estudiante\OrdenImpresionController;
+use App\Http\Controllers\Estudiante\ProgramaExpedienteController;
 use App\Http\Controllers\Estudiante\PublicacionInvestigacionController;
 use App\Http\Controllers\Estudiante\SeguimientoImpactoController;
 use App\Http\Controllers\Estudiante\TransferenciaConocimientoController;
@@ -49,6 +50,8 @@ Route::prefix('estudiante')->name('estudiante.')->group(function () {
                     ->only(['index', 'store', 'update', 'destroy'])
                     ->parameters([$segmento => 'registro']);
             }
+
+            Route::put('expedientes/{expediente}/programa', [ProgramaExpedienteController::class, 'update'])->name('expedientes.programa.update');
 
             Route::get('expedientes/{expediente}/cierre', [CierreExpedienteController::class, 'index'])->name('expedientes.cierre.index');
             Route::post('expedientes/{expediente}/cierre', [CierreExpedienteController::class, 'store'])->name('expedientes.cierre.store');

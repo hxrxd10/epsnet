@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use App\Enums\ClaveRol;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
@@ -35,7 +37,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use Auditable, HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * Get the attributes that should be cast.
@@ -98,5 +100,37 @@ class User extends Authenticatable implements MustVerifyEmail
     public function esUnidadAcademica(): bool
     {
         return $this->tieneRol(ClaveRol::UnidadAcademica);
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Usuarios';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return "al usuario {$this->name} ({$this->email})";
+    }
+
+    /**
+     * @param  array<string, mixed>  $valores
+     * @return array<string, mixed>
+     */
+    protected function valoresBitacora(array $valores): array
+    {
+        if (array_key_exists('rol_id', $valores)) {
+            $valores['rol'] = Rol::find($valores['rol_id'])?->clave;
+            unset($valores['rol_id']);
+        }
+
+        return $valores;
+    }
+
+    /**
+     * Quien se registra por su cuenta aún no tiene sesión: el cambio es suyo.
+     */
+    protected function actorBitacora(): ?self
+    {
+        return Auth::check() ? null : $this;
     }
 }

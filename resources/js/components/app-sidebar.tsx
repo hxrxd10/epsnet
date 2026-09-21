@@ -4,6 +4,7 @@ import {
     BookMarked,
     BookOpen,
     Database,
+    ScrollText,
     LayoutGrid,
     UserCog,
     Users,
@@ -22,6 +23,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard, documentacion } from '@/routes';
 import { datos } from '@/routes/admin';
+import { index as bitacora } from '@/routes/admin/bitacora';
 import { index as usuarios } from '@/routes/admin/usuarios';
 import { index as estadisticas } from '@/routes/estadisticas';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
@@ -48,6 +50,7 @@ function opcionesDeAdministracion(rol: string | null): NavItem[] {
             estudiantesYEps,
             { title: 'Usuarios', href: usuarios(), icon: UserCog },
             { title: 'Manejo de datos', href: datos(), icon: Database },
+            { title: 'Bitácora', href: bitacora(), icon: ScrollText },
         ];
     }
 

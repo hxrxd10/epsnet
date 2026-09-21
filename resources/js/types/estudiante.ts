@@ -17,6 +17,7 @@ export type ExpedienteResumen = {
     nivel_academico: string | null;
     estado: EstadoExpediente;
     estado_etiqueta: string;
+    es_epsum: boolean;
 };
 
 export type PasoEje = {

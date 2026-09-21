@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use Database\Factories\InstitucionReceptoraFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -31,7 +32,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class InstitucionReceptora extends Model
 {
     /** @use HasFactory<InstitucionReceptoraFactory> */
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
 
     /**
      * @return HasMany<ActorParticipante, $this>
@@ -39,5 +40,15 @@ class InstitucionReceptora extends Model
     public function actores(): HasMany
     {
         return $this->hasMany(ActorParticipante::class);
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Instituciones receptoras';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'la institución «'.$this->nombre.'»';
     }
 }

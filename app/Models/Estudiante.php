@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use App\Services\RegistroAcademico\DetalleAcademico;
 use Database\Factories\EstudianteFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -49,7 +50,7 @@ use Illuminate\Support\Collection;
 class Estudiante extends Model
 {
     /** @use HasFactory<EstudianteFactory> */
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -102,5 +103,23 @@ class Estudiante extends Model
             $this->apellido1,
             $this->apellido2,
         ])->filter()->implode(' '));
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Estudiantes';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'al estudiante '.$this->nombre_completo.' (carné '.$this->carnet.')';
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function atributosNoAuditablesPropios(): array
+    {
+        return ['ultima_consulta_at'];
     }
 }

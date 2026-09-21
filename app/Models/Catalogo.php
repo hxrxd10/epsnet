@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use App\Enums\TipoCatalogo;
 use Database\Factories\CatalogoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -25,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Catalogo extends Model
 {
     /** @use HasFactory<CatalogoFactory> */
-    use HasFactory;
+    use Auditable, HasFactory;
 
     /**
      * @var array<string, mixed>
@@ -86,5 +87,15 @@ class Catalogo extends Model
     {
         return $this->bienesServicios()->withTrashed()->exists()
             || $this->transferencias()->withTrashed()->exists();
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Catálogo: '.$this->catalogo->etiqueta();
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'el elemento «'.$this->nombre.'»';
     }
 }

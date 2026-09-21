@@ -22,6 +22,7 @@ type Tarjeta = {
     estudiante: string;
     carrera: string;
     unidad: string;
+    es_epsum: boolean;
     ubicacion: string;
     descripcion: string | null;
     bienes_servicios: number;
@@ -134,6 +135,14 @@ export default function Repositorio({
                                     </p>
                                     <h2 className="mt-2 leading-snug font-semibold">
                                         {tarjeta.carrera}
+                                        {tarjeta.es_epsum && (
+                                            <Badge
+                                                variant="outline"
+                                                className="ml-2 align-middle"
+                                            >
+                                                EPSUM
+                                            </Badge>
+                                        )}
                                     </h2>
                                     <p className="text-muted-foreground mt-1 text-sm">
                                         {tarjeta.estudiante}

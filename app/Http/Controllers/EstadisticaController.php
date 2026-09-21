@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Estadisticas\CalcularEstadisticas;
+use App\Concerns\LeeFiltrosEstadisticos;
 use App\Models\Departamento;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -10,6 +11,8 @@ use Inertia\Response;
 
 class EstadisticaController extends Controller
 {
+    use LeeFiltrosEstadisticos;
+
     /**
      * Mapa de Guatemala con las estadísticas consolidadas por departamento.
      */
@@ -37,41 +40,5 @@ class EstadisticaController extends Controller
             ...$estadisticas->opciones($filtros),
             'filtros' => $this->paraCliente($filtros),
         ]);
-    }
-
-    /**
-     * Filtros validados; una carrera que no pertenece a la unidad elegida se descarta.
-     *
-     * @return array{anio: int|null, unidad: int|null, carrera: string|null}
-     */
-    private function filtros(Request $request, CalcularEstadisticas $estadisticas): array
-    {
-        $datos = $request->validate([
-            'anio' => ['nullable', 'integer', 'between:2000,2100'],
-            'unidad' => ['nullable', 'integer', 'exists:unidades_academicas,id'],
-            'carrera' => ['nullable', 'string', 'max:500'],
-        ]);
-
-        $unidad = isset($datos['unidad']) ? (int) $datos['unidad'] : null;
-        $carrera = $datos['carrera'] ?? null;
-
-        return [
-            'anio' => isset($datos['anio']) ? (int) $datos['anio'] : null,
-            'unidad' => $unidad,
-            'carrera' => $carrera !== null && $estadisticas->carreras($unidad)->contains($carrera) ? $carrera : null,
-        ];
-    }
-
-    /**
-     * @param  array{anio: int|null, unidad: int|null, carrera: string|null}  $filtros
-     * @return array{anio: string, unidad: string, carrera: string}
-     */
-    private function paraCliente(array $filtros): array
-    {
-        return [
-            'anio' => (string) ($filtros['anio'] ?? ''),
-            'unidad' => (string) ($filtros['unidad'] ?? ''),
-            'carrera' => $filtros['carrera'] ?? '',
-        ];
     }
 }

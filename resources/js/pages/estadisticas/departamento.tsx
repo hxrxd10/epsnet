@@ -1,10 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ExternalLink, FileDown } from 'lucide-react';
 import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadisticos';
 import { METRICAS, formatearNumero } from '@/components/estadisticas/metricas';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
 import { departamento as rutaDepartamento, index } from '@/routes/estadisticas';
+import { pdf } from '@/routes/estadisticas/departamento';
 import type {
     FiltrosEstadisticos,
     ItemBienServicio,
@@ -108,13 +110,29 @@ export default function EstadisticasDepartamento({
                     </p>
                 </div>
 
-                <FiltrosEstadisticosBarra
-                    url={rutaDepartamento.url(departamento.codigo)}
-                    filtros={filtros}
-                    anios={anios}
-                    unidades={unidades}
-                    carreras={carreras}
-                />
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                    <FiltrosEstadisticosBarra
+                        url={rutaDepartamento.url(departamento.codigo)}
+                        filtros={filtros}
+                        anios={anios}
+                        unidades={unidades}
+                        carreras={carreras}
+                    />
+                    <Button asChild variant="outline">
+                        <a
+                            href={pdf.url(departamento.codigo, {
+                                query: Object.fromEntries(
+                                    Object.entries(filtros).filter(
+                                        ([, valor]) => valor !== '',
+                                    ),
+                                ),
+                            })}
+                        >
+                            <FileDown />
+                            Generar PDF
+                        </a>
+                    </Button>
+                </div>
 
                 <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
                     {METRICAS.map((item) => (

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::store
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:18
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
 export const store = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::store
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:18
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
 store.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { expediente: string | number | { id: string | number } } | [
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::store
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:18
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
 store.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { expediente: string | number | { id: string | number } } | 
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::store
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:18
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
 const storeForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storeForm = (args: { expediente: string | number | { id: string | number }
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::store
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:18
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:20
 * @route '/estudiantes/{expediente}/verificacion'
 */
 storeForm.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -81,7 +81,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:34
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
 * @route '/estudiantes/{expediente}/verificacion'
 */
 export const destroy = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -96,7 +96,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:34
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
 * @route '/estudiantes/{expediente}/verificacion'
 */
 destroy.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -129,7 +129,7 @@ destroy.url = (args: { expediente: string | number | { id: string | number } } |
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:34
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
 * @route '/estudiantes/{expediente}/verificacion'
 */
 destroy.delete = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -139,7 +139,7 @@ destroy.delete = (args: { expediente: string | number | { id: string | number } 
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:34
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
 * @route '/estudiantes/{expediente}/verificacion'
 */
 const destroyForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -154,7 +154,7 @@ const destroyForm = (args: { expediente: string | number | { id: string | number
 
 /**
 * @see \App\Http\Controllers\Panel\VerificacionExpedienteController::destroy
-* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:34
+* @see app/Http/Controllers/Panel/VerificacionExpedienteController.php:48
 * @route '/estudiantes/{expediente}/verificacion'
 */
 destroyForm.delete = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

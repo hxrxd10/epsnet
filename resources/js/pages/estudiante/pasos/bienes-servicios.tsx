@@ -5,6 +5,7 @@ import {
     update,
 } from '@/actions/App/Http/Controllers/Estudiante/BienServicioController';
 import PasoCrud from '@/components/estudiante/paso-crud';
+import ProgramaEps from '@/components/estudiante/programa-eps';
 import type { Campo } from '@/components/estudiante/paso-crud';
 import ResumenRegistro from '@/components/estudiante/resumen-registro';
 import EstudianteLayout from '@/layouts/estudiante-layout';
@@ -94,6 +95,11 @@ export default function BienesServicios({
             descripcion="Registra lo que produjiste para las comunidades durante tu ejercicio: materiales, obras, servicios, atención directa y más."
         >
             <Head title="Bienes y servicios generados" />
+
+            <ProgramaEps
+                expedienteId={expediente.id}
+                esEpsum={expediente.es_epsum}
+            />
 
             <PasoCrud<Registro>
                 etiquetaRegistro="bien o servicio"

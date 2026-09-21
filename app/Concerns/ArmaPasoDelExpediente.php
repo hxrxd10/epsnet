@@ -3,6 +3,7 @@
 namespace App\Concerns;
 
 use App\Enums\Eje;
+use App\Enums\ProgramaEps;
 use App\Models\Expediente;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
@@ -69,6 +70,7 @@ trait ArmaPasoDelExpediente
                 'nivel_academico' => $expediente->nivel_academico,
                 'estado' => $expediente->estado_expediente->value,
                 'estado_etiqueta' => $expediente->estado_expediente->etiqueta(),
+                'es_epsum' => $expediente->programa === ProgramaEps::Epsum,
             ],
             'eje' => $eje,
             'pasos' => $pasos,

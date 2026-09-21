@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
 import EstadoBadge from '@/components/expediente/estado-expediente';
+import { Badge } from '@/components/ui/badge';
 import Paginacion from '@/components/paginacion';
 import type { Pagina } from '@/components/paginacion';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ type Fila = {
     unidad: string;
     estado: EstadoExpediente;
     estado_etiqueta: string;
+    es_epsum: boolean;
     registros: number;
     actualizado: string | null;
 };
@@ -189,6 +191,11 @@ export default function Estudiantes({
                                                 ? 'registro'
                                                 : 'registros'}
                                         </span>
+                                        {fila.es_epsum && (
+                                            <Badge variant="outline">
+                                                EPSUM
+                                            </Badge>
+                                        )}
                                         <EstadoBadge
                                             estado={fila.estado}
                                             etiqueta={fila.estado_etiqueta}

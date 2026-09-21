@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowRight, MapPin } from 'lucide-react';
+import { ArrowRight, FileDown, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadisticos';
 import MapaEstadistico from '@/components/estadisticas/mapa-estadistico';
@@ -8,7 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import { departamento as rutaDepartamento, index } from '@/routes/estadisticas';
+import {
+    departamento as rutaDepartamento,
+    index,
+    pdf,
+} from '@/routes/estadisticas';
 import type {
     ClaveMetrica,
     DepartamentoEstadistico,
@@ -56,13 +60,25 @@ export default function Estadisticas({
                     </p>
                 </div>
 
-                <FiltrosEstadisticosBarra
-                    url={index.url()}
-                    filtros={filtros}
-                    anios={anios}
-                    unidades={unidades}
-                    carreras={carreras}
-                />
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                    <FiltrosEstadisticosBarra
+                        url={index.url()}
+                        filtros={filtros}
+                        anios={anios}
+                        unidades={unidades}
+                        carreras={carreras}
+                    />
+                    <Button asChild variant="outline">
+                        <a
+                            href={pdf.url({
+                                query: { ...consulta, metrica: clave },
+                            })}
+                        >
+                            <FileDown />
+                            Generar PDF
+                        </a>
+                    </Button>
+                </div>
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]">
                     <section

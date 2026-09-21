@@ -85,7 +85,7 @@ index.form = indexForm
 * @see app/Http/Controllers/Admin/UsuarioController.php:76
 * @route '/admin/usuarios/{usuario}'
 */
-export const update = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { usuario: string | number | { id: string | number } } | [usuario: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -100,7 +100,7 @@ update.definition = {
 * @see app/Http/Controllers/Admin/UsuarioController.php:76
 * @route '/admin/usuarios/{usuario}'
 */
-update.url = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+update.url = (args: { usuario: string | number | { id: string | number } } | [usuario: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { usuario: args }
     }
@@ -133,7 +133,7 @@ update.url = (args: { usuario: number | { id: number } } | [usuario: number | { 
 * @see app/Http/Controllers/Admin/UsuarioController.php:76
 * @route '/admin/usuarios/{usuario}'
 */
-update.put = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { usuario: string | number | { id: string | number } } | [usuario: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -143,7 +143,7 @@ update.put = (args: { usuario: number | { id: number } } | [usuario: number | { 
 * @see app/Http/Controllers/Admin/UsuarioController.php:76
 * @route '/admin/usuarios/{usuario}'
 */
-const updateForm = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const updateForm = (args: { usuario: string | number | { id: string | number } } | [usuario: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -158,7 +158,7 @@ const updateForm = (args: { usuario: number | { id: number } } | [usuario: numbe
 * @see app/Http/Controllers/Admin/UsuarioController.php:76
 * @route '/admin/usuarios/{usuario}'
 */
-updateForm.put = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.put = (args: { usuario: string | number | { id: string | number } } | [usuario: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Expedientes\ArmarDetalleExpediente;
 use App\Enums\Eje;
 use App\Enums\EstadoExpediente;
+use App\Enums\ProgramaEps;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
 use Illuminate\Http\Request;
@@ -56,6 +57,7 @@ class RepositorioController extends Controller
                 'estudiante' => $expediente->estudiante->nombre_completo,
                 'carrera' => $expediente->nombre_carrera,
                 'unidad' => $expediente->unidadAcademica->nombre,
+                'es_epsum' => $expediente->programa === ProgramaEps::Epsum,
                 'ubicacion' => $expediente->ubicaciones->map(fn ($ubicacion): string => collect([$ubicacion->municipio?->nombre, $ubicacion->departamento->nombre])->filter()->implode(', '))->unique()->take(2)->implode(' · '),
                 'descripcion' => $this->descripcion($expediente),
                 'bienes_servicios' => $expediente->bienes_servicios_count,

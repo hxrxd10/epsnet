@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use Database\Factories\ActorParticipanteFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ActorParticipante extends Model
 {
     /** @use HasFactory<ActorParticipanteFactory> */
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -53,5 +54,15 @@ class ActorParticipante extends Model
     public function institucionReceptora(): BelongsTo
     {
         return $this->belongsTo(InstitucionReceptora::class);
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Actores y participantes';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'el actor «'.$this->institucionReceptora?->nombre.'» (contraparte '.$this->contraparte.') del '.$this->expediente?->resumenBitacora();
     }
 }

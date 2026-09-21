@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Concerns\Auditable;
 use App\Enums\EstadoExpediente;
 use App\Enums\ProgramaEps;
+use App\Enums\TipoCambioBitacora;
 use Database\Factories\ExpedienteFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -61,8 +63,11 @@ use Illuminate\Support\Carbon;
 ])]
 class Expediente extends Model
 {
+    /** Lo que confirma quien aprueba el EPS; queda anotado en la bitácora. */
+    public const string CONSTANCIA_APROBACION = 'Confirmo que los bienes y servicios y todo lo descrito en este EPS está comprobado y que se ejecutó.';
+
     /** @use HasFactory<ExpedienteFactory> */
-    use HasFactory;
+    use Auditable, HasFactory;
 
     /**
      * @var array<string, mixed>
@@ -238,5 +243,47 @@ class Expediente extends Model
     public function verificadoPor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verificado_por');
+    }
+
+    /**
+     * «EPS de Juan Pérez (Licenciatura en Pedagogía)»: cómo se nombra este EPS en la bitácora.
+     */
+    public function resumenBitacora(): string
+    {
+        return "EPS de {$this->estudiante?->nombre_completo} ({$this->nombre_carrera})";
+    }
+
+    public function moduloBitacora(): string
+    {
+        return 'Expedientes (EPS)';
+    }
+
+    protected function descripcionBitacora(): string
+    {
+        return 'el '.$this->resumenBitacora();
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function atributosNoAuditablesPropios(): array
+    {
+        return ['eje_actual', 'datos_epsum'];
+    }
+
+    /**
+     * Las aprobaciones y sus retiros los anota quien las hace, junto con la constancia del acepto.
+     *
+     * @param  array<string, mixed>  $cambios
+     */
+    protected function tipoBitacora(TipoCambioBitacora $tipo, array $cambios): ?TipoCambioBitacora
+    {
+        if (isset($cambios['estado_expediente'])
+            && ($cambios['estado_expediente'] === EstadoExpediente::Verificado->value
+                || $this->getRawOriginal('estado_expediente') === EstadoExpediente::Verificado->value)) {
+            return null;
+        }
+
+        return $tipo;
     }
 }
