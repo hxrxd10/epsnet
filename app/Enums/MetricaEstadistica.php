@@ -28,7 +28,7 @@ enum MetricaEstadistica: string
             self::Beneficiarios => 'Beneficiarios',
             self::Acciones => 'Acciones de transferencia',
             self::Participantes => 'Participantes',
-            self::Instituciones => 'Instituciones',
+            self::Instituciones => 'Instituciones aliadas',
             self::Estudiantes => 'Estudiantes',
             self::Eps => 'EPS',
         };

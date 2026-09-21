@@ -37,7 +37,7 @@ const GUIAS: Record<string, Guia> = {
                 pasos: [
                     'Entra a "Estadísticas": el mapa de Guatemala muestra lo que ha hecho la red de EPS en cada departamento.',
                     'Elige en la barra de la derecha qué quieres ver: investigaciones, bienes y servicios, beneficiarios, acciones, participantes, instituciones, estudiantes o EPS.',
-                    'Filtra por año (el de la orden de impresión), por unidad académica y por carrera. Al elegir una unidad, solo verás las carreras de esa unidad.',
+                    'Filtra por año (el de la orden de impresión o, si no la tiene, el de su aprobación), por unidad académica y por carrera. Al elegir una unidad, solo verás las carreras de esa unidad.',
                     'Haz clic en un departamento para ver sus investigaciones y sus principales bienes y servicios; con "Ver más" abres el detalle organizado por municipio.',
                     'Con "Generar PDF" descargas lo que estás viendo, con los filtros aplicados. También puedes generar el PDF de un departamento.',
                 ],
@@ -83,7 +83,8 @@ const GUIAS: Record<string, Guia> = {
                     'Publicaciones de investigación: título, tipo, autores, medio y, si lo tienes, el enlace.',
                     'Transferencia de conocimiento: capacitaciones, talleres o asesorías, con la comunidad y los participantes.',
                     'Territorio: elige el departamento y el municipio de la lista y, si quieres, marca el punto exacto en el mapa; el mapa sugiere el departamento y el municipio. La comunidad y la referencia son opcionales.',
-                    'Actores y participantes: la institución receptora (puedes reutilizar una ya registrada), tu contraparte y la comunidad beneficiada.',
+                    'Actores y participantes, primera parte: escribe la institución receptora (donde realizas tu EPS, puede ser cualquiera), tu contraparte y la comunidad beneficiada.',
+                    'Actores y participantes, segunda parte: agrega las instituciones aliadas, es decir, las que participaron o cooperaron con tu proyecto (un ministerio, una ONG, un socio). Las eliges del catálogo de DIGEU (si no aparece, pide que la agreguen) y, si quieres, describes su aporte.',
                     'Seguimiento e impacto: avances parciales durante el EPS y la evaluación de impacto al finalizar.',
                     'En cada eje puedes registrar varios elementos, editarlos o eliminarlos.',
                 ],
@@ -120,7 +121,7 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Aprobar un EPS',
                 pasos: [
-                    'Cuando el EPS esté completo, usa "Aprobar EPS".',
+                    'Cuando el EPS esté completo, usa "Aprobar EPS". Si el estudiante no tiene orden de impresión (por ejemplo, porque no hay un informe escrito), también puedes aprobarlo: basta con que tenga información registrada y con tu acepto.',
                     'Debes marcar el acepto: confirmas que los bienes y servicios y todo lo descrito en el EPS está comprobado y que se ejecutó. Sin el acepto no se puede aprobar.',
                     'El EPS queda verificado y aparece en el repositorio. La aprobación, con quién la hizo y su acepto, queda anotada en la bitácora.',
                     'Puedes retirar la aprobación si hace falta: el EPS vuelve a "Completo".',
@@ -156,6 +157,7 @@ const GUIAS: Record<string, Guia> = {
                 titulo: 'Manejo de datos',
                 pasos: [
                     'Catálogos del EPS: bienes y servicios, y acciones de transferencia. Lo que ya está en uso se desactiva en lugar de eliminarse.',
+                    'Instituciones aliadas: ministerios, ONG y socios que participaron o cooperaron con los proyectos. Los estudiantes las eligen de este catálogo y no pueden crearlas; son las que se cuantifican en las estadísticas. Una que ya figura en algún EPS no se elimina.',
                     'Departamentos y municipios: los estudiantes eligen su ubicación de estos catálogos. Cada uno lleva una coordenada de referencia que puedes marcar en el mapa.',
                     'Unidades académicas: facultades, escuelas y centros, con la ubicación de su edificio. Las unidades también se crean solas cuando un estudiante registra su carrera; aquí completas sus datos.',
                     'Un municipio o departamento con EPS registrados, y una unidad con EPS o con administrador, no se eliminan: se desactivan.',
@@ -164,7 +166,7 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Estadísticas y reportes',
                 pasos: [
-                    'El mapa consolida todo el país. Filtra por año (el de la orden de impresión), unidad académica y carrera, y elige qué mostrar.',
+                    'El mapa consolida todo el país. Filtra por año (el de la orden de impresión o, si no la tiene, el de su aprobación), unidad académica y carrera, y elige qué mostrar.',
                     'Cada departamento tiene su página con todo organizado por municipio: bienes y servicios e investigaciones.',
                     'Con "Generar PDF" descargas el reporte del país o de un departamento, con los filtros aplicados.',
                 ],
@@ -187,6 +189,37 @@ const GUIAS: Record<string, Guia> = {
     },
 };
 
+const CONCEPTOS = [
+    [
+        'Acción de transferencia',
+        'Cualquier forma de compartir conocimiento con una comunidad: capacitaciones, talleres, asesorías y también los documentos o materiales que generaste con ese fin (propuestas de ley, políticas, informes técnicos). Se registran en el eje de Transferencia de conocimiento; para un documento elige el tipo "Documento o material generado".',
+    ],
+    [
+        'Dónde va cada cosa',
+        'Lo que entregas o prestas a la comunidad (una biblioteca, filtros de agua, una jornada de salud) va en Bienes y servicios. Los documentos y materiales con los que transfieres conocimiento van en Transferencia. Una investigación (artículo, tesis, informe de investigación) va en Publicaciones de investigación.',
+    ],
+    [
+        'Participantes',
+        'Personas que participaron directamente en una acción de transferencia: las que asistieron al taller o capacitación, o recibieron el material. Se cuentan por actividad; quien asiste a dos actividades cuenta dos veces.',
+    ],
+    [
+        'Beneficiarios',
+        'Total estimado de personas que se benefician con un bien o servicio, directas e indirectas (por ejemplo, todas las familias de una comunidad que usan la biblioteca). Es el alcance del bien o servicio, no la asistencia a una actividad.',
+    ],
+    [
+        'Participantes y beneficiarios',
+        'Son conteos distintos y no se suman entre sí: los participantes salen de las acciones de transferencia (eje 3) y los beneficiarios, de los bienes y servicios (eje 1). Una misma persona puede aparecer en ambos.',
+    ],
+    [
+        'Institución receptora',
+        'La institución donde el estudiante realiza su EPS. Es una sola por EPS y la escribe el estudiante libremente; no forma parte de ningún catálogo ni se cuantifica.',
+    ],
+    [
+        'Instituciones aliadas',
+        'Las instituciones que participaron o cooperaron con el proyecto: un ministerio, una ONG, un socio. Se eligen de un catálogo que administra DIGEU y son las que se cuentan en las estadísticas (instituciones distintas). Si una no aparece, hay que pedir que la agreguen.',
+    ],
+];
+
 const ESTADOS = [
     ['En progreso', 'El estudiante todavía está llenando su información.'],
     [
@@ -195,7 +228,7 @@ const ESTADOS = [
     ],
     [
         'Verificado',
-        'La unidad académica lo aprobó, confirmando que lo descrito se ejecutó: aparece en el repositorio.',
+        'La unidad académica lo aprobó, confirmando que lo descrito se ejecutó: aparece en el repositorio. Se puede aprobar aun sin orden de impresión (por ejemplo, si no hay un informe escrito).',
     ],
 ];
 
@@ -280,6 +313,22 @@ export default function Documentacion() {
                         </div>
                     </>
                 )}
+
+                <section className="border-sidebar-border/70 rounded-xl border p-6">
+                    <h2 className="font-semibold">
+                        Conceptos que conviene tener claros
+                    </h2>
+                    <dl className="mt-3 grid gap-x-8 gap-y-4 text-sm lg:grid-cols-2">
+                        {CONCEPTOS.map(([termino, texto]) => (
+                            <div key={termino}>
+                                <dt className="font-medium">{termino}</dt>
+                                <dd className="text-muted-foreground mt-0.5 leading-relaxed">
+                                    {texto}
+                                </dd>
+                            </div>
+                        ))}
+                    </dl>
+                </section>
 
                 <div className="grid gap-4 lg:grid-cols-2">
                     <section className="border-sidebar-border/70 rounded-xl border p-6">

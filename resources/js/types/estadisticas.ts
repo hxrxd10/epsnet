@@ -39,11 +39,18 @@ export type Investigacion = {
     unidad: string;
 };
 
+export type InstitucionAliada = {
+    nombre: string;
+    tipo: string | null;
+    eps: number;
+};
+
 export type MunicipioEstadistico = {
     nombre: string;
     metricas: Metricas;
     bienes_servicios: ItemBienServicio[];
     investigaciones: Investigacion[];
+    instituciones: InstitucionAliada[];
 };
 
 export type FiltrosEstadisticos = {

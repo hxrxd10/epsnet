@@ -21,22 +21,26 @@ export const METRICAS: DefinicionMetrica[] = [
     {
         clave: 'beneficiarios',
         etiqueta: 'Beneficiarios',
-        descripcion: 'personas beneficiadas con bienes y servicios',
+        descripcion:
+            'personas beneficiadas, directas e indirectas, con los bienes y servicios',
     },
     {
         clave: 'acciones',
         etiqueta: 'Acciones de transferencia',
-        descripcion: 'capacitaciones, talleres y asesorías',
+        descripcion:
+            'capacitaciones, talleres, asesorías y documentos generados',
     },
     {
         clave: 'participantes',
         etiqueta: 'Participantes',
-        descripcion: 'personas que participaron en las acciones',
+        descripcion:
+            'personas que participaron directamente en las acciones de transferencia',
     },
     {
         clave: 'instituciones',
-        etiqueta: 'Instituciones',
-        descripcion: 'instituciones receptoras distintas',
+        etiqueta: 'Instituciones aliadas',
+        descripcion:
+            'instituciones que participaron o cooperaron con los proyectos',
     },
     {
         clave: 'estudiantes',

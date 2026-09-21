@@ -123,10 +123,10 @@ Actores del sistema:
 | Campo | Detalle |
 |---|---|
 | **Actor(es)** | Estudiante, Unidad Académica |
-| **Descripción** | Permite registrar a los actores involucrados en el EPS: comunidad, contraparte e institución receptora. |
+| **Descripción** | Permite registrar a los actores involucrados en el EPS: la institución receptora, la contraparte, la comunidad y las instituciones aliadas que participaron o cooperaron con el proyecto. |
 | **Precondiciones** | El estudiante debe tener su expediente activo. |
-| **Flujo principal** | 1. El estudiante accede al módulo del Eje 5.<br>2. Registra los datos de la institución receptora.<br>3. Registra la contraparte y la comunidad beneficiada.<br>4. El sistema guarda el registro de actores.<br>5. La unidad académica consulta los actores vinculados al EPS de sus estudiantes. |
-| **Flujos alternativos** | 2a. Institución receptora ya registrada por otro estudiante → el sistema permite reutilizar el registro existente. |
+| **Flujo principal** | 1. El estudiante accede al módulo del Eje 5.<br>2. Escribe la institución receptora (donde realiza su EPS), su contraparte y la comunidad beneficiada.<br>3. Agrega las instituciones aliadas eligiéndolas del catálogo de DIGEU y describe su aporte.<br>4. El sistema guarda el registro de actores y de alianzas.<br>5. La unidad académica consulta los actores vinculados al EPS de sus estudiantes. |
+| **Flujos alternativos** | 2a. La institución aliada no está en el catálogo → el estudiante no puede crearla; DIGEU la agrega al catálogo y el estudiante la elige. |
 | **Postcondiciones** | Los actores quedan registrados y vinculados al expediente del estudiante. |
 
 ---

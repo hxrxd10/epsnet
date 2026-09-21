@@ -1,11 +1,12 @@
 <?php
 
 use App\Models\ActorParticipante;
+use App\Models\Alianza;
 use App\Models\BienServicio;
 use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
-use App\Models\InstitucionReceptora;
+use App\Models\InstitucionAliada;
 use App\Models\Municipio;
 use App\Models\PublicacionInvestigacion;
 use App\Models\SeguimientoImpacto;
@@ -55,7 +56,7 @@ dataset('ejes', [
         'referencia' => 'A 2 km del centro de la aldea',
     ]],
     'actores' => ['actores', 'actores', ActorParticipante::class, 'contraparte', fn (): array => [
-        'institucion_receptora_id' => InstitucionReceptora::factory()->create()->id,
+        'institucion_receptora' => 'Escuela Oficial Rural Mixta Colonia Nueva Esperanza',
         'contraparte' => 'Directora María López',
         'comunidad_beneficiada' => 'Colonia Nueva Esperanza',
     ]],
@@ -184,7 +185,7 @@ it('exige los campos obligatorios de cada eje', function (string $segmento, arra
     'publicaciones' => ['publicaciones', ['titulo', 'tipo', 'autores']],
     'transferencias' => ['transferencias', ['tipo_actividad', 'actividad', 'comunidad', 'fecha']],
     'territorio' => ['territorio', ['departamento_id', 'municipio_id']],
-    'actores' => ['actores', ['institucion_nombre', 'contraparte', 'comunidad_beneficiada']],
+    'actores' => ['actores', ['institucion_receptora', 'contraparte', 'comunidad_beneficiada']],
     'seguimiento' => ['seguimiento', ['tipo_registro', 'indicador', 'fecha']],
 ]);
 
@@ -303,84 +304,130 @@ it('guarda la ubicación con la referencia territorial cuando no hay coordenadas
         ->referencia->toBe('Cerca del parque central');
 });
 
-it('registra una institución receptora nueva junto con los actores', function () {
-    $expediente = expedienteDelEstudiante();
+describe('institución receptora (la escribe el estudiante)', function () {
+    it('acepta cualquier nombre sin tocar el catálogo de instituciones aliadas', function () {
+        $expediente = expedienteDelEstudiante();
 
-    $this->post(route('estudiante.expedientes.actores.store', $expediente), [
-        'institucion_nombre' => 'Escuela Oficial Rural Mixta El Progreso',
-        'institucion_tipo' => 'Educación',
-        'institucion_correo_contacto' => 'director@escuela.example',
-        'contraparte' => 'Directora María López',
-        'comunidad_beneficiada' => 'Aldea El Progreso',
-    ])->assertSessionHasNoErrors();
+        $this->post(route('estudiante.expedientes.actores.store', $expediente), [
+            'institucion_receptora' => 'Escuela Oficial Rural Mixta El Progreso',
+            'contraparte' => 'Directora María López',
+            'comunidad_beneficiada' => 'Aldea El Progreso',
+        ])->assertSessionHasNoErrors();
 
-    $institucion = InstitucionReceptora::sole();
+        expect($expediente->actores()->sole()->institucion_receptora)->toBe('Escuela Oficial Rural Mixta El Progreso')
+            ->and(InstitucionAliada::count())->toBe(0);
+    });
 
-    expect($institucion)
-        ->nombre->toBe('Escuela Oficial Rural Mixta El Progreso')
-        ->tipo->toBe('Educación')
-        ->correo_contacto->toBe('director@escuela.example')
-        ->and($expediente->actores()->sole()->institucion_receptora_id)->toBe($institucion->id);
+    it('permite que dos estudiantes escriban la misma institución', function () {
+        $expediente = expedienteDelEstudiante();
+        Expediente::factory()->create()->actores()->create(['institucion_receptora' => 'Centro de Salud Zona 5', 'contraparte' => 'Dr. Ramírez', 'comunidad_beneficiada' => 'Zona 5']);
+
+        $this->post(route('estudiante.expedientes.actores.store', $expediente), [
+            'institucion_receptora' => 'Centro de Salud Zona 5',
+            'contraparte' => 'Enfermera Ortiz',
+            'comunidad_beneficiada' => 'Zona 5',
+        ])->assertSessionHasNoErrors();
+
+        expect($expediente->actores()->count())->toBe(1);
+    });
 });
 
-it('reutiliza la institución receptora ya registrada por otro estudiante', function () {
-    $expediente = expedienteDelEstudiante();
-    $existente = InstitucionReceptora::factory()->create(['nombre' => 'Centro de Salud Zona 5', 'tipo' => 'Salud']);
-    $otroExpediente = Expediente::factory()->create();
-    $otroExpediente->actores()->create([
-        'institucion_receptora_id' => $existente->id,
-        'contraparte' => 'Dr. Ramírez',
-        'comunidad_beneficiada' => 'Zona 5',
-    ]);
+describe('instituciones aliadas (del catálogo de DIGEU)', function () {
+    it('ofrece el catálogo ordenado por nombre, con su tipo, junto con las aliadas del EPS', function () {
+        $expediente = expedienteDelEstudiante();
+        $norte = InstitucionAliada::factory()->create(['nombre' => 'Ministerio de Salud', 'tipo' => 'Gobierno central']);
+        InstitucionAliada::factory()->create(['nombre' => 'Cruz Roja', 'tipo' => null]);
+        $expediente->alianzas()->create(['institucion_aliada_id' => $norte->id, 'aporte' => 'Vacunas']);
 
-    $this->post(route('estudiante.expedientes.actores.store', $expediente), [
-        'institucion_receptora_id' => $existente->id,
-        'contraparte' => 'Enfermera Ortiz',
-        'comunidad_beneficiada' => 'Zona 5',
-    ])->assertSessionHasNoErrors();
+        $this->get(route('estudiante.expedientes.actores.index', $expediente))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('instituciones.0.label', 'Cruz Roja')
+                ->where('instituciones.1.label', 'Ministerio de Salud (Gobierno central)')
+                ->where('alianzas.0.institucion', 'Ministerio de Salud')
+                ->where('alianzas.0.aporte', 'Vacunas'));
+    });
 
-    expect(InstitucionReceptora::count())->toBe(1)
-        ->and($expediente->actores()->sole()->institucion_receptora_id)->toBe($existente->id);
-});
+    it('registra, actualiza y elimina una alianza con una institución del catálogo', function () {
+        $expediente = expedienteDelEstudiante();
+        $ministerio = InstitucionAliada::factory()->create();
+        $ong = InstitucionAliada::factory()->create();
 
-it('no duplica una institución receptora al registrarla otra vez con el mismo nombre', function () {
-    $expediente = expedienteDelEstudiante();
-    $existente = InstitucionReceptora::factory()->create(['nombre' => 'Centro de Salud Zona 5', 'tipo' => 'Salud']);
+        $this->post(route('estudiante.expedientes.alianzas.store', $expediente), ['institucion_aliada_id' => $ministerio->id, 'aporte' => 'Materiales'])
+            ->assertRedirect(route('estudiante.expedientes.actores.index', $expediente))
+            ->assertSessionHasNoErrors();
 
-    $this->post(route('estudiante.expedientes.actores.store', $expediente), [
-        'institucion_nombre' => '  centro de salud zona 5 ',
-        'institucion_tipo' => 'Otro tipo',
-        'contraparte' => 'Enfermera Ortiz',
-        'comunidad_beneficiada' => 'Zona 5',
-    ])->assertSessionHasNoErrors();
+        $alianza = $expediente->alianzas()->sole();
 
-    expect(InstitucionReceptora::count())->toBe(1)
-        ->and($existente->fresh()->tipo)->toBe('Salud')
-        ->and($expediente->actores()->sole()->institucion_receptora_id)->toBe($existente->id);
-});
+        $this->put(route('estudiante.expedientes.alianzas.update', [$expediente, $alianza->id]), ['institucion_aliada_id' => $ong->id, 'aporte' => 'Capacitación'])
+            ->assertSessionHasNoErrors();
+        expect($alianza->fresh())->institucion_aliada_id->toBe($ong->id)->aporte->toBe('Capacitación');
 
-it('recupera una institución eliminada cuando se registra de nuevo por su nombre', function () {
-    $expediente = expedienteDelEstudiante();
-    $eliminada = InstitucionReceptora::factory()->create(['nombre' => 'Escuela Antigua']);
-    $eliminada->delete();
+        $this->delete(route('estudiante.expedientes.alianzas.destroy', [$expediente, $alianza->id]));
+        $this->assertSoftDeleted($alianza);
+    });
 
-    $this->post(route('estudiante.expedientes.actores.store', $expediente), [
-        'institucion_nombre' => 'Escuela Antigua',
-        'contraparte' => 'Director',
-        'comunidad_beneficiada' => 'Barrio Norte',
-    ])->assertSessionHasNoErrors();
+    it('permite dejar el aporte sin describir', function () {
+        $expediente = expedienteDelEstudiante();
 
-    expect(InstitucionReceptora::count())->toBe(1)
-        ->and($eliminada->fresh()->trashed())->toBeFalse();
-});
+        $this->post(route('estudiante.expedientes.alianzas.store', $expediente), ['institucion_aliada_id' => InstitucionAliada::factory()->create()->id])
+            ->assertSessionHasNoErrors();
 
-it('exige elegir o registrar una institución receptora', function () {
-    $expediente = expedienteDelEstudiante();
+        expect($expediente->alianzas()->sole()->aporte)->toBeNull();
+    });
 
-    $this->post(route('estudiante.expedientes.actores.store', $expediente), [
-        'contraparte' => 'Director',
-        'comunidad_beneficiada' => 'Barrio Norte',
-    ])->assertSessionHasErrors(['institucion_nombre' => 'Selecciona una institución receptora o registra una nueva.']);
+    it('exige elegir una institución del catálogo y no deja al estudiante crearla', function () {
+        $expediente = expedienteDelEstudiante();
+
+        $this->post(route('estudiante.expedientes.alianzas.store', $expediente), ['institucion_nombre' => 'Fundación Nueva'])
+            ->assertSessionHasErrors(['institucion_aliada_id' => 'Selecciona la institución aliada. Si no aparece en la lista, pide a DIGEU que la agregue.']);
+
+        expect(InstitucionAliada::count())->toBe(0)->and($expediente->alianzas()->count())->toBe(0);
+    });
+
+    it('no acepta una institución inexistente o eliminada', function (string $caso) {
+        $expediente = expedienteDelEstudiante();
+        $eliminada = InstitucionAliada::factory()->create();
+        $eliminada->delete();
+
+        $this->post(route('estudiante.expedientes.alianzas.store', $expediente), ['institucion_aliada_id' => $caso === 'inexistente' ? 9999 : $eliminada->id])
+            ->assertSessionHasErrors(['institucion_aliada_id' => 'La institución elegida ya no está disponible. Selecciona otra de la lista.']);
+    })->with(['inexistente', 'eliminada']);
+
+    it('no permite repetir la misma institución en un EPS, pero sí en otro', function () {
+        $expediente = expedienteDelEstudiante();
+        $ministerio = InstitucionAliada::factory()->create();
+        Alianza::factory()->create(['expediente_id' => Expediente::factory()->create()->id, 'institucion_aliada_id' => $ministerio->id]);
+
+        $this->post(route('estudiante.expedientes.alianzas.store', $expediente), ['institucion_aliada_id' => $ministerio->id])->assertSessionHasNoErrors();
+        $this->post(route('estudiante.expedientes.alianzas.store', $expediente), ['institucion_aliada_id' => $ministerio->id])
+            ->assertSessionHasErrors(['institucion_aliada_id' => 'Esta institución ya está registrada como aliada de tu EPS.']);
+
+        expect($expediente->alianzas()->count())->toBe(1);
+    });
+
+    it('permite volver a elegir la misma institución al editar su propia alianza y tras eliminarla', function () {
+        $expediente = expedienteDelEstudiante();
+        $ministerio = InstitucionAliada::factory()->create();
+        $alianza = $expediente->alianzas()->create(['institucion_aliada_id' => $ministerio->id]);
+
+        $this->put(route('estudiante.expedientes.alianzas.update', [$expediente, $alianza->id]), ['institucion_aliada_id' => $ministerio->id, 'aporte' => 'Nuevo'])
+            ->assertSessionHasNoErrors();
+
+        $alianza->delete();
+
+        $this->post(route('estudiante.expedientes.alianzas.store', $expediente), ['institucion_aliada_id' => $ministerio->id])->assertSessionHasNoErrors();
+    });
+
+    it('no permite tocar las alianzas del EPS de otro estudiante', function () {
+        expedienteDelEstudiante();
+        $ajeno = Expediente::factory()->create();
+        $alianza = Alianza::factory()->create(['expediente_id' => $ajeno->id]);
+
+        $this->post(route('estudiante.expedientes.alianzas.store', $ajeno), ['institucion_aliada_id' => InstitucionAliada::factory()->create()->id])->assertNotFound();
+        $this->delete(route('estudiante.expedientes.alianzas.destroy', [$ajeno, $alianza->id]))->assertNotFound();
+
+        expect($ajeno->alianzas()->count())->toBe(1);
+    });
 });
 
 it('exige la evaluación de impacto solo en el registro final', function () {

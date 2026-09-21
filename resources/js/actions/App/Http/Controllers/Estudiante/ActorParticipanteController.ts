@@ -106,7 +106,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:45
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
 * @route '/estudiante/expedientes/{expediente}/actores'
 */
 export const store = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -121,7 +121,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:45
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
 * @route '/estudiante/expedientes/{expediente}/actores'
 */
 store.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -154,7 +154,7 @@ store.url = (args: { expediente: string | number | { id: string | number } } | [
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:45
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
 * @route '/estudiante/expedientes/{expediente}/actores'
 */
 store.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -164,7 +164,7 @@ store.post = (args: { expediente: string | number | { id: string | number } } | 
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:45
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
 * @route '/estudiante/expedientes/{expediente}/actores'
 */
 const storeForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -174,7 +174,7 @@ const storeForm = (args: { expediente: string | number | { id: string | number }
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:45
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
 * @route '/estudiante/expedientes/{expediente}/actores'
 */
 storeForm.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -186,7 +186,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:58
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 export const update = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -201,7 +201,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:58
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 update.url = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions) => {
@@ -229,7 +229,7 @@ update.url = (args: { expediente: string | number | { id: string | number }, reg
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:58
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 update.put = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -239,7 +239,7 @@ update.put = (args: { expediente: string | number | { id: string | number }, reg
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:58
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 update.patch = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -249,7 +249,7 @@ update.patch = (args: { expediente: string | number | { id: string | number }, r
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:58
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 const updateForm = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -264,7 +264,7 @@ const updateForm = (args: { expediente: string | number | { id: string | number 
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:58
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 updateForm.put = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -279,7 +279,7 @@ updateForm.put = (args: { expediente: string | number | { id: string | number },
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:58
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 updateForm.patch = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -296,7 +296,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:73
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 export const destroy = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -311,7 +311,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:73
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 destroy.url = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions) => {
@@ -339,7 +339,7 @@ destroy.url = (args: { expediente: string | number | { id: string | number }, re
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:73
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 destroy.delete = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -349,7 +349,7 @@ destroy.delete = (args: { expediente: string | number | { id: string | number },
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:73
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 const destroyForm = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -364,7 +364,7 @@ const destroyForm = (args: { expediente: string | number | { id: string | number
 
 /**
 * @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:73
+* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
 * @route '/estudiante/expedientes/{expediente}/actores/{registro}'
 */
 destroyForm.delete = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

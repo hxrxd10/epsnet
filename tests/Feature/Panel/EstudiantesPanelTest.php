@@ -2,7 +2,9 @@
 
 use App\Enums\ClaveRol;
 use App\Enums\EstadoExpediente;
+use App\Enums\TipoCambioBitacora;
 use App\Models\Adjunto;
+use App\Models\Bitacora;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\Rol;
@@ -213,6 +215,32 @@ describe('aprobación (doble verificación)', function () {
         'sin el acepto' => [[]],
         'con el acepto en falso' => [['acepto' => false]],
     ]);
+
+    it('permite aprobar sin orden de impresión un EPS con información aunque el estudiante no lo haya cerrado', function () {
+        $unidad = UnidadAcademica::factory()->create();
+        $expediente = expedienteDeUnidad($unidad);
+        $expediente->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Jornada médica', 'fecha' => '2026-03-01']);
+        $this->actingAs(usuarioDeUnidad($unidad));
+
+        $this->get(route('panel.estudiantes.show', $expediente))
+            ->assertInertia(fn (Assert $page) => $page->where('puedeVerificar', true)->where('orden_impresion', null));
+
+        $this->post(route('panel.estudiantes.verificacion.store', $expediente), ['acepto' => true])->assertRedirect();
+
+        expect($expediente->fresh()->estado_expediente)->toBe(EstadoExpediente::Verificado)
+            ->and(Bitacora::where('tipo_cambio', TipoCambioBitacora::Aprobacion)->sole()->detalle)
+            ->toContain('(sin orden de impresión)')->toContain('está comprobado y que se ejecutó');
+    });
+
+    it('sigue exigiendo el acepto cuando no hay orden de impresión', function () {
+        $unidad = UnidadAcademica::factory()->create();
+        $expediente = expedienteDeUnidad($unidad, ['estado_expediente' => EstadoExpediente::Completo]);
+        $this->actingAs(usuarioDeUnidad($unidad));
+
+        $this->post(route('panel.estudiantes.verificacion.store', $expediente))->assertSessionHasErrors('acepto');
+
+        expect($expediente->fresh()->estado_expediente)->toBe(EstadoExpediente::Completo);
+    });
 
     it('no permite aprobar un EPS que el estudiante aún no completa', function () {
         $expediente = expedienteDeUnidad(UnidadAcademica::factory()->create());

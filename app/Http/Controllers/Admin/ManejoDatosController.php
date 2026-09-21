@@ -6,6 +6,7 @@ use App\Enums\TipoCatalogo;
 use App\Http\Controllers\Controller;
 use App\Models\Catalogo;
 use App\Models\Departamento;
+use App\Models\InstitucionAliada;
 use App\Models\Municipio;
 use App\Models\UnidadAcademica;
 use Inertia\Inertia;
@@ -49,6 +50,14 @@ class ManejoDatosController extends Controller
                     'total' => Municipio::count(),
                     'activos' => null,
                     'href' => route('admin.municipios.index', absolute: false),
+                ],
+                [
+                    'clave' => 'instituciones',
+                    'etiqueta' => 'Instituciones aliadas',
+                    'descripcion' => 'Ministerios, ONG y socios que participaron o cooperaron con los proyectos. Se eligen de este catálogo y se cuantifican en las estadísticas.',
+                    'total' => InstitucionAliada::count(),
+                    'activos' => null,
+                    'href' => route('admin.instituciones.index', absolute: false),
                 ],
                 [
                     'clave' => 'unidades',

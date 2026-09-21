@@ -154,6 +154,25 @@ export default function Estudiante({
                                 Al aprobarlo, el EPS aparece en el repositorio.
                             </DialogDescription>
                         </DialogHeader>
+                        {(orden_impresion === null ||
+                            expediente.estado === 'activo') && (
+                            <ul className="bg-muted text-muted-foreground list-disc space-y-1 rounded-lg p-3 pl-7 text-sm">
+                                {orden_impresion === null && (
+                                    <li>
+                                        Este EPS no tiene orden de impresión
+                                        (por ejemplo, porque no hay un informe
+                                        escrito). Puedes aprobarlo igual: tu
+                                        acepto es la constancia.
+                                    </li>
+                                )}
+                                {expediente.estado === 'activo' && (
+                                    <li>
+                                        El estudiante aún no cierra su EPS; se
+                                        aprueba con lo que tiene registrado.
+                                    </li>
+                                )}
+                            </ul>
+                        )}
                         <div className="flex items-start gap-3">
                             <Checkbox
                                 id="acepto"
@@ -230,7 +249,7 @@ export default function Estudiante({
                                 <Download className="size-3.5" />
                             </a>
                         ) : (
-                            <p className="mt-1">No ha subido el archivo</p>
+                            <p className="mt-1">Sin orden de impresión</p>
                         )}
                     </div>
                 </section>

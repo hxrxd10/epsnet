@@ -5,6 +5,7 @@ import transferencias from './transferencias'
 import territorio from './territorio'
 import actores from './actores'
 import seguimiento from './seguimiento'
+import alianzas from './alianzas'
 import programa from './programa'
 import cierre from './cierre'
 import ordenImpresion from './orden-impresion'
@@ -178,6 +179,7 @@ const expedientes = {
     territorio: Object.assign(territorio, territorio),
     actores: Object.assign(actores, actores),
     seguimiento: Object.assign(seguimiento, seguimiento),
+    alianzas: Object.assign(alianzas, alianzas),
     programa: Object.assign(programa, programa),
     cierre: Object.assign(cierre, cierre),
     ordenImpresion: Object.assign(ordenImpresion, ordenImpresion),

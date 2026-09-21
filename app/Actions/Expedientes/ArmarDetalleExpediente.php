@@ -58,13 +58,20 @@ class ArmarDetalleExpediente
                     [$r->latitud !== null && $r->longitud !== null ? "{$r->latitud}, {$r->longitud}" : null],
                     ['Referencia territorial' => $r->referencia],
                 )),
-            Eje::Actores => $expediente->actores()->with('institucionReceptora')->orderBy('id')->get()
+            Eje::Actores => $expediente->actores()->orderBy('id')->get()
                 ->map(fn ($r): array => $this->registro(
                     'Institución receptora',
-                    $r->institucionReceptora->nombre,
+                    $r->institucion_receptora,
                     ["Contraparte: {$r->contraparte}", "Comunidad: {$r->comunidad_beneficiada}"],
                     [],
-                )),
+                ))
+                ->concat($expediente->alianzas()->with('institucionAliada')->orderBy('id')->get()
+                    ->map(fn ($r): array => $this->registro(
+                        'Institución aliada',
+                        $r->institucionAliada->nombre,
+                        [$r->institucionAliada->tipo],
+                        ['Aporte' => $r->aporte],
+                    ))),
             Eje::Seguimiento => $expediente->seguimientos()->orderBy('fecha')->get()
                 ->map(fn ($r): array => $this->registro(
                     $r->tipo_registro->etiqueta(),

@@ -287,6 +287,48 @@ export default function EstadisticasDepartamento({
                                         )}
                                     </div>
                                 </div>
+
+                                <div className="mt-6">
+                                    <h3 className="text-muted-foreground mb-2 font-mono text-[11px] tracking-[0.18em] uppercase">
+                                        Instituciones aliadas (
+                                        {municipio.instituciones.length})
+                                    </h3>
+                                    {municipio.instituciones.length === 0 ? (
+                                        <p className="text-muted-foreground text-sm">
+                                            No hay instituciones aliadas
+                                            registradas.
+                                        </p>
+                                    ) : (
+                                        <ul className="flex flex-wrap gap-2">
+                                            {municipio.instituciones.map(
+                                                (institucion) => (
+                                                    <li
+                                                        key={institucion.nombre}
+                                                        className="rounded-lg border px-3 py-1.5 text-sm"
+                                                    >
+                                                        {institucion.nombre}
+                                                        {institucion.tipo && (
+                                                            <span className="text-muted-foreground">
+                                                                {' '}
+                                                                ·{' '}
+                                                                {
+                                                                    institucion.tipo
+                                                                }
+                                                            </span>
+                                                        )}
+                                                        <span className="text-muted-foreground font-mono text-xs">
+                                                            {' '}
+                                                            · {
+                                                                institucion.eps
+                                                            }{' '}
+                                                            EPS
+                                                        </span>
+                                                    </li>
+                                                ),
+                                            )}
+                                        </ul>
+                                    )}
+                                </div>
                             </section>
                         ))}
                     </>

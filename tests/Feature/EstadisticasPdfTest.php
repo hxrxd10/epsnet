@@ -84,7 +84,7 @@ it('deja constancia en la bitácora de quién exportó, con los filtros aplicado
         ->and($registros[0]->usuario_correo)->toBe('invitado@example.com')
         ->and($registros[0]->modulo)->toBe('Estadísticas')
         ->and($registros[0]->detalle)->toContain('estadísticas del país (EPS)')
-        ->toContain('Año (orden de impresión): 2025')
+        ->toContain('Año: 2025')
         ->toContain('Unidad académica: Facultad de Humanidades')
         ->toContain('Carrera: Licenciatura en Pedagogía')
         ->and($registros[1]->detalle)->toContain('departamento Sacatepéquez')->toContain('Todos los años');

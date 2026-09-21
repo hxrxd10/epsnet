@@ -15,11 +15,12 @@ use App\Enums\TipoRegistroSeguimiento;
 use App\Enums\TipoUnidadAcademica;
 use App\Models\Adjunto;
 use App\Models\AdjuntoContenido;
+use App\Models\Alianza;
 use App\Models\Catalogo;
 use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
-use App\Models\InstitucionReceptora;
+use App\Models\InstitucionAliada;
 use App\Models\Municipio;
 use App\Models\Rol;
 use App\Models\UnidadAcademica;
@@ -135,6 +136,50 @@ class DatosDemoSeeder extends Seeder
         ['Charla de prevención de la violencia', TipoActividadTransferencia::Otro],
         ['Capacitación en primeros auxilios', TipoActividadTransferencia::Capacitacion],
         ['Taller de nutrición familiar', TipoActividadTransferencia::Taller],
+        ['Propuesta de política pública elaborada', TipoActividadTransferencia::Documento],
+        ['Informe técnico entregado a la municipalidad', TipoActividadTransferencia::Documento],
+    ];
+
+    /**
+     * Instituciones aliadas (ministerios, ONG, cooperación, socios): nombre, tipo y peso (cuáles aparecen más).
+     *
+     * @var list<array{0: string, 1: string, 2: int}>
+     */
+    private const array ALIADAS = [
+        ['Ministerio de Educación (MINEDUC)', 'Gobierno central', 10],
+        ['Ministerio de Salud Pública y Asistencia Social (MSPAS)', 'Gobierno central', 10],
+        ['Ministerio de Agricultura, Ganadería y Alimentación (MAGA)', 'Gobierno central', 6],
+        ['Ministerio de Ambiente y Recursos Naturales (MARN)', 'Gobierno central', 4],
+        ['Ministerio de Desarrollo Social (MIDES)', 'Gobierno central', 4],
+        ['Consejo Nacional de Áreas Protegidas (CONAP)', 'Gobierno central', 3],
+        ['Secretaría de Seguridad Alimentaria y Nutricional (SESAN)', 'Gobierno central', 4],
+        ['Coordinadora Nacional para la Reducción de Desastres (CONRED)', 'Gobierno central', 3],
+        ['Asociación Nacional de Municipalidades (ANAM)', 'Gobierno local', 2],
+        ['Consejo Comunitario de Desarrollo (COCODE)', 'Organización comunitaria', 7],
+        ['Comité de Desarrollo Municipal (COMUDE)', 'Gobierno local', 4],
+        ['Cruz Roja Guatemalteca', 'Organización no gubernamental', 5],
+        ['Plan Internacional Guatemala', 'Organización no gubernamental', 4],
+        ['Save the Children Guatemala', 'Organización no gubernamental', 4],
+        ['Visión Mundial Guatemala', 'Organización no gubernamental', 3],
+        ['Fundación Ayuda en Acción', 'Organización no gubernamental', 2],
+        ['Asociación de Mujeres Rurales', 'Organización comunitaria', 3],
+        ['Programa Mundial de Alimentos (PMA)', 'Cooperación internacional', 3],
+        ['UNICEF Guatemala', 'Cooperación internacional', 3],
+        ['Agencia de Cooperación Alemana (GIZ)', 'Cooperación internacional', 2],
+        ['Universidad de San Carlos de Guatemala (extensión)', 'Universidad o centro educativo', 3],
+        ['Instituto Técnico de Capacitación y Productividad (INTECAP)', 'Universidad o centro educativo', 2],
+        ['Cooperativa Agrícola Integral', 'Organización comunitaria', 2],
+        ['Cámara de Industria de Guatemala', 'Empresa privada', 1],
+    ];
+
+    private const array APORTES = [
+        'Acompañamiento técnico durante la ejecución del proyecto.',
+        'Donación de materiales y equipo para las actividades.',
+        'Gestión de permisos y coordinación con las autoridades locales.',
+        'Capacitación al personal y a los líderes comunitarios.',
+        'Financiamiento parcial de las jornadas y los materiales.',
+        'Espacio y logística para realizar los talleres.',
+        'Seguimiento y validación de los resultados.',
     ];
 
     private const array TEMAS = [
@@ -160,8 +205,8 @@ class DatosDemoSeeder extends Seeder
     /** @var array<int, list<Municipio>> */
     private array $municipios = [];
 
-    /** @var array<string, int> */
-    private array $instituciones = [];
+    /** @var list<array{id: int, peso: int}> */
+    private array $aliadas = [];
 
     /** @var array<string, list<array<string, mixed>>> */
     private array $filas = [];
@@ -177,7 +222,11 @@ class DatosDemoSeeder extends Seeder
         }
 
         if (Estudiante::where('carnet', 'like', self::PREFIJO_CARNET.'%')->exists()) {
-            $this->command?->warn('Los datos de demostración ya están sembrados.');
+            $agregadas = $this->completarAliadas();
+
+            $agregadas > 0
+                ? $this->command?->info("Los datos de demostración ya estaban sembrados: se agregaron el catálogo de instituciones aliadas y {$agregadas} alianzas.")
+                : $this->command?->warn('Los datos de demostración ya están sembrados.');
 
             return;
         }
@@ -194,6 +243,7 @@ class DatosDemoSeeder extends Seeder
             $catalogoBienes = $this->sembrarCatalogo(TipoCatalogo::BienesServicios, self::BIENES_SERVICIOS);
             $catalogoAcciones = $this->sembrarCatalogo(TipoCatalogo::Acciones, array_map(fn (array $accion): array => [$accion[0], null, 1], self::ACCIONES));
 
+            $this->aliadas = $this->sembrarAliadas();
             $this->sembrarUsuarios($unidades);
             $this->sembrarExpedientes($unidades, $catalogoBienes, $catalogoAcciones);
             $this->volcarFilas();
@@ -266,6 +316,17 @@ class DatosDemoSeeder extends Seeder
     }
 
     /**
+     * @return list<array{id: int, peso: int}>
+     */
+    private function sembrarAliadas(): array
+    {
+        return array_map(fn (array $aliada): array => [
+            'id' => InstitucionAliada::firstOrCreate(['nombre' => $aliada[0]], ['tipo' => $aliada[1]])->id,
+            'peso' => $aliada[2],
+        ], self::ALIADAS);
+    }
+
+    /**
      * @param  list<array{unidad: UnidadAcademica, peso: int, perfil: array<string, int>, carreras: list<string>, indice: int}>  $unidades
      */
     private function sembrarUsuarios(array $unidades): void
@@ -299,15 +360,19 @@ class DatosDemoSeeder extends Seeder
         $codigos = array_keys($this->departamentos);
 
         for ($numero = 1; $numero <= self::TOTAL_EPS; $numero++) {
-            // Los primeros EPS recorren los departamentos para que ninguno quede vacío en el mapa; los atiende
-            // una unidad que opere allí.
+            // Los primeros EPS recorren los departamentos para que ninguno quede vacío en el mapa (los atiende una
+            // unidad que opere allí) y los siguientes recorren las unidades para que todas tengan datos. Todos
+            // estos cuentan para las estadísticas.
             $forzado = $codigos[$numero - 1] ?? null;
-            $candidatas = $forzado === null
-                ? $pesosUnidades
-                : array_filter($pesosUnidades, fn (int $peso, int $indice): bool => isset($unidades[$indice]['perfil'][$forzado]), ARRAY_FILTER_USE_BOTH);
+            $forzadoUnidad = $forzado === null ? ($numero - count($codigos) - 1) : null;
+            $candidatas = match (true) {
+                $forzado !== null => array_filter($pesosUnidades, fn (int $peso, int $indice): bool => isset($unidades[$indice]['perfil'][$forzado]), ARRAY_FILTER_USE_BOTH),
+                isset($unidades[$forzadoUnidad]) => [$forzadoUnidad => 1],
+                default => $pesosUnidades,
+            };
             $unidad = $unidades[$this->ponderado($candidatas)];
             $carrera = $unidad['carreras'][array_rand($unidad['carreras'])];
-            $estado = $this->estado();
+            $estado = $this->estado($forzado !== null || isset($unidades[$forzadoUnidad]));
             $orden = $this->fechaDeOrden();
             $fin = $orden->copy()->subDays(mt_rand(15, 60));
             $inicio = $fin->copy()->subDays(mt_rand(150, 240));
@@ -336,7 +401,7 @@ class DatosDemoSeeder extends Seeder
                 'eje_actual' => $estado === EstadoExpediente::Activo ? mt_rand(1, 5) : 6,
                 'estado_expediente' => $estado,
                 'completado_at' => $estado === EstadoExpediente::Activo ? null : $orden,
-                'verificado_at' => $estado === EstadoExpediente::Verificado ? $orden->copy()->addDays(mt_rand(3, 30)) : null,
+                'verificado_at' => $estado === EstadoExpediente::Verificado ? $this->fechaDeAprobacion($orden) : null,
                 'verificado_por' => $estado === EstadoExpediente::Verificado ? $administrador : null,
                 'fecha_inicio_eps' => $inicio,
                 'fecha_fin_eps' => $fin,
@@ -350,9 +415,11 @@ class DatosDemoSeeder extends Seeder
             $this->registrarTransferencias($expediente->id, $catalogoAcciones, $lugar, $inicio, $fin, $completo);
             $this->registrarPublicaciones($expediente->id, $estudiante, $lugar, $inicio, $fin, $completo);
             $this->registrarActores($expediente->id, $lugar);
+            $this->registrarAlianzas($expediente->id, $completo);
             $this->registrarSeguimientos($expediente->id, $lugar, $inicio, $fin, $completo);
 
-            if ($completo) {
+            // Algunos EPS aprobados no tienen orden de impresión (p. ej. no hay un informe escrito).
+            if ($completo && ! ($estado === EstadoExpediente::Verificado && mt_rand(1, 100) <= 10)) {
                 $this->registrarOrdenImpresion($expediente->id, $orden, $administrador);
             }
         }
@@ -478,20 +545,32 @@ class DatosDemoSeeder extends Seeder
     {
         $tipos = ['Municipalidad de', 'Centro de Salud de', 'Escuela Oficial Urbana Mixta de', 'Instituto Nacional de Educación Básica de'];
 
-        for ($i = mt_rand(1, 2); $i > 0; $i--) {
-            $prefijo = $tipos[array_rand($tipos)];
-            $nombre = "{$prefijo} {$lugar['municipio']->nombre}";
+        $this->filas['actores_participantes'][] = [
+            'expediente_id' => $expedienteId,
+            'institucion_receptora' => $tipos[array_rand($tipos)].' '.$lugar['municipio']->nombre,
+            'contraparte' => self::NOMBRES[array_rand(self::NOMBRES)].' '.self::APELLIDOS[array_rand(self::APELLIDOS)],
+            'comunidad_beneficiada' => $lugar['comunidad'],
+            ...$this->marcas($this->hoy),
+        ];
+    }
 
-            $this->instituciones[$nombre] ??= InstitucionReceptora::firstOrCreate(
-                ['nombre' => $nombre],
-                ['tipo' => str_starts_with($prefijo, 'Municipalidad') ? 'Gobierno local' : (str_starts_with($prefijo, 'Centro') ? 'Salud' : 'Educación')],
-            )->id;
+    /**
+     * Instituciones aliadas del proyecto: ninguna a tres por EPS, sin repetir.
+     */
+    private function registrarAlianzas(int $expedienteId, bool $completo): void
+    {
+        $pesos = array_map(fn (array $aliada): int => $aliada['peso'], $this->aliadas);
+        $elegidas = [];
 
-            $this->filas['actores_participantes'][] = [
+        for ($i = mt_rand(0, $completo ? 3 : 1); $i > 0; $i--) {
+            $elegidas[$this->ponderado($pesos)] = true;
+        }
+
+        foreach (array_keys($elegidas) as $indice) {
+            $this->filas['alianzas'][] = [
                 'expediente_id' => $expedienteId,
-                'institucion_receptora_id' => $this->instituciones[$nombre],
-                'contraparte' => self::NOMBRES[array_rand(self::NOMBRES)].' '.self::APELLIDOS[array_rand(self::APELLIDOS)],
-                'comunidad_beneficiada' => $lugar['comunidad'],
+                'institucion_aliada_id' => $this->aliadas[$indice]['id'],
+                'aporte' => self::APORTES[array_rand(self::APORTES)],
                 ...$this->marcas($this->hoy),
             ];
         }
@@ -600,6 +679,10 @@ class DatosDemoSeeder extends Seeder
             $anotar($admin, ClaveRol::Digeu, 'Catálogo: '.$elemento->catalogo->etiqueta(), TipoCambioBitacora::Creacion, "Creó el elemento «{$elemento->nombre}»", $inicio->copy()->addHours(2)->addMinutes($elemento->id * 4), $elemento, null, ['nombre' => $elemento->nombre, 'categoria' => $elemento->categoria]);
         }
 
+        foreach (InstitucionAliada::orderBy('id')->get() as $institucion) {
+            $anotar($admin, ClaveRol::Digeu, 'Instituciones aliadas', TipoCambioBitacora::Creacion, "Creó la institución «{$institucion->nombre}»", $inicio->copy()->addHours(3)->addMinutes($institucion->id * 5), $institucion, null, ['nombre' => $institucion->nombre, 'tipo' => $institucion->tipo]);
+        }
+
         foreach (Municipio::whereIn('codigo', ['1601', '0901', '1701', '2001'])->get() as $municipio) {
             $anotar($admin, ClaveRol::Digeu, 'Municipios', TipoCambioBitacora::Edicion, "Editó el municipio «{$municipio->nombre}» ({$municipio->codigo}) · Campos: latitud, longitud", $inicio->copy()->addDays(3), $municipio, ['latitud' => (string) $municipio->latitud], ['latitud' => (string) round((float) $municipio->latitud + 0.0123, 7)]);
         }
@@ -649,14 +732,40 @@ class DatosDemoSeeder extends Seeder
         }
 
         $anotar($invitado, ClaveRol::Invitado, 'Acceso al sistema', TipoCambioBitacora::Acceso, 'Inició sesión', $this->hoy->copy()->subDays(1));
-        $anotar($invitado, ClaveRol::Invitado, 'Estadísticas', TipoCambioBitacora::Exportacion, 'Generó el PDF de estadísticas del país (Investigaciones) · Año (orden de impresión): 2025 · Unidad académica: Todas las unidades · Carrera: Todas las carreras', $this->hoy->copy()->subDays(1)->addMinutes(8));
-        $anotar($admin, ClaveRol::Digeu, 'Estadísticas', TipoCambioBitacora::Exportacion, 'Generó el PDF del departamento Alta Verapaz · Año (orden de impresión): Todos los años · Unidad académica: Centro Universitario del Norte · Carrera: Todas las carreras', $this->hoy->copy()->subHours(5));
+        $anotar($invitado, ClaveRol::Invitado, 'Estadísticas', TipoCambioBitacora::Exportacion, 'Generó el PDF de estadísticas del país (Investigaciones) · Año: 2025 · Unidad académica: Todas las unidades · Carrera: Todas las carreras', $this->hoy->copy()->subDays(1)->addMinutes(8));
+        $anotar($admin, ClaveRol::Digeu, 'Estadísticas', TipoCambioBitacora::Exportacion, 'Generó el PDF del departamento Alta Verapaz · Año: Todos los años · Unidad académica: Centro Universitario del Norte · Carrera: Todas las carreras', $this->hoy->copy()->subHours(5));
 
         usort($filas, fn (array $a, array $b): int => $a['fecha_hora'] <=> $b['fecha_hora']);
 
         foreach (array_chunk($filas, 300) as $lote) {
             DB::table('bitacoras')->insert($lote);
         }
+    }
+
+    /**
+     * Demos sembradas antes de que existieran las instituciones aliadas: les agrega el catálogo y las alianzas de
+     * sus EPS. No hace nada si ya hay alianzas.
+     */
+    private function completarAliadas(): int
+    {
+        if (Alianza::query()->exists()) {
+            return 0;
+        }
+
+        mt_srand(2026);
+        $this->hoy = now();
+        $this->aliadas = $this->sembrarAliadas();
+
+        DB::transaction(function (): void {
+            Expediente::query()
+                ->whereHas('estudiante', fn ($consulta) => $consulta->where('carnet', 'like', self::PREFIJO_CARNET.'%'))
+                ->orderBy('id')
+                ->each(fn (Expediente $expediente) => $this->registrarAlianzas($expediente->id, $expediente->estado_expediente !== EstadoExpediente::Activo));
+
+            $this->volcarFilas();
+        });
+
+        return DB::table('alianzas')->count();
     }
 
     private function volcarFilas(): void
@@ -668,9 +777,9 @@ class DatosDemoSeeder extends Seeder
         }
     }
 
-    private function estado(): EstadoExpediente
+    private function estado(bool $paraEstadisticas = false): EstadoExpediente
     {
-        $azar = mt_rand(1, 100);
+        $azar = mt_rand(1, $paraEstadisticas ? 90 : 100);
 
         return match (true) {
             $azar <= 66 => EstadoExpediente::Verificado,
@@ -689,6 +798,16 @@ class DatosDemoSeeder extends Seeder
         $fin = $anio === $this->hoy->year ? $this->hoy->copy()->subDays(3) : Carbon::create($anio, 12, 20);
 
         return $inicio->copy()->addDays(mt_rand(0, max(1, (int) $inicio->diffInDays($fin))))->setTime(mt_rand(8, 16), mt_rand(0, 59));
+    }
+
+    /**
+     * Unos días después de la orden de impresión, sin pasar de hoy.
+     */
+    private function fechaDeAprobacion(CarbonInterface $orden): CarbonInterface
+    {
+        $fecha = $orden->copy()->addDays(mt_rand(3, 30));
+
+        return $fecha->greaterThan($this->hoy) ? $this->hoy->copy()->subHours(mt_rand(1, 48)) : $fecha;
     }
 
     private function fechaEntre(CarbonInterface $inicio, CarbonInterface $fin): CarbonInterface

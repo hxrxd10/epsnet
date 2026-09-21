@@ -2,14 +2,15 @@
 
 namespace Database\Factories;
 
-use App\Models\ActorParticipante;
+use App\Models\Alianza;
 use App\Models\Expediente;
+use App\Models\InstitucionAliada;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<ActorParticipante>
+ * @extends Factory<Alianza>
  */
-class ActorParticipanteFactory extends Factory
+class AlianzaFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,9 +21,8 @@ class ActorParticipanteFactory extends Factory
     {
         return [
             'expediente_id' => Expediente::factory(),
-            'institucion_receptora' => 'Escuela '.fake()->words(2, true),
-            'contraparte' => fake()->name(),
-            'comunidad_beneficiada' => fake()->city(),
+            'institucion_aliada_id' => InstitucionAliada::factory(),
+            'aporte' => fake()->sentence(),
         ];
     }
 }

@@ -14,14 +14,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @property int $id
  * @property int $expediente_id
- * @property int $institucion_receptora_id
+ * @property string $institucion_receptora
  * @property string $contraparte
  * @property string $comunidad_beneficiada
  */
 #[Table('actores_participantes')]
 #[Fillable([
     'expediente_id',
-    'institucion_receptora_id',
+    'institucion_receptora',
     'contraparte',
     'comunidad_beneficiada',
 ])]
@@ -48,14 +48,6 @@ class ActorParticipante extends Model
         return $this->belongsTo(Expediente::class);
     }
 
-    /**
-     * @return BelongsTo<InstitucionReceptora, $this>
-     */
-    public function institucionReceptora(): BelongsTo
-    {
-        return $this->belongsTo(InstitucionReceptora::class);
-    }
-
     public function moduloBitacora(): string
     {
         return 'Actores y participantes';
@@ -63,6 +55,6 @@ class ActorParticipante extends Model
 
     protected function descripcionBitacora(): string
     {
-        return 'el actor «'.$this->institucionReceptora?->nombre.'» (contraparte '.$this->contraparte.') del '.$this->expediente?->resumenBitacora();
+        return 'la institución receptora «'.$this->institucion_receptora.'» (contraparte '.$this->contraparte.') del '.$this->expediente?->resumenBitacora();
     }
 }

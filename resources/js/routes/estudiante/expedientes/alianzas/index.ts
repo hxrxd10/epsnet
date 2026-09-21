@@ -1,113 +1,8 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::index
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:20
-* @route '/estudiante/expedientes/{expediente}/actores'
-*/
-export const index = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(args, options),
-    method: 'get',
-})
-
-index.definition = {
-    methods: ["get","head"],
-    url: '/estudiante/expedientes/{expediente}/actores',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::index
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:20
-* @route '/estudiante/expedientes/{expediente}/actores'
-*/
-index.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { expediente: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { expediente: args.id }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            expediente: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        expediente: typeof args.expediente === 'object'
-        ? args.expediente.id
-        : args.expediente,
-    }
-
-    return index.definition.url
-            .replace('{expediente}', parsedArgs.expediente.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::index
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:20
-* @route '/estudiante/expedientes/{expediente}/actores'
-*/
-index.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::index
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:20
-* @route '/estudiante/expedientes/{expediente}/actores'
-*/
-index.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: index.url(args, options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::index
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:20
-* @route '/estudiante/expedientes/{expediente}/actores'
-*/
-const indexForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::index
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:20
-* @route '/estudiante/expedientes/{expediente}/actores'
-*/
-indexForm.get = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::index
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:20
-* @route '/estudiante/expedientes/{expediente}/actores'
-*/
-indexForm.head = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
-
-/**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
-* @route '/estudiante/expedientes/{expediente}/actores'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::store
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:16
+* @route '/estudiante/expedientes/{expediente}/alianzas'
 */
 export const store = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
@@ -116,13 +11,13 @@ export const store = (args: { expediente: string | number | { id: string | numbe
 
 store.definition = {
     methods: ["post"],
-    url: '/estudiante/expedientes/{expediente}/actores',
+    url: '/estudiante/expedientes/{expediente}/alianzas',
 } satisfies RouteDefinition<["post"]>
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
-* @route '/estudiante/expedientes/{expediente}/actores'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::store
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:16
+* @route '/estudiante/expedientes/{expediente}/alianzas'
 */
 store.url = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
@@ -153,9 +48,9 @@ store.url = (args: { expediente: string | number | { id: string | number } } | [
 }
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
-* @route '/estudiante/expedientes/{expediente}/actores'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::store
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:16
+* @route '/estudiante/expedientes/{expediente}/alianzas'
 */
 store.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(args, options),
@@ -163,9 +58,9 @@ store.post = (args: { expediente: string | number | { id: string | number } } | 
 })
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
-* @route '/estudiante/expedientes/{expediente}/actores'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::store
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:16
+* @route '/estudiante/expedientes/{expediente}/alianzas'
 */
 const storeForm = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
@@ -173,9 +68,9 @@ const storeForm = (args: { expediente: string | number | { id: string | number }
 })
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::store
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:55
-* @route '/estudiante/expedientes/{expediente}/actores'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::store
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:16
+* @route '/estudiante/expedientes/{expediente}/alianzas'
 */
 storeForm.post = (args: { expediente: string | number | { id: string | number } } | [expediente: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(args, options),
@@ -185,9 +80,9 @@ storeForm.post = (args: { expediente: string | number | { id: string | number } 
 store.form = storeForm
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::update
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:23
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 export const update = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
@@ -196,13 +91,13 @@ export const update = (args: { expediente: string | number | { id: string | numb
 
 update.definition = {
     methods: ["put","patch"],
-    url: '/estudiante/expedientes/{expediente}/actores/{registro}',
+    url: '/estudiante/expedientes/{expediente}/alianzas/{registro}',
 } satisfies RouteDefinition<["put","patch"]>
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::update
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:23
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 update.url = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
@@ -228,9 +123,9 @@ update.url = (args: { expediente: string | number | { id: string | number }, reg
 }
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::update
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:23
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 update.put = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
@@ -238,9 +133,9 @@ update.put = (args: { expediente: string | number | { id: string | number }, reg
 })
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::update
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:23
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 update.patch = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
@@ -248,9 +143,9 @@ update.patch = (args: { expediente: string | number | { id: string | number }, r
 })
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::update
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:23
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 const updateForm = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
@@ -263,9 +158,9 @@ const updateForm = (args: { expediente: string | number | { id: string | number 
 })
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::update
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:23
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 updateForm.put = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
@@ -278,9 +173,9 @@ updateForm.put = (args: { expediente: string | number | { id: string | number },
 })
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::update
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:62
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::update
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:23
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 updateForm.patch = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
@@ -295,9 +190,9 @@ updateForm.patch = (args: { expediente: string | number | { id: string | number 
 update.form = updateForm
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::destroy
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:30
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 export const destroy = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
@@ -306,13 +201,13 @@ export const destroy = (args: { expediente: string | number | { id: string | num
 
 destroy.definition = {
     methods: ["delete"],
-    url: '/estudiante/expedientes/{expediente}/actores/{registro}',
+    url: '/estudiante/expedientes/{expediente}/alianzas/{registro}',
 } satisfies RouteDefinition<["delete"]>
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::destroy
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:30
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 destroy.url = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
@@ -338,9 +233,9 @@ destroy.url = (args: { expediente: string | number | { id: string | number }, re
 }
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::destroy
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:30
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 destroy.delete = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
@@ -348,9 +243,9 @@ destroy.delete = (args: { expediente: string | number | { id: string | number },
 })
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::destroy
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:30
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 const destroyForm = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
@@ -363,9 +258,9 @@ const destroyForm = (args: { expediente: string | number | { id: string | number
 })
 
 /**
-* @see \App\Http\Controllers\Estudiante\ActorParticipanteController::destroy
-* @see app/Http/Controllers/Estudiante/ActorParticipanteController.php:69
-* @route '/estudiante/expedientes/{expediente}/actores/{registro}'
+* @see \App\Http\Controllers\Estudiante\AlianzaController::destroy
+* @see app/Http/Controllers/Estudiante/AlianzaController.php:30
+* @route '/estudiante/expedientes/{expediente}/alianzas/{registro}'
 */
 destroyForm.delete = (args: { expediente: string | number | { id: string | number }, registro: string | number } | [expediente: string | number | { id: string | number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
@@ -379,11 +274,10 @@ destroyForm.delete = (args: { expediente: string | number | { id: string | numbe
 
 destroy.form = destroyForm
 
-const actores = {
-    index: Object.assign(index, index),
+const alianzas = {
     store: Object.assign(store, store),
     update: Object.assign(update, update),
     destroy: Object.assign(destroy, destroy),
 }
 
-export default actores
+export default alianzas

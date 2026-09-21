@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BitacoraController;
 use App\Http\Controllers\Admin\CatalogoController;
 use App\Http\Controllers\Admin\DepartamentoController;
+use App\Http\Controllers\Admin\InstitucionAliadaController;
 use App\Http\Controllers\Admin\ManejoDatosController;
 use App\Http\Controllers\Admin\MunicipioController;
 use App\Http\Controllers\Admin\UnidadAcademicaController;
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'verified', 'rol:digeu'])->prefix('admin')->name('adm
 
     Route::resource('departamentos', DepartamentoController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('municipios', MunicipioController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('instituciones', InstitucionAliadaController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['instituciones' => 'institucion']);
     Route::resource('unidades', UnidadAcademicaController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['unidades' => 'unidad']);
 
     Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');

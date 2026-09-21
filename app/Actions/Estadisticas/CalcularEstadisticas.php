@@ -2,8 +2,8 @@
 
 namespace App\Actions\Estadisticas;
 
-use App\Models\ActorParticipante;
 use App\Models\Adjunto;
+use App\Models\Alianza;
 use App\Models\BienServicio;
 use App\Models\Catalogo;
 use App\Models\Departamento;
@@ -104,18 +104,29 @@ class CalcularEstadisticas
             ->get()
             ->groupBy('expediente_id');
 
+        $aliadas = Alianza::query()
+            ->whereIn('expediente_id', $registros->keys()->all())
+            ->with('institucionAliada:id,nombre,tipo')
+            ->get()
+            ->groupBy('expediente_id');
+
         $nombres = Municipio::query()->where('departamento_id', $departamento->id)->pluck('nombre', 'id');
 
         $total = new Acumulador;
-        /** @var array<int, array{nombre: string, acumulador: Acumulador, investigaciones: list<array<string, mixed>>}> $municipios */
+        /** @var array<int, array{nombre: string, acumulador: Acumulador, investigaciones: list<array<string, mixed>>, instituciones: array<int, array{nombre: string, tipo: string|null, eps: int}>}> $municipios */
         $municipios = [];
 
         foreach ($registros as $expedienteId => $registro) {
             $total->agregar($registro);
 
             $clave = (int) $ubicaciones[$expedienteId]->municipio_id;
-            $municipios[$clave] ??= ['nombre' => $nombres[$clave] ?? self::SIN_MUNICIPIO, 'acumulador' => new Acumulador, 'investigaciones' => []];
+            $municipios[$clave] ??= ['nombre' => $nombres[$clave] ?? self::SIN_MUNICIPIO, 'acumulador' => new Acumulador, 'investigaciones' => [], 'instituciones' => []];
             $municipios[$clave]['acumulador']->agregar($registro);
+
+            foreach ($aliadas->get($expedienteId, []) as $alianza) {
+                $municipios[$clave]['instituciones'][$alianza->institucion_aliada_id] ??= ['nombre' => $alianza->institucionAliada->nombre, 'tipo' => $alianza->institucionAliada->tipo, 'eps' => 0];
+                $municipios[$clave]['instituciones'][$alianza->institucion_aliada_id]['eps']++;
+            }
 
             foreach ($publicaciones->get($expedienteId, []) as $publicacion) {
                 $municipios[$clave]['investigaciones'][] = [
@@ -141,6 +152,7 @@ class CalcularEstadisticas
                     'metricas' => $municipio['acumulador']->metricas(),
                     'bienes_servicios' => $municipio['acumulador']->items(),
                     'investigaciones' => $municipio['investigaciones'],
+                    'instituciones' => collect($municipio['instituciones'])->sortBy([['eps', 'desc'], ['nombre', 'asc']])->values()->all(),
                 ])
                 ->values()
                 ->all(),
@@ -159,11 +171,15 @@ class CalcularEstadisticas
             ->where('categoria', Adjunto::ORDEN_IMPRESION)
             ->where('entidad_tipo', 'expediente')
             ->whereIn('entidad_id', Expediente::query()->validos()->select('id'));
-        $primero = $ordenes->min('fecha_subida');
-        $ultimo = $ordenes->max('fecha_subida');
+        $sinOrden = Expediente::query()->validos()->whereDoesntHave('ordenImpresion')->whereNotNull('verificado_at');
+        $fechas = array_filter([
+            $ordenes->min('fecha_subida'), $ordenes->max('fecha_subida'),
+            $sinOrden->min('verificado_at'), $sinOrden->max('verificado_at'),
+        ]);
+        $anios = array_map(fn (string $fecha): int => Carbon::parse($fecha)->year, $fechas);
 
         return [
-            'anios' => $primero === null ? [] : range(Carbon::parse($ultimo)->year, Carbon::parse($primero)->year),
+            'anios' => $anios === [] ? [] : range(max($anios), min($anios)),
             'unidades' => UnidadAcademica::query()
                 ->whereIn('id', Expediente::query()->validos()->select('unidad_academica_id'))
                 ->orderBy('nombre')
@@ -201,12 +217,15 @@ class CalcularEstadisticas
             ->validos()
             ->when($filtros['unidad'], fn (Builder $consulta, int $unidad) => $consulta->where('unidad_academica_id', $unidad))
             ->when($filtros['carrera'], fn (Builder $consulta, string $carrera) => $consulta->where('nombre_carrera', $carrera))
-            ->when($filtros['anio'], fn (Builder $consulta, int $anio) => $consulta->whereHas(
-                'ordenImpresion',
-                fn (Builder $orden) => $orden
-                    ->where('fecha_subida', '>=', "{$anio}-01-01")
-                    ->where('fecha_subida', '<', ($anio + 1).'-01-01'),
-            ));
+            ->when($filtros['anio'], fn (Builder $consulta, int $anio) => $consulta->where(function (Builder $consulta) use ($anio): void {
+                $desde = "{$anio}-01-01";
+                $hasta = ($anio + 1).'-01-01';
+
+                // El año es el de la orden de impresión; si el EPS no la tiene, el de su aprobación.
+                $consulta
+                    ->whereHas('ordenImpresion', fn (Builder $orden) => $orden->where('fecha_subida', '>=', $desde)->where('fecha_subida', '<', $hasta))
+                    ->orWhere(fn (Builder $sinOrden) => $sinOrden->whereDoesntHave('ordenImpresion')->where('verificado_at', '>=', $desde)->where('verificado_at', '<', $hasta));
+            }));
     }
 
     /**
@@ -256,9 +275,9 @@ class CalcularEstadisticas
             ->selectRaw('expediente_id, count(*) as total')
             ->groupBy('expediente_id')
             ->pluck('total', 'expediente_id');
-        $instituciones = ActorParticipante::query()
+        $instituciones = Alianza::query()
             ->whereIn('expediente_id', $ids)
-            ->select('expediente_id', 'institucion_receptora_id')
+            ->select('expediente_id', 'institucion_aliada_id')
             ->distinct()
             ->get()
             ->groupBy('expediente_id');
@@ -281,7 +300,7 @@ class CalcularEstadisticas
                 'acciones' => (int) ($acciones[$expediente->id]->total ?? 0),
                 'participantes' => (int) ($acciones[$expediente->id]->participantes ?? 0),
                 'investigaciones' => (int) ($investigaciones[$expediente->id] ?? 0),
-                'instituciones' => $instituciones->get($expediente->id, collect())->pluck('institucion_receptora_id')->all(),
+                'instituciones' => $instituciones->get($expediente->id, collect())->pluck('institucion_aliada_id')->all(),
                 'items' => $items,
             ];
         });

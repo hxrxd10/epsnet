@@ -3,7 +3,7 @@
 use App\Models\BienServicio;
 use App\Models\Estudiante;
 use App\Models\Expediente;
-use App\Models\InstitucionReceptora;
+use App\Models\InstitucionAliada;
 use App\Models\PublicacionInvestigacion;
 use App\Models\UnidadAcademica;
 use App\Models\User;
@@ -21,7 +21,7 @@ it('crea todas las tablas del modelo de datos', function (string $tabla) {
     'roles', 'departamentos', 'unidades_academicas', 'estudiantes', 'expedientes',
     'formularios_ingreso', 'bienes_servicios', 'publicaciones_investigacion',
     'transferencias_conocimiento', 'ubicaciones_territoriales',
-    'instituciones_receptoras', 'actores_participantes', 'seguimientos_impacto',
+    'instituciones_aliadas', 'alianzas', 'actores_participantes', 'seguimientos_impacto',
     'bitacoras', 'adjuntos', 'adjunto_contenidos', 'catalogos', 'municipios',
 ]);
 
@@ -114,10 +114,10 @@ it('impide repetir el mismo formulario de ingreso en un expediente', function ()
     DB::table('formularios_ingreso')->insert($formulario);
 })->throws(QueryException::class);
 
-it('impide instituciones receptoras duplicadas con el mismo nombre', function () {
-    InstitucionReceptora::factory()->create(['nombre' => 'Escuela Oficial Rural Mixta']);
+it('impide instituciones aliadas duplicadas con el mismo nombre', function () {
+    InstitucionAliada::factory()->create(['nombre' => 'Cruz Roja Guatemalteca']);
 
-    InstitucionReceptora::factory()->create(['nombre' => 'Escuela Oficial Rural Mixta']);
+    InstitucionAliada::factory()->create(['nombre' => 'Cruz Roja Guatemalteca']);
 })->throws(QueryException::class);
 
 it('impide asignar el mismo administrador a dos unidades académicas', function () {
@@ -205,4 +205,29 @@ it('enlaza al catálogo los municipios escritos a mano y deja sin municipio los 
 
     expect(Schema::hasColumn('ubicaciones_territoriales', 'municipio'))->toBeFalse()
         ->and(DB::table('ubicaciones_territoriales')->orderBy('id')->pluck('municipio_id')->all())->toBe([$antigua, null]);
+});
+
+it('conserva como texto el nombre de la institución receptora que ya tenían los EPS al pasar a receptora libre', function () {
+    $migracion = 'database/migrations/2026_09_21_051456_usar_receptora_libre_en_actores_participantes_table.php';
+    Artisan::call('migrate:rollback', ['--path' => $migracion]);
+
+    expect(Schema::hasTable('instituciones_receptoras'))->toBeTrue()
+        ->and(Schema::hasColumn('actores_participantes', 'institucion_receptora'))->toBeFalse();
+
+    $escuela = DB::table('instituciones_receptoras')->insertGetId(['nombre' => 'Escuela Oficial Rural Mixta', 'created_at' => now(), 'updated_at' => now()]);
+    $expediente = Expediente::factory()->create();
+    DB::table('actores_participantes')->insert([
+        'expediente_id' => $expediente->id,
+        'institucion_receptora_id' => $escuela,
+        'contraparte' => 'Directora',
+        'comunidad_beneficiada' => 'Barrio Norte',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    Artisan::call('migrate', ['--path' => $migracion]);
+
+    expect(Schema::hasTable('instituciones_receptoras'))->toBeFalse()
+        ->and(Schema::hasColumn('actores_participantes', 'institucion_receptora_id'))->toBeFalse()
+        ->and(DB::table('actores_participantes')->value('institucion_receptora'))->toBe('Escuela Oficial Rural Mixta');
 });

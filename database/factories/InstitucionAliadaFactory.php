@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\InstitucionReceptora;
+use App\Models\InstitucionAliada;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<InstitucionReceptora>
+ * @extends Factory<InstitucionAliada>
  */
-class InstitucionReceptoraFactory extends Factory
+class InstitucionAliadaFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,8 +18,8 @@ class InstitucionReceptoraFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => 'Escuela '.fake()->unique()->words(3, true),
-            'tipo' => 'Educación',
+            'nombre' => 'Fundación '.fake()->unique()->words(3, true),
+            'tipo' => 'Organización no gubernamental',
             'nombre_contacto' => fake()->name(),
             'correo_contacto' => fake()->safeEmail(),
             'telefono_contacto' => fake()->numerify('2#######'),

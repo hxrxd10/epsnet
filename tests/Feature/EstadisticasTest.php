@@ -6,7 +6,7 @@ use App\Models\Catalogo;
 use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
-use App\Models\InstitucionReceptora;
+use App\Models\InstitucionAliada;
 use App\Models\Municipio;
 use App\Models\UnidadAcademica;
 use App\Models\User;
@@ -60,16 +60,20 @@ it('suma por departamento lo registrado en cada eje', function () {
     $sacatepequez = departamentoEstadistico('03', 'Sacatepéquez');
     $peten = departamentoEstadistico('17', 'Petén');
     $mobiliario = Catalogo::factory()->create(['nombre' => 'Mobiliario escolar']);
-    $escuela = InstitucionReceptora::factory()->create();
+    $ministerio = InstitucionAliada::factory()->create(['nombre' => 'Ministerio de Educación']);
+    $ong = InstitucionAliada::factory()->create(['nombre' => 'Cruz Roja']);
 
     $uno = epsEstadistico($sacatepequez, 'Antigua Guatemala');
     $uno->bienesServicios()->create(['tipo' => 'bien', 'catalogo_id' => $mobiliario->id, 'descripcion' => 'Pupitres', 'cantidad_beneficiarios' => 40, 'fecha' => '2026-04-01']);
     $uno->bienesServicios()->create(['tipo' => 'bien', 'catalogo_id' => $mobiliario->id, 'descripcion' => 'Sillas', 'cantidad_beneficiarios' => 10, 'fecha' => '2026-04-02']);
     $uno->transferencias()->create(['tipo_actividad' => 'taller', 'actividad' => 'Taller de lectura', 'comunidad' => 'San Felipe', 'numero_participantes' => 25, 'fecha' => '2026-05-01']);
     $uno->publicaciones()->create(['titulo' => 'Lectura temprana', 'tipo' => 'articulo', 'autores' => 'A. Pérez']);
-    $uno->actores()->create(['institucion_receptora_id' => $escuela->id, 'contraparte' => 'Director', 'comunidad_beneficiada' => 'San Felipe']);
+    $uno->actores()->create(['institucion_receptora' => 'Escuela de San Felipe', 'contraparte' => 'Director', 'comunidad_beneficiada' => 'San Felipe']);
+    $uno->alianzas()->create(['institucion_aliada_id' => $ministerio->id]);
+    $uno->alianzas()->create(['institucion_aliada_id' => $ong->id]);
     $dos = epsEstadistico($sacatepequez, 'Jocotenango');
-    $dos->actores()->create(['institucion_receptora_id' => $escuela->id, 'contraparte' => 'Directora', 'comunidad_beneficiada' => 'Jocotenango']);
+    $dos->actores()->create(['institucion_receptora' => 'Escuela de Jocotenango', 'contraparte' => 'Directora', 'comunidad_beneficiada' => 'Jocotenango']);
+    $dos->alianzas()->create(['institucion_aliada_id' => $ministerio->id]);
     epsEstadistico($peten, 'Flores')->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Jornada', 'cantidad_beneficiarios' => 5, 'fecha' => '2026-04-03']);
     $this->actingAs(User::factory()->invitado()->create());
 
@@ -90,7 +94,7 @@ it('suma por departamento lo registrado en cada eje', function () {
                     'acciones' => 1,
                     'participantes' => 25,
                     'investigaciones' => 1,
-                    'instituciones' => 1,
+                    'instituciones' => 2,
                 ],
                 'top_bienes_servicios' => [['nombre' => 'Mobiliario escolar', 'tipo' => 'bien', 'cantidad' => 2, 'beneficiarios' => 50]],
             ]));
@@ -233,4 +237,22 @@ it('agrupa aparte las ubicaciones anteriores al catálogo, que no tienen municip
     $this->get(route('estadisticas.departamento', $departamento))
         ->assertInertia(fn (Assert $page) => $page
             ->where('municipios', fn ($municipios) => collect($municipios)->pluck('nombre')->all() === ['Antigua Guatemala', 'Sin municipio']));
+});
+
+it('toma el año de la aprobación cuando el EPS no tiene orden de impresión', function () {
+    $departamento = departamentoEstadistico('03', 'Sacatepéquez');
+    $conOrden = epsEstadistico($departamento, 'Antigua Guatemala', '2025-03-10');
+    $sinOrden = epsEstadistico($departamento, 'Antigua Guatemala', '2023-01-01', ['estado_expediente' => EstadoExpediente::Verificado, 'verificado_at' => '2024-06-15 10:00:00']);
+    $sinOrden->ordenImpresion()->delete();
+    $sinOrdenNiAprobacion = epsEstadistico($departamento, 'Antigua Guatemala', '2023-01-01');
+    $sinOrdenNiAprobacion->ordenImpresion()->delete();
+    $this->actingAs(User::factory()->invitado()->create());
+
+    $this->get(route('estadisticas.index'))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 3)->where('anios', [2025, 2024]));
+    $this->get(route('estadisticas.index', ['anio' => 2024]))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1));
+    $this->get(route('estadisticas.index', ['anio' => 2025]))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1));
+    expect($conOrden->exists)->toBeTrue();
 });

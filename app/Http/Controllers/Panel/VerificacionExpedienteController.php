@@ -32,7 +32,7 @@ class VerificacionExpedienteController extends Controller
             Bitacora::registrar(
                 $expediente->moduloBitacora(),
                 TipoCambioBitacora::Aprobacion,
-                "Aprobó el {$expediente->resumenBitacora()} · ".Expediente::CONSTANCIA_APROBACION,
+                "Aprobó el {$expediente->resumenBitacora()}".($expediente->ordenImpresion()->exists() ? '' : ' (sin orden de impresión)').' · '.Expediente::CONSTANCIA_APROBACION,
                 $expediente,
             );
         }

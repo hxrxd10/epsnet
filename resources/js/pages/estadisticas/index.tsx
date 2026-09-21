@@ -56,7 +56,8 @@ export default function Estadisticas({
                     </h1>
                     <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
                         Lo que la red de EPS ha hecho en cada departamento. El
-                        año es el de la orden de impresión de cada EPS.
+                        año es el de la orden de impresión de cada EPS o, si no
+                        la tiene, el de su aprobación.
                     </p>
                 </div>
 

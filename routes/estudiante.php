@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Estudiante\AccesoController;
 use App\Http\Controllers\Estudiante\ActorParticipanteController;
+use App\Http\Controllers\Estudiante\AlianzaController;
 use App\Http\Controllers\Estudiante\BienServicioController;
 use App\Http\Controllers\Estudiante\CierreExpedienteController;
 use App\Http\Controllers\Estudiante\CuentaController;
@@ -50,6 +51,11 @@ Route::prefix('estudiante')->name('estudiante.')->group(function () {
                     ->only(['index', 'store', 'update', 'destroy'])
                     ->parameters([$segmento => 'registro']);
             }
+
+            // Instituciones aliadas del EPS: se muestran en el paso de actores.
+            Route::resource('expedientes.alianzas', AlianzaController::class)
+                ->only(['store', 'update', 'destroy'])
+                ->parameters(['alianzas' => 'registro']);
 
             Route::put('expedientes/{expediente}/programa', [ProgramaExpedienteController::class, 'update'])->name('expedientes.programa.update');
 

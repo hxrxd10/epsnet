@@ -82,6 +82,7 @@ export default function BienesServicios({
             label: 'Cantidad de beneficiarios',
             tipo: 'number',
             min: 0,
+            ayuda: 'Total estimado de personas que se benefician con este bien o servicio, directas e indirectas.',
             ancho: 'mitad',
         },
     ];

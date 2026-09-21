@@ -66,7 +66,7 @@ export default function Transferencias({
             tipo: 'textarea',
             requerido: true,
             filas: 6,
-            ayuda: 'Describe la capacitación, taller o asesoría y lo que se transfirió.',
+            ayuda: 'Describe la acción y lo que se transfirió. Si fue un documento o material (una propuesta de ley, una política, un informe, una guía), indica de qué trata y a quién se entregó.',
         },
         {
             name: 'comunidad',
@@ -80,6 +80,7 @@ export default function Transferencias({
             label: 'Número de participantes',
             tipo: 'number',
             min: 0,
+            ayuda: 'Personas que participaron directamente en la acción (las que asistieron o recibieron el material). Es distinto de los beneficiarios de un bien o servicio.',
             ancho: 'mitad',
         },
     ];
@@ -90,7 +91,7 @@ export default function Transferencias({
             ejes={pasos}
             expediente={expediente}
             titulo="Transferencia de conocimiento"
-            descripcion="Registra las capacitaciones, talleres y asesorías con las que compartiste conocimiento con las comunidades. Si la hiciste junto a otros estudiantes, cada quien registra la suya."
+            descripcion="Registra las capacitaciones, talleres, asesorías y también los documentos y materiales que generaste para compartir conocimiento (leyes, políticas, informes, guías). Si la hiciste junto a otros estudiantes, cada quien registra la suya."
         >
             <Head title="Transferencia de conocimiento" />
 

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\Auditable;
-use Database\Factories\InstitucionReceptoraFactory;
+use Database\Factories\InstitucionAliadaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $telefono_contacto
  * @property string|null $direccion
  */
-#[Table('instituciones_receptoras')]
+#[Table('instituciones_aliadas')]
 #[Fillable([
     'nombre',
     'tipo',
@@ -29,26 +29,34 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'telefono_contacto',
     'direccion',
 ])]
-class InstitucionReceptora extends Model
+class InstitucionAliada extends Model
 {
-    /** @use HasFactory<InstitucionReceptoraFactory> */
+    /** @use HasFactory<InstitucionAliadaFactory> */
     use Auditable, HasFactory, SoftDeletes;
 
     /**
-     * @return HasMany<ActorParticipante, $this>
+     * @return HasMany<Alianza, $this>
      */
-    public function actores(): HasMany
+    public function alianzas(): HasMany
     {
-        return $this->hasMany(ActorParticipante::class);
+        return $this->hasMany(Alianza::class);
     }
 
     public function moduloBitacora(): string
     {
-        return 'Instituciones receptoras';
+        return 'Instituciones aliadas';
     }
 
     protected function descripcionBitacora(): string
     {
         return 'la institución «'.$this->nombre.'»';
+    }
+
+    /**
+     * Una institución aliada que ya figura en el EPS de algún estudiante no se elimina.
+     */
+    public function estaEnUso(): bool
+    {
+        return $this->alianzas()->withTrashed()->exists();
     }
 }

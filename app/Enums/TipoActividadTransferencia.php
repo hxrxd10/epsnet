@@ -11,6 +11,7 @@ enum TipoActividadTransferencia: string
     case Capacitacion = 'capacitacion';
     case Taller = 'taller';
     case Asesoria = 'asesoria';
+    case Documento = 'documento';
     case Otro = 'otro';
 
     public function etiqueta(): string
@@ -19,6 +20,7 @@ enum TipoActividadTransferencia: string
             self::Capacitacion => 'Capacitación',
             self::Taller => 'Taller',
             self::Asesoria => 'Asesoría',
+            self::Documento => 'Documento o material generado',
             self::Otro => 'Otra actividad',
         };
     }

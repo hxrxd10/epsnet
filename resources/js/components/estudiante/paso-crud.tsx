@@ -31,6 +31,8 @@ export type ContextoCampo = {
     valores: Valores;
     /** Combina valores en el formulario (p. ej. las coordenadas elegidas en un mapa). */
     establecer: (parcial: Valores) => void;
+    /** Errores de validación por campo, para los controles propios. */
+    errores: Record<string, string | undefined>;
 };
 
 export type Campo = {
@@ -307,6 +309,7 @@ export default function PasoCrud<T extends { id: number }>({
                                 <div key={campo.name} className="sm:col-span-2">
                                     {campo.render({
                                         valores: formulario.data,
+                                        errores: formulario.errors,
                                         establecer: (parcial) =>
                                             formulario.setData((previos) => ({
                                                 ...previos,

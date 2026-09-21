@@ -97,7 +97,7 @@ class EstadisticaPdfController extends Controller
     private function etiquetasDeFiltros(array $filtros): array
     {
         return [
-            'Año (orden de impresión)' => $filtros['anio'] === null ? 'Todos los años' : (string) $filtros['anio'],
+            'Año' => $filtros['anio'] === null ? 'Todos los años' : (string) $filtros['anio'],
             'Unidad académica' => $filtros['unidad'] === null ? 'Todas las unidades' : (UnidadAcademica::find($filtros['unidad'])?->nombre ?? '—'),
             'Carrera' => $filtros['carrera'] ?? 'Todas las carreras',
         ];

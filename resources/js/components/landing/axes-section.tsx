@@ -78,7 +78,7 @@ const AXES: Axis[] = [
             'Institución receptora',
             'Contraparte',
             'Comunidad beneficiada',
-            'Instituciones reutilizables',
+            'Instituciones aliadas y su aporte',
         ],
     },
     {

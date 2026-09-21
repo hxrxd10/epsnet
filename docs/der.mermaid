@@ -86,15 +86,21 @@ erDiagram
     EJE5_ACTORES {
         int id PK
         int estudiante_id FK
-        int institucion_receptora_id FK
+        string institucion_receptora
         string contraparte
         string comunidad_beneficiada
     }
-    INSTITUCION_RECEPTORA {
+    INSTITUCION_ALIADA {
         int id PK
         string nombre
         string tipo
         string contacto
+    }
+    ALIANZA {
+        int id PK
+        int estudiante_id FK
+        int institucion_aliada_id FK
+        string aporte
     }
     EJE6_SEGUIMIENTO {
         int id PK
@@ -134,7 +140,8 @@ erDiagram
     DEPARTAMENTO ||--o{ MUNICIPIO : contiene
     DEPARTAMENTO ||--o{ EJE4_TERRITORIO : ubica
     MUNICIPIO ||--o{ EJE4_TERRITORIO : ubica
-    EJE5_ACTORES }o--|| INSTITUCION_RECEPTORA : involucra
+    ESTUDIANTE ||--o{ ALIANZA : registra
+    ALIANZA }o--|| INSTITUCION_ALIADA : con
     USUARIO ||--o{ BITACORA : genera
     FORMULARIO_INGRESO ||--o{ ADJUNTO : contiene
     EJE1_BIENES_SERVICIOS ||--o{ ADJUNTO : contiene

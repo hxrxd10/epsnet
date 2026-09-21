@@ -151,6 +151,16 @@ class Expediente extends Model
     }
 
     /**
+     * Instituciones aliadas (ministerios, ONG, socios) que cooperaron con el proyecto.
+     *
+     * @return HasMany<Alianza, $this>
+     */
+    public function alianzas(): HasMany
+    {
+        return $this->hasMany(Alianza::class);
+    }
+
+    /**
      * @return HasMany<SeguimientoImpacto, $this>
      */
     public function seguimientos(): HasMany

@@ -106,7 +106,7 @@ class EstudianteController extends Controller
                 'descarga' => route('panel.estudiantes.orden-impresion', $expediente, absolute: false),
             ],
             'ejes' => $detalle->handle($expediente),
-            'puedeVerificar' => $expediente->estado_expediente !== EstadoExpediente::Activo,
+            'puedeVerificar' => $request->user()->can('verificar', $expediente),
         ]);
     }
 }

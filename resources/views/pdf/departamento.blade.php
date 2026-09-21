@@ -79,6 +79,17 @@
                 @empty
                     <p class="apagado">No hay investigaciones registradas.</p>
                 @endforelse
+
+                <h3>Instituciones aliadas ({{ count($municipio['instituciones']) }})</h3>
+                @forelse ($municipio['instituciones'] as $institucion)
+                    <div style="margin: 0 0 3px 0;">
+                        {{ $institucion['nombre'] }}
+                        @if ($institucion['tipo']) <span class="apagado">· {{ $institucion['tipo'] }}</span> @endif
+                        <span class="apagado">· {{ $institucion['eps'] }} EPS</span>
+                    </div>
+                @empty
+                    <p class="apagado">No hay instituciones aliadas registradas.</p>
+                @endforelse
             </div>
         @endforeach
     </div>

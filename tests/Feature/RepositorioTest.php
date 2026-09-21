@@ -4,7 +4,7 @@ use App\Enums\EstadoExpediente;
 use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
-use App\Models\InstitucionReceptora;
+use App\Models\InstitucionAliada;
 use App\Models\Municipio;
 use App\Models\UnidadAcademica;
 use App\Models\User;
@@ -107,8 +107,9 @@ it('no muestra el detalle de un EPS que no está aprobado', function (EstadoExpe
 
 it('no expone datos privados del estudiante ni de las instituciones', function () {
     $expediente = expedienteAprobado();
-    $institucion = InstitucionReceptora::factory()->create(['correo_contacto' => 'privado@escuela.example', 'telefono_contacto' => '22334455']);
-    $expediente->actores()->create(['institucion_receptora_id' => $institucion->id, 'contraparte' => 'Directora', 'comunidad_beneficiada' => 'Barrio Norte']);
+    $institucion = InstitucionAliada::factory()->create(['correo_contacto' => 'privado@escuela.example', 'telefono_contacto' => '22334455']);
+    $expediente->alianzas()->create(['institucion_aliada_id' => $institucion->id]);
+    $expediente->actores()->create(['institucion_receptora' => 'Escuela Norte', 'contraparte' => 'Directora', 'comunidad_beneficiada' => 'Barrio Norte']);
     $this->actingAs(User::factory()->invitado()->create());
 
     $contenido = $this->get(route('repositorio.show', $expediente))->getContent().$this->get(route('repositorio.index'))->getContent();

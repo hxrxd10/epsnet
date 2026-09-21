@@ -115,11 +115,12 @@ Este documento cubre los 13 módulos funcionales a desarrollar en Laravel, organ
 #### Módulo 9 — Eje 5 — Actores/Participantes (Mes 2)
 
 **Requerimientos funcionales**
-- RF-18: El sistema debe permitir registrar la institución receptora, la contraparte y la comunidad beneficiada del EPS.
-- RF-19: El sistema debe permitir reutilizar una institución receptora ya registrada por otro estudiante.
+- RF-18: El sistema debe permitir registrar la institución receptora (donde el estudiante realiza su EPS, escrita libremente por él), la contraparte y la comunidad beneficiada del EPS.
+- RF-19: El sistema debe permitir registrar las instituciones aliadas del proyecto (ministerios, ONG, socios que participaron o cooperaron), eligiéndolas de un catálogo administrado por DIGEU, e indicar su aporte. Las instituciones aliadas son las que se cuantifican en las estadísticas.
 
 **Criterios de aceptación**
-- El sistema no permite instituciones receptoras duplicadas con el mismo nombre.
+- El sistema no permite instituciones aliadas duplicadas con el mismo nombre en el catálogo, ni repetir una misma institución aliada en un EPS.
+- El estudiante no puede crear instituciones aliadas: si una no está en el catálogo, DIGEU la agrega.
 - Los actores registrados quedan vinculados al expediente del estudiante correspondiente.
 
 #### Módulo 10 — Eje 6 — Seguimiento e Impacto (Mes 2)
