@@ -24,7 +24,31 @@ class BienServicioRequest extends EjeRequest
             'beneficiarios' => ['nullable', 'string', 'max:'.self::LIMITE_TEXTO_LARGO],
             'cantidad_beneficiarios' => ['nullable', 'integer', 'min:0', 'max:100000000'],
             'fecha' => ['required', 'date', 'before_or_equal:today'],
+            'poblaciones' => ['nullable', 'array'],
+            'poblaciones.*' => ['integer', 'distinct', Rule::exists('catalogos', 'id')->where('catalogo', TipoCatalogo::PoblacionesVulnerables->value)],
         ];
+    }
+
+    /**
+     * El formulario envía las poblaciones vulnerables marcadas como una lista separada por comas.
+     */
+    protected function prepareForValidation(): void
+    {
+        $poblaciones = $this->input('poblaciones');
+
+        if (is_string($poblaciones)) {
+            $this->merge(['poblaciones' => $poblaciones === '' ? [] : explode(',', $poblaciones)]);
+        }
+    }
+
+    /**
+     * Ids de las poblaciones vulnerables marcadas.
+     *
+     * @return list<int>
+     */
+    public function poblaciones(): array
+    {
+        return array_values(array_map('intval', $this->validated('poblaciones') ?? []));
     }
 
     /**
@@ -54,7 +78,7 @@ class BienServicioRequest extends EjeRequest
      */
     public function datos(): array
     {
-        $datos = $this->validated();
+        $datos = collect($this->validated())->except('poblaciones')->all();
 
         if (filled($datos['catalogo_id'] ?? null)) {
             $categoria = Catalogo::find($datos['catalogo_id'])?->categoria;

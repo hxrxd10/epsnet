@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:53
+* @see app/Http/Controllers/EstadisticaPdfController.php:52
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 export const pdf = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:53
+* @see app/Http/Controllers/EstadisticaPdfController.php:52
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdf.url = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ pdf.url = (args: { departamento: string | { codigo: string } } | [departamento: 
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:53
+* @see app/Http/Controllers/EstadisticaPdfController.php:52
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdf.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ pdf.get = (args: { departamento: string | { codigo: string } } | [departamento: 
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:53
+* @see app/Http/Controllers/EstadisticaPdfController.php:52
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdf.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ pdf.head = (args: { departamento: string | { codigo: string } } | [departamento:
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:53
+* @see app/Http/Controllers/EstadisticaPdfController.php:52
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 const pdfForm = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const pdfForm = (args: { departamento: string | { codigo: string } } | [departam
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:53
+* @see app/Http/Controllers/EstadisticaPdfController.php:52
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdfForm.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ pdfForm.get = (args: { departamento: string | { codigo: string } } | [departamen
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:53
+* @see app/Http/Controllers/EstadisticaPdfController.php:52
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdfForm.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -104,8 +104,114 @@ pdfForm.head = (args: { departamento: string | { codigo: string } } | [departame
 
 pdf.form = pdfForm
 
+/**
+* @see \App\Http\Controllers\EstadisticaExcelController::excel
+* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @route '/estadisticas/departamentos/{departamento}/excel'
+*/
+export const excel = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: excel.url(args, options),
+    method: 'get',
+})
+
+excel.definition = {
+    methods: ["get","head"],
+    url: '/estadisticas/departamentos/{departamento}/excel',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\EstadisticaExcelController::excel
+* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @route '/estadisticas/departamentos/{departamento}/excel'
+*/
+excel.url = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { departamento: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'codigo' in args) {
+        args = { departamento: args.codigo }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            departamento: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        departamento: typeof args.departamento === 'object'
+        ? args.departamento.codigo
+        : args.departamento,
+    }
+
+    return excel.definition.url
+            .replace('{departamento}', parsedArgs.departamento.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\EstadisticaExcelController::excel
+* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @route '/estadisticas/departamentos/{departamento}/excel'
+*/
+excel.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: excel.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EstadisticaExcelController::excel
+* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @route '/estadisticas/departamentos/{departamento}/excel'
+*/
+excel.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: excel.url(args, options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\EstadisticaExcelController::excel
+* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @route '/estadisticas/departamentos/{departamento}/excel'
+*/
+const excelForm = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: excel.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EstadisticaExcelController::excel
+* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @route '/estadisticas/departamentos/{departamento}/excel'
+*/
+excelForm.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: excel.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EstadisticaExcelController::excel
+* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @route '/estadisticas/departamentos/{departamento}/excel'
+*/
+excelForm.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: excel.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+excel.form = excelForm
+
 const departamento = {
     pdf: Object.assign(pdf, pdf),
+    excel: Object.assign(excel, excel),
 }
 
 export default departamento

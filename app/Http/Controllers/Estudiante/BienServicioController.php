@@ -12,6 +12,7 @@ use App\Models\BienServicio;
 use App\Models\Catalogo;
 use App\Models\Expediente;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Response;
 
 class BienServicioController extends Controller
@@ -22,6 +23,7 @@ class BienServicioController extends Controller
     {
         return $this->paso($expediente, Eje::BienesServicios, [
             'registros' => $expediente->bienesServicios()
+                ->with('poblaciones:id,nombre')
                 ->orderByDesc('fecha')->orderByDesc('id')
                 ->get()
                 ->map(fn (BienServicio $registro): array => [
@@ -33,11 +35,19 @@ class BienServicioController extends Controller
                     'cantidad' => $registro->cantidad,
                     'beneficiarios' => $registro->beneficiarios,
                     'cantidad_beneficiarios' => $registro->cantidad_beneficiarios,
+                    'poblaciones' => $registro->poblaciones->map(fn (Catalogo $poblacion): array => ['id' => $poblacion->id, 'nombre' => $poblacion->nombre])->values()->all(),
                     'fecha' => $registro->fecha->toDateString(),
                 ])
                 ->values(),
             'tipos' => TipoBienServicio::opciones(),
             'catalogo' => $this->opcionesDelCatalogo($expediente),
+            'poblaciones' => Catalogo::query()
+                ->delCatalogo(TipoCatalogo::PoblacionesVulnerables)
+                ->where(fn ($consulta) => $consulta->where('activo', true)->orWhereHas('bienesConPoblacion', fn ($deEste) => $deEste->where('expediente_id', $expediente->id)))
+                ->orderBy('nombre')
+                ->get(['id', 'nombre'])
+                ->map(fn (Catalogo $poblacion): array => ['value' => (string) $poblacion->id, 'label' => $poblacion->nombre])
+                ->all(),
             'lineas' => Catalogo::query()
                 ->delCatalogo(TipoCatalogo::LineasIntervencion)
                 ->whereIn('id', Catalogo::query()->delCatalogo(TipoCatalogo::BienesServicios)->whereNotNull('linea_intervencion_id')->select('linea_intervencion_id'))
@@ -50,14 +60,18 @@ class BienServicioController extends Controller
 
     public function store(BienServicioRequest $request, Expediente $expediente): RedirectResponse
     {
-        $expediente->bienesServicios()->create($request->datos());
+        DB::transaction(fn () => $expediente->bienesServicios()->create($request->datos())->poblaciones()->sync($request->poblaciones()));
 
         return $this->guardado($expediente, Eje::BienesServicios, 'Bien o servicio registrado.');
     }
 
     public function update(BienServicioRequest $request, Expediente $expediente, int $registro): RedirectResponse
     {
-        $expediente->bienesServicios()->findOrFail($registro)->update($request->datos());
+        DB::transaction(function () use ($request, $expediente, $registro): void {
+            $bien = $expediente->bienesServicios()->findOrFail($registro);
+            $bien->update($request->datos());
+            $bien->poblaciones()->sync($request->poblaciones());
+        });
 
         return $this->guardado($expediente, Eje::BienesServicios, 'Bien o servicio actualizado.');
     }

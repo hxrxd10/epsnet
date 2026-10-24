@@ -8,6 +8,7 @@ use App\Enums\EstadoExpediente;
 use App\Enums\ProgramaEps;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
+use App\Support\Articulacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -37,7 +38,7 @@ class RepositorioController extends Controller
                 'transferencias:id,expediente_id,actividad,fecha',
                 'seguimientos:id,expediente_id,evaluacion_impacto,fecha',
             ])
-            ->withCount(array_map(fn (Eje $eje): string => $eje->relacion(), Eje::cases()))
+            ->withCount([...array_map(fn (Eje $eje): string => $eje->relacion(), Eje::cases()), 'alianzas'])
             ->when($filtros['q'] ?? null, fn ($consulta, string $texto) => $consulta->where(
                 fn ($consulta) => $consulta
                     ->where('nombre_carrera', 'like', "%{$texto}%")
@@ -66,6 +67,7 @@ class RepositorioController extends Controller
                 'publicaciones' => $expediente->publicaciones_count,
                 'aprobado' => $expediente->verificado_at?->toDateString(),
                 'foto' => $expediente->urlFoto(),
+                'articulacion' => Articulacion::deExpediente($expediente)->toArray(),
             ])->values(),
             'pagina' => [
                 'actual' => $expedientes->currentPage(),
@@ -95,6 +97,7 @@ class RepositorioController extends Controller
                 'foto' => $expediente->urlFoto(),
             ],
             'ejes' => $detalle->handle($expediente),
+            'articulacion' => Articulacion::deExpediente($expediente)->toArray(),
         ]);
     }
 

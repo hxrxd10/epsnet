@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowRight, FileDown, MapPin } from 'lucide-react';
+import { ArrowRight, FileDown, FileSpreadsheet, MapPin } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadisticos';
 import MapaGoogle from '@/components/estadisticas/mapa-google';
@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import {
     departamento as rutaDepartamento,
+    excel,
     index,
     pdf,
 } from '@/routes/estadisticas';
@@ -84,16 +85,24 @@ export default function Estadisticas({
                         unidades={unidades}
                         carreras={carreras}
                     />
-                    <Button asChild variant="outline">
-                        <a
-                            href={pdf.url({
-                                query: { ...consulta, metrica: clave },
-                            })}
-                        >
-                            <FileDown />
-                            Generar PDF
-                        </a>
-                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                        <Button asChild variant="outline">
+                            <a
+                                href={pdf.url({
+                                    query: { ...consulta, metrica: clave },
+                                })}
+                            >
+                                <FileDown />
+                                Generar PDF
+                            </a>
+                        </Button>
+                        <Button asChild variant="outline">
+                            <a href={excel.url({ query: consulta })}>
+                                <FileSpreadsheet />
+                                Exportar Excel
+                            </a>
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]">

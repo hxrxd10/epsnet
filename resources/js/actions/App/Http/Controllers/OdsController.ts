@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\OdsController::index
-* @see app/Http/Controllers/OdsController.php:19
+* @see app/Http/Controllers/OdsController.php:23
 * @route '/ods'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\OdsController::index
-* @see app/Http/Controllers/OdsController.php:19
+* @see app/Http/Controllers/OdsController.php:23
 * @route '/ods'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\OdsController::index
-* @see app/Http/Controllers/OdsController.php:19
+* @see app/Http/Controllers/OdsController.php:23
 * @route '/ods'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\OdsController::index
-* @see app/Http/Controllers/OdsController.php:19
+* @see app/Http/Controllers/OdsController.php:23
 * @route '/ods'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\OdsController::index
-* @see app/Http/Controllers/OdsController.php:19
+* @see app/Http/Controllers/OdsController.php:23
 * @route '/ods'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\OdsController::index
-* @see app/Http/Controllers/OdsController.php:19
+* @see app/Http/Controllers/OdsController.php:23
 * @route '/ods'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\OdsController::index
-* @see app/Http/Controllers/OdsController.php:19
+* @see app/Http/Controllers/OdsController.php:23
 * @route '/ods'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -80,6 +80,87 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 index.form = indexForm
 
-const OdsController = { index }
+/**
+* @see \App\Http\Controllers\OdsController::excel
+* @see app/Http/Controllers/OdsController.php:37
+* @route '/ods/excel'
+*/
+export const excel = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: excel.url(options),
+    method: 'get',
+})
+
+excel.definition = {
+    methods: ["get","head"],
+    url: '/ods/excel',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\OdsController::excel
+* @see app/Http/Controllers/OdsController.php:37
+* @route '/ods/excel'
+*/
+excel.url = (options?: RouteQueryOptions) => {
+    return excel.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\OdsController::excel
+* @see app/Http/Controllers/OdsController.php:37
+* @route '/ods/excel'
+*/
+excel.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: excel.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OdsController::excel
+* @see app/Http/Controllers/OdsController.php:37
+* @route '/ods/excel'
+*/
+excel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: excel.url(options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\OdsController::excel
+* @see app/Http/Controllers/OdsController.php:37
+* @route '/ods/excel'
+*/
+const excelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: excel.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OdsController::excel
+* @see app/Http/Controllers/OdsController.php:37
+* @route '/ods/excel'
+*/
+excelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: excel.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OdsController::excel
+* @see app/Http/Controllers/OdsController.php:37
+* @route '/ods/excel'
+*/
+excelForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: excel.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+excel.form = excelForm
+
+const OdsController = { index, excel }
 
 export default OdsController

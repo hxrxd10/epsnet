@@ -72,6 +72,7 @@ it('suma por ODS el aporte, los bienes y servicios, los beneficiarios y los EPS 
             ->where('ods.1.items.0.cantidad', 6)
             ->where('ods.1.items.0.aporte', 1500)
             ->where('ods.1.lineas.0.nombre', 'Agua y saneamiento')
+            ->where('ods.1.lineas.0.beneficiarios', 55)
             ->where('ods.0.aporte', 1000)
             ->where('ods.2.eps', 0)
             ->where('ods.2.aporte', 0));

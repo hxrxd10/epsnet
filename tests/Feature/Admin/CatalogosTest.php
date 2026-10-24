@@ -321,3 +321,13 @@ describe('vínculos de los bienes y servicios', function () {
         expect(Catalogo::sole()->nombre)->toBe(trim($nombre));
     });
 });
+
+it('no elimina una población vulnerable que ya marcó algún bien o servicio', function () {
+    administrador();
+    $mujeres = Catalogo::factory()->del(TipoCatalogo::PoblacionesVulnerables)->create(['nombre' => 'Mujeres']);
+    BienServicio::factory()->create()->poblaciones()->attach($mujeres);
+
+    $this->delete(route('admin.catalogos.destroy', ['poblaciones-vulnerables', $mujeres->id]))->assertInertiaFlash('toast.type', 'error');
+
+    expect($mujeres->fresh())->not->toBeNull();
+});

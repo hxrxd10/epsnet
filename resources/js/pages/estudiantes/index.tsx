@@ -17,6 +17,8 @@ import {
 import { dashboard } from '@/routes';
 import { index, show } from '@/routes/panel/estudiantes';
 import type { EstadoExpediente, Opcion } from '@/types/estudiante';
+import { ArticulacionInsignia } from '@/components/expediente/articulacion';
+import type { ArticulacionEps } from '@/components/expediente/articulacion';
 
 type Fila = {
     id: number;
@@ -28,6 +30,7 @@ type Fila = {
     estado_etiqueta: string;
     es_epsum: boolean;
     registros: number;
+    articulacion: ArticulacionEps;
     actualizado: string | null;
 };
 
@@ -196,6 +199,9 @@ export default function Estudiantes({
                                                 EPSUM
                                             </Badge>
                                         )}
+                                        <ArticulacionInsignia
+                                            articulacion={fila.articulacion}
+                                        />
                                         <EstadoBadge
                                             estado={fila.estado}
                                             etiqueta={fila.estado_etiqueta}

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -91,6 +92,16 @@ class Catalogo extends Model
     }
 
     /**
+     * Bienes y servicios que incluyeron a esta población vulnerable entre sus beneficiarios.
+     *
+     * @return BelongsToMany<BienServicio, $this>
+     */
+    public function bienesConPoblacion(): BelongsToMany
+    {
+        return $this->belongsToMany(BienServicio::class, 'bien_servicio_poblacion', 'catalogo_id', 'bien_servicio_id');
+    }
+
+    /**
      * @return HasMany<TransferenciaConocimiento, $this>
      */
     public function transferencias(): HasMany
@@ -138,6 +149,7 @@ class Catalogo extends Model
     {
         return $this->bienesServicios()->withTrashed()->exists()
             || $this->transferencias()->withTrashed()->exists()
+            || $this->bienesConPoblacion()->exists()
             || self::query()->where(fn (Builder $consulta) => $consulta
                 ->where('linea_intervencion_id', $this->id)
                 ->orWhere('politica_publica_id', $this->id)

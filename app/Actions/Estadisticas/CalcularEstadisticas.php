@@ -14,9 +14,11 @@ use App\Models\PublicacionInvestigacion;
 use App\Models\TransferenciaConocimiento;
 use App\Models\UbicacionTerritorial;
 use App\Models\UnidadAcademica;
+use App\Support\Articulacion;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -199,9 +201,10 @@ class CalcularEstadisticas
      * servicios que entregaron (cada elemento del catálogo está anclado a un ODS).
      *
      * @param  Filtros  $filtros
+     * @param  int|null  $limite  Cuántos bienes, líneas, áreas y unidades se dan por ODS (null: todos).
      * @return array{totales: array{eps: int, estudiantes: int, bienes_servicios: int, beneficiarios: int, aporte: float, ods_con_actividad: int}, sin_ods: array{bienes_servicios: int, aporte: float}, ods: list<array<string, mixed>>}
      */
-    public function porOds(array $filtros): array
+    public function porOds(array $filtros, ?int $limite = 10): array
     {
         $expedientes = $this->expedientes($filtros)->get(['id', 'estudiante_id', 'unidad_academica_id'])->keyBy('id');
         $ubicaciones = $this->ubicaciones($this->expedientes($filtros));
@@ -254,15 +257,15 @@ class CalcularEstadisticas
             $porOds[$clave]['aporte'] += $aporte;
 
             $this->sumar($porOds[$clave]['items'], (string) $elemento->id, ['nombre' => $elemento->nombre, 'tipo' => $fila->tipo->value], $cantidad, $aporte, (int) $fila->beneficiarios);
-            $this->sumar($porOds[$clave]['lineas'], (string) $elemento->linea_intervencion_id, ['nombre' => $elemento->lineaIntervencion->nombre ?? self::SIN_CLASIFICAR], $cantidad, $aporte);
-            $this->sumar($porOds[$clave]['areas'], (string) $elemento->area_intervencion_id, ['nombre' => $elemento->areaIntervencion->nombre ?? self::SIN_CLASIFICAR], $cantidad, $aporte);
-            $this->sumar($porOds[$clave]['unidades'], (string) $expediente->unidad_academica_id, ['nombre' => $unidades[$expediente->unidad_academica_id] ?? self::SIN_CLASIFICAR], $cantidad, $aporte);
+            $this->sumar($porOds[$clave]['lineas'], (string) $elemento->linea_intervencion_id, ['nombre' => $elemento->lineaIntervencion->nombre ?? self::SIN_CLASIFICAR], $cantidad, $aporte, (int) $fila->beneficiarios);
+            $this->sumar($porOds[$clave]['areas'], (string) $elemento->area_intervencion_id, ['nombre' => $elemento->areaIntervencion->nombre ?? self::SIN_CLASIFICAR], $cantidad, $aporte, (int) $fila->beneficiarios);
+            $this->sumar($porOds[$clave]['unidades'], (string) $expediente->unidad_academica_id, ['nombre' => $unidades[$expediente->unidad_academica_id] ?? self::SIN_CLASIFICAR], $cantidad, $aporte, (int) $fila->beneficiarios);
         }
 
-        $ordenar = fn (array $grupo, int $limite): array => collect($grupo)
+        $ordenar = fn (array $grupo): array => collect($grupo)
             ->map(fn (array $item): array => [...$item, 'aporte' => round($item['aporte'], 2)])
             ->sortBy([['aporte', 'desc'], ['cantidad', 'desc'], ['nombre', 'asc']])
-            ->take($limite)
+            ->when($limite !== null, fn (Collection $items) => $items->take($limite))
             ->values()
             ->all();
 
@@ -283,10 +286,10 @@ class CalcularEstadisticas
                     'bienes_servicios' => $datos['bienes_servicios'] ?? 0,
                     'beneficiarios' => $datos['beneficiarios'] ?? 0,
                     'aporte' => round($datos['aporte'] ?? 0, 2),
-                    'items' => $ordenar($datos['items'] ?? [], 10),
-                    'lineas' => $ordenar($datos['lineas'] ?? [], 10),
-                    'areas' => $ordenar($datos['areas'] ?? [], 10),
-                    'unidades' => $ordenar($datos['unidades'] ?? [], 10),
+                    'items' => $ordenar($datos['items'] ?? []),
+                    'lineas' => $ordenar($datos['lineas'] ?? []),
+                    'areas' => $ordenar($datos['areas'] ?? []),
+                    'unidades' => $ordenar($datos['unidades'] ?? []),
                 ];
             })
             ->values()
@@ -304,6 +307,86 @@ class CalcularEstadisticas
             'sin_ods' => ['bienes_servicios' => $sinOds['bienes_servicios'], 'aporte' => round($sinOds['aporte'], 2)],
             'ods' => $ods,
         ];
+    }
+
+    /**
+     * Cada EPS aprobado con lo que registró, su ubicación y su indicador de articulación (para exportar).
+     *
+     * @param  Filtros  $filtros
+     * @return list<array<string, mixed>>
+     */
+    public function expedientesDetallados(array $filtros): array
+    {
+        $registros = $this->registros($this->expedientes($filtros));
+        $ubicaciones = $this->ubicaciones($this->expedientes($filtros));
+        $departamentos = Departamento::query()->whereIn('id', $ubicaciones->pluck('departamento_id'))->get(['id', 'codigo', 'nombre'])->keyBy('id');
+        $municipios = Municipio::query()->whereIn('id', $ubicaciones->pluck('municipio_id')->filter())->pluck('nombre', 'id');
+
+        return $this->expedientes($filtros)
+            ->with(['estudiante', 'unidadAcademica:id,nombre'])
+            ->orderBy('id')
+            ->get()
+            ->map(function (Expediente $expediente) use ($registros, $ubicaciones, $departamentos, $municipios): array {
+                $registro = $registros[$expediente->id];
+                $ubicacion = $ubicaciones[$expediente->id] ?? null;
+                $departamento = $ubicacion === null ? null : $departamentos[$ubicacion->departamento_id] ?? null;
+
+                return [
+                    'id' => $expediente->id,
+                    'estudiante' => $expediente->estudiante->nombre_completo,
+                    'carrera' => $expediente->nombre_carrera,
+                    'unidad' => $expediente->unidadAcademica->nombre,
+                    'programa' => $expediente->programa?->etiqueta() ?? 'EPS',
+                    'aprobado' => $expediente->verificado_at?->format('d-m-Y'),
+                    'departamento_codigo' => $departamento?->codigo,
+                    'departamento' => $departamento?->nombre,
+                    'municipio' => $ubicacion?->municipio_id === null ? null : $municipios[$ubicacion->municipio_id] ?? null,
+                    'bienes_servicios' => $registro['bienes'],
+                    'beneficiarios' => $registro['beneficiarios'],
+                    'aporte' => round($registro['aporte'], 2),
+                    'investigaciones' => $registro['investigaciones'],
+                    'acciones' => $registro['acciones'],
+                    'participantes' => $registro['participantes'],
+                    'instituciones' => count($registro['instituciones']),
+                    'articulacion' => Articulacion::desdeConteos($registro['bienes'], $registro['investigaciones'], $registro['acciones'], count($registro['instituciones'])),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Bienes y servicios que incluyeron a cada población vulnerable entre sus beneficiarios.
+     *
+     * @param  Filtros  $filtros
+     * @return list<array{nombre: string, eps: int, registros: int, cantidad: int, beneficiarios: int, aporte: float}>
+     */
+    public function poblacionesVulnerables(array $filtros): array
+    {
+        $totales = DB::table('bien_servicio_poblacion as marca')
+            ->join('bienes_servicios as bien', 'bien.id', '=', 'marca.bien_servicio_id')
+            ->leftJoin('catalogos as elemento', 'elemento.id', '=', 'bien.catalogo_id')
+            ->whereNull('bien.deleted_at')
+            ->whereIn('bien.expediente_id', $this->expedientes($filtros)->select('id'))
+            ->groupBy('marca.catalogo_id')
+            ->selectRaw('marca.catalogo_id, count(distinct bien.expediente_id) as eps, count(*) as registros, sum(coalesce(bien.cantidad, 1)) as cantidad, sum(coalesce(bien.cantidad_beneficiarios, 0)) as beneficiarios, sum(coalesce(bien.cantidad, 1) * coalesce(elemento.valor_base, 0)) as aporte')
+            ->get()
+            ->keyBy('catalogo_id');
+
+        return Catalogo::query()
+            ->delCatalogo(TipoCatalogo::PoblacionesVulnerables)
+            ->orderBy('nombre')
+            ->get(['id', 'nombre'])
+            ->map(fn (Catalogo $poblacion): array => [
+                'nombre' => $poblacion->nombre,
+                'eps' => (int) ($totales[$poblacion->id]->eps ?? 0),
+                'registros' => (int) ($totales[$poblacion->id]->registros ?? 0),
+                'cantidad' => (int) ($totales[$poblacion->id]->cantidad ?? 0),
+                'beneficiarios' => (int) ($totales[$poblacion->id]->beneficiarios ?? 0),
+                'aporte' => round((float) ($totales[$poblacion->id]->aporte ?? 0), 2),
+            ])
+            ->values()
+            ->all();
     }
 
     /**

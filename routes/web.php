@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\UnidadAcademicaController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\EstadisticaController;
+use App\Http\Controllers\EstadisticaExcelController;
 use App\Http\Controllers\EstadisticaPdfController;
 use App\Http\Controllers\FotoExpedienteController;
 use App\Http\Controllers\InvestigacionController;
@@ -37,7 +38,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('estadisticas/pdf', [EstadisticaPdfController::class, 'index'])->name('estadisticas.pdf');
     Route::get('estadisticas/departamentos/{departamento:codigo}', [EstadisticaController::class, 'departamento'])->name('estadisticas.departamento');
     Route::get('estadisticas/departamentos/{departamento:codigo}/pdf', [EstadisticaPdfController::class, 'departamento'])->name('estadisticas.departamento.pdf');
+    Route::get('estadisticas/excel', [EstadisticaExcelController::class, 'index'])->name('estadisticas.excel');
+    Route::get('estadisticas/departamentos/{departamento:codigo}/excel', [EstadisticaExcelController::class, 'departamento'])->name('estadisticas.departamento.excel');
     Route::get('ods', [OdsController::class, 'index'])->name('ods.index');
+    Route::get('ods/excel', [OdsController::class, 'excel'])->name('ods.excel');
 
     Route::get('repositorio', [RepositorioController::class, 'index'])->name('repositorio.index');
     Route::get('repositorio/{expediente}', [RepositorioController::class, 'show'])->name('repositorio.show');

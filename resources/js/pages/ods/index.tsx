@@ -1,12 +1,14 @@
 import { Head } from '@inertiajs/react';
+import { FileSpreadsheet } from 'lucide-react';
 import { useState } from 'react';
 import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadisticos';
 import { formatearNumero } from '@/components/estadisticas/metricas';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { formatearQuetzales } from '@/lib/moneda';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import { index } from '@/routes/ods';
+import { excel, index } from '@/routes/ods';
 import type {
     FiltrosEstadisticos,
     Ods,
@@ -167,13 +169,29 @@ export default function OdsIndex({
                     </p>
                 </div>
 
-                <FiltrosEstadisticosBarra
-                    url={index.url()}
-                    filtros={filtros}
-                    anios={anios}
-                    unidades={unidades}
-                    carreras={carreras}
-                />
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                    <FiltrosEstadisticosBarra
+                        url={index.url()}
+                        filtros={filtros}
+                        anios={anios}
+                        unidades={unidades}
+                        carreras={carreras}
+                    />
+                    <Button asChild variant="outline">
+                        <a
+                            href={excel.url({
+                                query: Object.fromEntries(
+                                    Object.entries(filtros).filter(
+                                        ([, valor]) => valor !== '',
+                                    ),
+                                ),
+                            })}
+                        >
+                            <FileSpreadsheet />
+                            Exportar Excel
+                        </a>
+                    </Button>
+                </div>
 
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-5">
                     <Cifra

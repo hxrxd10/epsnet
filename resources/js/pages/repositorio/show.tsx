@@ -4,6 +4,8 @@ import type { EjeDetalle } from '@/components/expediente/detalle-ejes';
 import { formatearFecha } from '@/lib/fechas';
 import { dashboard } from '@/routes';
 import { index } from '@/routes/repositorio';
+import Articulacion from '@/components/expediente/articulacion';
+import type { ArticulacionEps } from '@/components/expediente/articulacion';
 
 type Props = {
     expediente: {
@@ -15,9 +17,14 @@ type Props = {
         foto: string | null;
     };
     ejes: EjeDetalle[];
+    articulacion: ArticulacionEps;
 };
 
-export default function RepositorioEps({ expediente, ejes }: Props) {
+export default function RepositorioEps({
+    expediente,
+    ejes,
+    articulacion,
+}: Props) {
     return (
         <>
             <Head title={expediente.carrera} />
@@ -43,6 +50,11 @@ export default function RepositorioEps({ expediente, ejes }: Props) {
                         className="border-sidebar-border/70 max-h-[28rem] w-full max-w-3xl rounded-xl border object-cover"
                     />
                 )}
+
+                <Articulacion
+                    articulacion={articulacion}
+                    className="max-w-3xl"
+                />
 
                 <DetalleEjes ejes={ejes} />
             </div>

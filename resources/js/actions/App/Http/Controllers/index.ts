@@ -1,6 +1,7 @@
 import Auth from './Auth'
 import EstadisticaController from './EstadisticaController'
 import EstadisticaPdfController from './EstadisticaPdfController'
+import EstadisticaExcelController from './EstadisticaExcelController'
 import OdsController from './OdsController'
 import RepositorioController from './RepositorioController'
 import InvestigacionController from './InvestigacionController'
@@ -14,6 +15,7 @@ const Controllers = {
     Auth: Object.assign(Auth, Auth),
     EstadisticaController: Object.assign(EstadisticaController, EstadisticaController),
     EstadisticaPdfController: Object.assign(EstadisticaPdfController, EstadisticaPdfController),
+    EstadisticaExcelController: Object.assign(EstadisticaExcelController, EstadisticaExcelController),
     OdsController: Object.assign(OdsController, OdsController),
     RepositorioController: Object.assign(RepositorioController, RepositorioController),
     InvestigacionController: Object.assign(InvestigacionController, InvestigacionController),

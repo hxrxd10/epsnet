@@ -16,6 +16,8 @@ import {
 import { dashboard } from '@/routes';
 import { index, show } from '@/routes/repositorio';
 import type { Opcion } from '@/types/estudiante';
+import { ArticulacionInsignia } from '@/components/expediente/articulacion';
+import type { ArticulacionEps } from '@/components/expediente/articulacion';
 
 type Tarjeta = {
     id: number;
@@ -30,6 +32,7 @@ type Tarjeta = {
     publicaciones: number;
     aprobado: string | null;
     foto: string | null;
+    articulacion: ArticulacionEps;
 };
 
 type Props = {
@@ -181,6 +184,9 @@ export default function Repositorio({
                                                 publicaciones
                                             </Badge>
                                         )}
+                                        <ArticulacionInsignia
+                                            articulacion={tarjeta.articulacion}
+                                        />
                                     </div>
                                 </Link>
                             </li>

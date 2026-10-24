@@ -7,6 +7,7 @@ use App\Enums\Eje;
 use App\Enums\EstadoExpediente;
 use App\Http\Controllers\Controller;
 use App\Models\Expediente;
+use App\Support\Articulacion;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -41,6 +42,7 @@ class CierreExpedienteController extends Controller
                 ...$expediente->posicionEnBandeja(),
             ],
             'foto' => $expediente->urlFoto(),
+            'articulacion' => Articulacion::deExpediente($expediente)->toArray(),
             'orden_impresion' => $orden === null ? null : [
                 'nombre' => $orden->nombre_original,
                 'mime_type' => $orden->mime_type,

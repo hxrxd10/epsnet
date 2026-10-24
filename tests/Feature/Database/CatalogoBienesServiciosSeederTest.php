@@ -3,6 +3,7 @@
 use App\Enums\TipoCatalogo;
 use App\Models\Catalogo;
 use Database\Seeders\CatalogoBienesServiciosSeeder;
+use Database\Seeders\PoblacionVulnerableSeeder;
 
 function bienDelCatalogo(string $nombre): Catalogo
 {
@@ -60,4 +61,12 @@ it('completa los vínculos y el valor de un bien que ya existía sin ellos', fun
         ->valor_base->not->toBeNull()
         ->linea_intervencion_id->not->toBeNull()
         ->ods_id->not->toBeNull();
+});
+
+it('siembra las poblaciones vulnerables sin duplicarlas', function () {
+    $this->seed(PoblacionVulnerableSeeder::class);
+    $this->seed(PoblacionVulnerableSeeder::class);
+
+    expect(Catalogo::delCatalogo(TipoCatalogo::PoblacionesVulnerables)->count())->toBe(count(PoblacionVulnerableSeeder::POBLACIONES))
+        ->and(Catalogo::delCatalogo(TipoCatalogo::PoblacionesVulnerables)->where('nombre', 'Pueblos indígenas')->exists())->toBeTrue();
 });

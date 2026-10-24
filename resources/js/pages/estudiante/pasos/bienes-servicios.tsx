@@ -5,6 +5,8 @@ import {
     update,
 } from '@/actions/App/Http/Controllers/Estudiante/BienServicioController';
 import PasoCrud from '@/components/estudiante/paso-crud';
+import InputError from '@/components/input-error';
+import { Checkbox } from '@/components/ui/checkbox';
 import ProgramaEps from '@/components/estudiante/programa-eps';
 import type { Campo } from '@/components/estudiante/paso-crud';
 import ResumenRegistro from '@/components/estudiante/resumen-registro';
@@ -21,6 +23,7 @@ type Registro = {
     cantidad: number | null;
     beneficiarios: string | null;
     cantidad_beneficiarios: number | null;
+    poblaciones: { id: number; nombre: string }[];
     fecha: string;
 };
 
@@ -31,6 +34,7 @@ type Props = PasoProps & {
     tipos: Opcion[];
     catalogo: OpcionCatalogo[];
     lineas: Opcion[];
+    poblaciones: Opcion[];
 };
 
 export default function BienesServicios({
@@ -41,6 +45,7 @@ export default function BienesServicios({
     tipos,
     catalogo,
     lineas,
+    poblaciones,
 }: Props) {
     const lineaDe = (catalogoId: string): string =>
         catalogo.find((opcion) => opcion.value === catalogoId)?.linea ?? '';
@@ -117,6 +122,63 @@ export default function BienesServicios({
             ayuda: 'Total estimado de personas que se benefician con este bien o servicio, directas e indirectas.',
             ancho: 'mitad',
         },
+        {
+            name: 'poblaciones',
+            label: 'Poblaciones vulnerables incluidas',
+            tipo: 'text',
+            visibleSi: () => poblaciones.length > 0,
+            render: ({ valores, establecer, errores }) => {
+                const marcadas = valores.poblaciones
+                    ? valores.poblaciones.split(',')
+                    : [];
+                const error = Object.entries(errores).find(([campo]) =>
+                    campo.startsWith('poblaciones'),
+                )?.[1];
+
+                return (
+                    <fieldset className="grid gap-2">
+                        <legend className="text-sm font-medium">
+                            Poblaciones vulnerables incluidas
+                        </legend>
+                        <p className="text-brand/55 text-xs">
+                            Marca los grupos en situación de vulnerabilidad que
+                            estuvieron entre los beneficiarios.
+                        </p>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                            {poblaciones.map((poblacion) => (
+                                <label
+                                    key={poblacion.value}
+                                    className="flex items-center gap-2 text-sm"
+                                >
+                                    <Checkbox
+                                        checked={marcadas.includes(
+                                            poblacion.value,
+                                        )}
+                                        onCheckedChange={(valor) =>
+                                            establecer({
+                                                poblaciones: (valor === true
+                                                    ? [
+                                                          ...marcadas,
+                                                          poblacion.value,
+                                                      ]
+                                                    : marcadas.filter(
+                                                          (otra) =>
+                                                              otra !==
+                                                              poblacion.value,
+                                                      )
+                                                ).join(','),
+                                            })
+                                        }
+                                    />
+                                    {poblacion.label}
+                                </label>
+                            ))}
+                        </div>
+                        <InputError message={error} />
+                    </fieldset>
+                );
+            },
+        },
     ];
 
     return (
@@ -147,6 +209,7 @@ export default function BienesServicios({
                     cantidad: '',
                     beneficiarios: '',
                     cantidad_beneficiarios: '',
+                    poblaciones: '',
                 }}
                 aFormulario={(registro) => ({
                     linea: lineaDe(registro.catalogo_id?.toString() ?? ''),
@@ -158,6 +221,9 @@ export default function BienesServicios({
                     beneficiarios: registro.beneficiarios ?? '',
                     cantidad_beneficiarios:
                         registro.cantidad_beneficiarios?.toString() ?? '',
+                    poblaciones: registro.poblaciones
+                        .map((poblacion) => poblacion.id)
+                        .join(','),
                 })}
                 resumen={(registro) => (
                     <ResumenRegistro
@@ -170,7 +236,16 @@ export default function BienesServicios({
                             registro.cantidad_beneficiarios !== null &&
                                 `${registro.cantidad_beneficiarios} beneficiarios`,
                         ]}
-                        texto={registro.beneficiarios}
+                        texto={
+                            registro.poblaciones.length > 0
+                                ? [
+                                      registro.beneficiarios,
+                                      `Poblaciones vulnerables: ${registro.poblaciones.map((poblacion) => poblacion.nombre).join(', ')}`,
+                                  ]
+                                      .filter(Boolean)
+                                      .join(' · ')
+                                : registro.beneficiarios
+                        }
                     />
                 )}
                 antesDeEnviar={({ linea: _linea, ...valores }) => valores}

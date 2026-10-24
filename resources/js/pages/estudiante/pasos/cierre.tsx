@@ -30,6 +30,8 @@ import { Spinner } from '@/components/ui/spinner';
 import { formatearFecha, formatearFechaHora } from '@/lib/fechas';
 import EstudianteLayout from '@/layouts/estudiante-layout';
 import type { PasoProps } from '@/types/estudiante';
+import Articulacion from '@/components/expediente/articulacion';
+import type { ArticulacionEps } from '@/components/expediente/articulacion';
 
 type ResumenEje = {
     eje: number;
@@ -52,6 +54,7 @@ type Props = PasoProps & {
     completado_at: string | null;
     orden_impresion: OrdenImpresion | null;
     foto: string | null;
+    articulacion: ArticulacionEps;
     puede_solicitar: boolean;
     solicitud: { enviada_at: string; posicion: number; total: number } | null;
     errors: {
@@ -82,6 +85,7 @@ export default function Cierre({
     completado_at,
     orden_impresion,
     foto,
+    articulacion,
     puede_solicitar,
     solicitud,
     errors,
@@ -232,6 +236,12 @@ export default function Cierre({
                         ))}
                     </ul>
                 </section>
+
+                <Articulacion
+                    articulacion={articulacion}
+                    descripcion="Cuántas funciones universitarias combina tu EPS además de la docencia. Registra publicaciones, acciones de transferencia o instituciones aliadas para articular más."
+                    className="rounded-3xl bg-white p-6 sm:p-8"
+                />
 
                 <FotoEps expedienteId={expediente.id} foto={foto} />
 

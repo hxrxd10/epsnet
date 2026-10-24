@@ -1,5 +1,10 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, ExternalLink, FileDown } from 'lucide-react';
+import {
+    ArrowLeft,
+    ExternalLink,
+    FileDown,
+    FileSpreadsheet,
+} from 'lucide-react';
 import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadisticos';
 import {
     METRICAS,
@@ -11,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { formatearFecha } from '@/lib/fechas';
 import { dashboard } from '@/routes';
 import { departamento as rutaDepartamento, index } from '@/routes/estadisticas';
-import { pdf } from '@/routes/estadisticas/departamento';
+import { excel, pdf } from '@/routes/estadisticas/departamento';
 import type {
     FiltrosEstadisticos,
     ItemBienServicio,
@@ -129,20 +134,36 @@ export default function EstadisticasDepartamento({
                         unidades={unidades}
                         carreras={carreras}
                     />
-                    <Button asChild variant="outline">
-                        <a
-                            href={pdf.url(departamento.codigo, {
-                                query: Object.fromEntries(
-                                    Object.entries(filtros).filter(
-                                        ([, valor]) => valor !== '',
+                    <div className="flex flex-wrap gap-2">
+                        <Button asChild variant="outline">
+                            <a
+                                href={pdf.url(departamento.codigo, {
+                                    query: Object.fromEntries(
+                                        Object.entries(filtros).filter(
+                                            ([, valor]) => valor !== '',
+                                        ),
                                     ),
-                                ),
-                            })}
-                        >
-                            <FileDown />
-                            Generar PDF
-                        </a>
-                    </Button>
+                                })}
+                            >
+                                <FileDown />
+                                Generar PDF
+                            </a>
+                        </Button>
+                        <Button asChild variant="outline">
+                            <a
+                                href={excel.url(departamento.codigo, {
+                                    query: Object.fromEntries(
+                                        Object.entries(filtros).filter(
+                                            ([, valor]) => valor !== '',
+                                        ),
+                                    ),
+                                })}
+                            >
+                                <FileSpreadsheet />
+                                Exportar Excel
+                            </a>
+                        </Button>
+                    </div>
                 </div>
 
                 <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">

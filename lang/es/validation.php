@@ -55,6 +55,8 @@ return [
         'cantidad_beneficiarios' => 'la cantidad de beneficiarios',
         'cantidad' => 'la cantidad',
         'valor_base' => 'el valor base',
+        'poblaciones' => 'las poblaciones vulnerables',
+        'poblaciones.*' => 'la población vulnerable',
         'fecha' => 'la fecha',
         'titulo' => 'el título',
         'autores' => 'los autores',

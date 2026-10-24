@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::index
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:21
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:22
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 export const index = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::index
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:21
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:22
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 index.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ index.url = (args: { expediente: number | { id: number } } | [expediente: number
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::index
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:21
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:22
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 index.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ index.get = (args: { expediente: number | { id: number } } | [expediente: number
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::index
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:21
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:22
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 index.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ index.head = (args: { expediente: number | { id: number } } | [expediente: numbe
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::index
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:21
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:22
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 const indexForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const indexForm = (args: { expediente: number | { id: number } } | [expediente: 
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::index
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:21
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:22
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 indexForm.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ indexForm.get = (args: { expediente: number | { id: number } } | [expediente: nu
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::index
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:21
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:22
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 indexForm.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -106,7 +106,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::store
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:51
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:61
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 export const store = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -121,7 +121,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::store
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:51
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:61
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 store.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -154,7 +154,7 @@ store.url = (args: { expediente: number | { id: number } } | [expediente: number
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::store
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:51
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:61
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 store.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -164,7 +164,7 @@ store.post = (args: { expediente: number | { id: number } } | [expediente: numbe
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::store
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:51
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:61
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 const storeForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -174,7 +174,7 @@ const storeForm = (args: { expediente: number | { id: number } } | [expediente: 
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::store
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:51
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:61
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios'
 */
 storeForm.post = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -186,7 +186,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::update
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:58
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:68
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 export const update = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -201,7 +201,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::update
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:58
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:68
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 update.url = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions) => {
@@ -229,7 +229,7 @@ update.url = (args: { expediente: number | { id: number }, registro: string | nu
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::update
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:58
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:68
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 update.put = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -239,7 +239,7 @@ update.put = (args: { expediente: number | { id: number }, registro: string | nu
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::update
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:58
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:68
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 update.patch = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -249,7 +249,7 @@ update.patch = (args: { expediente: number | { id: number }, registro: string | 
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::update
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:58
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:68
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 const updateForm = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -264,7 +264,7 @@ const updateForm = (args: { expediente: number | { id: number }, registro: strin
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::update
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:58
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:68
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 updateForm.put = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -279,7 +279,7 @@ updateForm.put = (args: { expediente: number | { id: number }, registro: string 
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::update
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:58
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:68
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 updateForm.patch = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -296,7 +296,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::destroy
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:65
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:79
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 export const destroy = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -311,7 +311,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::destroy
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:65
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:79
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 destroy.url = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions) => {
@@ -339,7 +339,7 @@ destroy.url = (args: { expediente: number | { id: number }, registro: string | n
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::destroy
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:65
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:79
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 destroy.delete = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -349,7 +349,7 @@ destroy.delete = (args: { expediente: number | { id: number }, registro: string 
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::destroy
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:65
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:79
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 const destroyForm = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -364,7 +364,7 @@ const destroyForm = (args: { expediente: number | { id: number }, registro: stri
 
 /**
 * @see \App\Http\Controllers\Estudiante\BienServicioController::destroy
-* @see app/Http/Controllers/Estudiante/BienServicioController.php:65
+* @see app/Http/Controllers/Estudiante/BienServicioController.php:79
 * @route '/estudiante/expedientes/{expediente}/bienes-servicios/{registro}'
 */
 destroyForm.delete = (args: { expediente: number | { id: number }, registro: string | number } | [expediente: number | { id: number }, registro: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

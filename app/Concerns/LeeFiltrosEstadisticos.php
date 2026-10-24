@@ -3,6 +3,7 @@
 namespace App\Concerns;
 
 use App\Actions\Estadisticas\CalcularEstadisticas;
+use App\Models\UnidadAcademica;
 use Illuminate\Http\Request;
 
 /**
@@ -46,5 +47,28 @@ trait LeeFiltrosEstadisticos
             'unidad' => (string) ($filtros['unidad'] ?? ''),
             'carrera' => $filtros['carrera'] ?? '',
         ];
+    }
+
+    /**
+     * Los filtros como los lee una persona: «Año: 2026», «Unidad académica: Todas las unidades»…
+     *
+     * @param  Filtros  $filtros
+     * @return array<string, string>
+     */
+    protected function etiquetasDeFiltros(array $filtros): array
+    {
+        return [
+            'Año' => $filtros['anio'] === null ? 'Todos los años' : (string) $filtros['anio'],
+            'Unidad académica' => $filtros['unidad'] === null ? 'Todas las unidades' : (UnidadAcademica::find($filtros['unidad'])?->nombre ?? '—'),
+            'Carrera' => $filtros['carrera'] ?? 'Todas las carreras',
+        ];
+    }
+
+    /**
+     * @param  Filtros  $filtros
+     */
+    protected function resumenDeFiltros(array $filtros): string
+    {
+        return collect($this->etiquetasDeFiltros($filtros))->map(fn (string $valor, string $nombre): string => "{$nombre}: {$valor}")->implode(' · ');
     }
 }

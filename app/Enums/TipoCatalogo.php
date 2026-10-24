@@ -18,6 +18,7 @@ enum TipoCatalogo: string
     case PoliticasPublicas = 'politicas-publicas';
     case AreasIntervencion = 'areas-intervencion';
     case Ods = 'ods';
+    case PoblacionesVulnerables = 'poblaciones-vulnerables';
 
     public function etiqueta(): string
     {
@@ -28,6 +29,7 @@ enum TipoCatalogo: string
             self::PoliticasPublicas => 'Políticas públicas',
             self::AreasIntervencion => 'Áreas de intervención',
             self::Ods => 'Objetivos de Desarrollo Sostenible (ODS)',
+            self::PoblacionesVulnerables => 'Poblaciones vulnerables',
         };
     }
 
@@ -40,6 +42,7 @@ enum TipoCatalogo: string
             self::PoliticasPublicas => 'Políticas públicas asociadas a los bienes y servicios.',
             self::AreasIntervencion => 'Áreas de intervención de los bienes y servicios: salud, ambiente, educación, economía, gestión pública.',
             self::Ods => 'Objetivos de Desarrollo Sostenible a los que aporta cada bien o servicio.',
+            self::PoblacionesVulnerables => 'Grupos en situación de vulnerabilidad que el estudiante marca entre los beneficiarios de cada bien o servicio.',
         };
     }
 
@@ -92,6 +95,7 @@ enum TipoCatalogo: string
             self::PoliticasPublicas => 'Política pública',
             self::AreasIntervencion => 'Área de intervención',
             self::Ods => 'ODS',
+            self::PoblacionesVulnerables => 'Población vulnerable',
         };
     }
 

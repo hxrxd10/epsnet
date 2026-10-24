@@ -33,7 +33,7 @@ class BandejaController extends Controller
             ->visiblesPara($usuario)
             ->pendientesDeAprobacion()
             ->with(['estudiante', 'unidadAcademica'])
-            ->withCount(array_map(fn (Eje $eje): string => $eje->relacion(), Eje::cases()))
+            ->withCount([...array_map(fn (Eje $eje): string => $eje->relacion(), Eje::cases()), 'alianzas'])
             ->when($filtros['q'] ?? null, fn (Builder $consulta, string $texto) => $consulta->where(
                 fn (Builder $consulta) => $consulta
                     ->where('nombre_carrera', 'like', "%{$texto}%")

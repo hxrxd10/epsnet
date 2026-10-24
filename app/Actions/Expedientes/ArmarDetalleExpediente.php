@@ -31,7 +31,7 @@ class ArmarDetalleExpediente
     {
         return match ($eje) {
             Eje::BienesServicios => $expediente->bienesServicios()
-                ->with(['catalogo.lineaIntervencion', 'catalogo.politicaPublica', 'catalogo.areaIntervencion', 'catalogo.ods'])
+                ->with(['catalogo.lineaIntervencion', 'catalogo.politicaPublica', 'catalogo.areaIntervencion', 'catalogo.ods', 'poblaciones:id,nombre'])
                 ->orderBy('fecha')->get()
                 ->map(fn ($r): array => $this->registro(
                     $r->tipo->etiqueta(),
@@ -48,6 +48,7 @@ class ArmarDetalleExpediente
                         'Política pública' => $r->catalogo?->politicaPublica?->nombre,
                         'Descripción' => $r->descripcion,
                         'Beneficiarios' => $r->beneficiarios,
+                        'Poblaciones vulnerables' => $r->poblaciones->pluck('nombre')->implode(', '),
                     ],
                 )),
             Eje::Publicaciones => $expediente->publicaciones()->orderBy('id')->get()

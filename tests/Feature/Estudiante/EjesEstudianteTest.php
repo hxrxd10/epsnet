@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Expedientes\ArmarDetalleExpediente;
+use App\Enums\TipoCatalogo;
 use App\Models\ActorParticipante;
 use App\Models\Alianza;
 use App\Models\BienServicio;
@@ -251,6 +252,40 @@ it('muestra en el detalle del EPS la línea, política, área y ODS del bien o s
             'Línea de intervención' => $huerto->lineaIntervencion->nombre,
             'Política pública' => $huerto->politicaPublica->nombre,
         ]);
+});
+
+it('marca las poblaciones vulnerables incluidas entre los beneficiarios de un bien o servicio', function () {
+    $expediente = expedienteDelEstudiante();
+    [$mujeres, $niñez, $rural] = collect(['Mujeres', 'Niñez y adolescencia', 'Población rural'])
+        ->map(fn (string $nombre) => Catalogo::factory()->del(TipoCatalogo::PoblacionesVulnerables)->create(['nombre' => $nombre]))
+        ->all();
+    $base = ['tipo' => 'bien', 'descripcion' => 'Huerto', 'fecha' => '2026-03-10'];
+
+    $this->post(route('estudiante.expedientes.bienes-servicios.store', $expediente), [...$base, 'poblaciones' => "{$mujeres->id},{$niñez->id}"])
+        ->assertSessionHasNoErrors();
+
+    $bien = $expediente->bienesServicios()->sole();
+    expect($bien->poblaciones->pluck('id')->sort()->values()->all())->toBe([$mujeres->id, $niñez->id]);
+
+    $this->put(route('estudiante.expedientes.bienes-servicios.update', [$expediente, $bien]), [...$base, 'poblaciones' => (string) $rural->id])
+        ->assertSessionHasNoErrors();
+
+    expect($bien->fresh()->poblaciones->pluck('id')->all())->toBe([$rural->id]);
+
+    $this->get(route('estudiante.expedientes.bienes-servicios.index', $expediente))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('poblaciones', 3)
+            ->where('registros.0.poblaciones', [['id' => $rural->id, 'nombre' => 'Población rural']]));
+});
+
+it('solo acepta poblaciones del catálogo de poblaciones vulnerables', function () {
+    $expediente = expedienteDelEstudiante();
+    $otro = Catalogo::factory()->create();
+
+    $this->post(route('estudiante.expedientes.bienes-servicios.store', $expediente), ['tipo' => 'bien', 'descripcion' => 'Huerto', 'fecha' => '2026-03-10', 'poblaciones' => (string) $otro->id])
+        ->assertSessionHasErrors('poblaciones.0');
+
+    expect($expediente->bienesServicios()->count())->toBe(0);
 });
 
 it('acepta un título de investigación de 4000 palabras', function () {

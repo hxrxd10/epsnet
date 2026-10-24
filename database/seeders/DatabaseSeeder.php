@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class, CatalogoBienesServiciosSeeder::class]);
+        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class, CatalogoBienesServiciosSeeder::class, PoblacionVulnerableSeeder::class]);
 
         // Solo en desarrollo: administrador de prueba (contraseña "password").
         if (app()->isLocal() && User::where('email', 'admin@epsnet.test')->doesntExist()) {

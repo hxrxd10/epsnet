@@ -231,20 +231,22 @@ class DatosDemoSeeder extends Seeder
             $solicitudes = $this->completarSolicitudes();
             $carreras = Carrera::query()->exists() ? 0 : $this->sembrarCarreras();
             $reemplazados = $this->reemplazarCatalogoAnterior();
+            $poblaciones = $this->completarPoblaciones();
 
-            $agregadas + $solicitudes + $carreras + $reemplazados > 0
+            $agregadas + $solicitudes + $carreras + $reemplazados + $poblaciones > 0
                 ? $this->command?->info('Los datos de demostración ya estaban sembrados: '.implode(' y ', array_filter([
                     $agregadas > 0 ? "se agregaron el catálogo de instituciones aliadas y {$agregadas} alianzas" : null,
                     $solicitudes > 0 ? "se enviaron {$solicitudes} EPS a la bandeja de solicitudes" : null,
                     $carreras > 0 ? "se agregaron {$carreras} carreras y la cuenta del supervisor" : null,
                     $reemplazados > 0 ? "se reemplazaron {$reemplazados} bienes y servicios de demostración por los del catálogo real" : null,
+                    $poblaciones > 0 ? "se marcaron poblaciones vulnerables en {$poblaciones} bienes y servicios" : null,
                 ])).'.')
                 : $this->command?->warn('Los datos de demostración ya están sembrados.');
 
             return;
         }
 
-        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class, CatalogoBienesServiciosSeeder::class]);
+        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class, CatalogoBienesServiciosSeeder::class, PoblacionVulnerableSeeder::class]);
 
         mt_srand(2026);
         $this->hoy = now();
@@ -262,6 +264,7 @@ class DatosDemoSeeder extends Seeder
             $this->volcarFilas();
             $this->sembrarCarreras();
             $this->sembrarBitacora();
+            $this->completarPoblaciones();
         });
 
         $this->command?->info(sprintf(
@@ -855,6 +858,45 @@ class DatosDemoSeeder extends Seeder
         });
 
         return $anteriores->count();
+    }
+
+    /**
+     * Marca poblaciones vulnerables (una o dos) en dos de cada tres bienes y servicios de demostración.
+     * Solo lo hace si aún no hay ninguna marcada.
+     */
+    private function completarPoblaciones(): int
+    {
+        if (DB::table('bien_servicio_poblacion')->exists()) {
+            return 0;
+        }
+
+        $this->call(PoblacionVulnerableSeeder::class);
+
+        $poblaciones = Catalogo::query()->delCatalogo(TipoCatalogo::PoblacionesVulnerables)->orderBy('id')->pluck('id')->all();
+        $demo = Expediente::query()->whereHas('estudiante', fn ($consulta) => $consulta->where('carnet', 'like', self::PREFIJO_CARNET.'%'))->select('id');
+        $ahora = now();
+        $filas = [];
+        $marcados = 0;
+
+        mt_srand(2029);
+
+        foreach (BienServicio::query()->whereIn('expediente_id', $demo)->orderBy('id')->pluck('id') as $bien) {
+            if ($poblaciones === [] || mt_rand(1, 3) === 1) {
+                continue;
+            }
+
+            $marcados++;
+
+            foreach ((array) array_rand(array_flip($poblaciones), mt_rand(1, min(2, count($poblaciones)))) as $poblacion) {
+                $filas[] = ['bien_servicio_id' => $bien, 'catalogo_id' => $poblacion, 'created_at' => $ahora, 'updated_at' => $ahora];
+            }
+        }
+
+        foreach (array_chunk($filas, 500) as $lote) {
+            DB::table('bien_servicio_poblacion')->insert($lote);
+        }
+
+        return $marcados;
     }
 
     /**

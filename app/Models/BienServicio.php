@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -60,6 +61,16 @@ class BienServicio extends Model
     public function expediente(): BelongsTo
     {
         return $this->belongsTo(Expediente::class);
+    }
+
+    /**
+     * Poblaciones vulnerables que el bien o servicio incluyó entre sus beneficiarios.
+     *
+     * @return BelongsToMany<Catalogo, $this>
+     */
+    public function poblaciones(): BelongsToMany
+    {
+        return $this->belongsToMany(Catalogo::class, 'bien_servicio_poblacion', 'bien_servicio_id', 'catalogo_id')->withTimestamps();
     }
 
     /**

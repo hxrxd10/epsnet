@@ -8,7 +8,6 @@ use App\Enums\MetricaEstadistica;
 use App\Enums\TipoCambioBitacora;
 use App\Models\Bitacora;
 use App\Models\Departamento;
-use App\Models\UnidadAcademica;
 use App\Support\MapaEstadisticoSvg;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -88,26 +87,5 @@ class EstadisticaPdfController extends Controller
             'generadoPor' => "{$request->user()->name} ({$request->user()->email})",
             'fecha' => now(),
         ];
-    }
-
-    /**
-     * @param  array{anio: int|null, unidad: int|null, carrera: string|null}  $filtros
-     * @return array<string, string>
-     */
-    private function etiquetasDeFiltros(array $filtros): array
-    {
-        return [
-            'Año' => $filtros['anio'] === null ? 'Todos los años' : (string) $filtros['anio'],
-            'Unidad académica' => $filtros['unidad'] === null ? 'Todas las unidades' : (UnidadAcademica::find($filtros['unidad'])?->nombre ?? '—'),
-            'Carrera' => $filtros['carrera'] ?? 'Todas las carreras',
-        ];
-    }
-
-    /**
-     * @param  array{anio: int|null, unidad: int|null, carrera: string|null}  $filtros
-     */
-    private function resumenDeFiltros(array $filtros): string
-    {
-        return collect($this->etiquetasDeFiltros($filtros))->map(fn (string $valor, string $nombre): string => "{$nombre}: {$valor}")->implode(' · ');
     }
 }

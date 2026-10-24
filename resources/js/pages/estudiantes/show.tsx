@@ -23,6 +23,8 @@ import { index as bandeja } from '@/routes/panel/bandeja';
 import { index } from '@/routes/panel/estudiantes';
 import { destroy, store } from '@/routes/panel/estudiantes/verificacion';
 import type { EstadoExpediente } from '@/types/estudiante';
+import Articulacion from '@/components/expediente/articulacion';
+import type { ArticulacionEps } from '@/components/expediente/articulacion';
 
 type Props = {
     expediente: {
@@ -50,6 +52,7 @@ type Props = {
     } | null;
     ejes: EjeDetalle[];
     puedeVerificar: boolean;
+    articulacion: ArticulacionEps;
     desdeBandeja: boolean;
 };
 
@@ -58,6 +61,7 @@ export default function Estudiante({
     orden_impresion,
     ejes,
     puedeVerificar,
+    articulacion,
     desdeBandeja,
 }: Props) {
     const [procesando, setProcesando] = useState(false);
@@ -267,6 +271,8 @@ export default function Estudiante({
                         )}
                     </div>
                 </section>
+
+                <Articulacion articulacion={articulacion} />
 
                 {expediente.foto && (
                     <figure className="max-w-3xl">

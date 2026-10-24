@@ -9,6 +9,7 @@ use App\Enums\ProgramaEps;
 use App\Http\Controllers\Controller;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
+use App\Support\Articulacion;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -32,7 +33,7 @@ class EstudianteController extends Controller
         $expedientes = Expediente::query()
             ->visiblesPara($usuario)
             ->with(['estudiante', 'unidadAcademica'])
-            ->withCount(array_map(fn (Eje $eje): string => $eje->relacion(), Eje::cases()))
+            ->withCount([...array_map(fn (Eje $eje): string => $eje->relacion(), Eje::cases()), 'alianzas'])
             ->when($filtros['q'] ?? null, fn ($consulta, string $texto) => $consulta->where(
                 fn ($consulta) => $consulta
                     ->where('nombre_carrera', 'like', "%{$texto}%")
@@ -61,6 +62,7 @@ class EstudianteController extends Controller
                 'es_epsum' => $expediente->programa === ProgramaEps::Epsum,
                 'registros' => collect(Eje::cases())->sum(fn (Eje $eje): int => (int) $expediente->getAttribute(str($eje->relacion())->snake().'_count')),
                 'actualizado' => $expediente->updated_at?->toDateString(),
+                'articulacion' => Articulacion::deExpediente($expediente)->toArray(),
             ])->values(),
             'pagina' => [
                 'actual' => $expedientes->currentPage(),
@@ -110,6 +112,7 @@ class EstudianteController extends Controller
             ],
             'ejes' => $detalle->handle($expediente),
             'puedeVerificar' => $request->user()->can('verificar', $expediente),
+            'articulacion' => Articulacion::deExpediente($expediente)->toArray(),
         ]);
     }
 }

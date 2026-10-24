@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::index
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:22
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:23
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
 export const index = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::index
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:22
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:23
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
 index.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ index.url = (args: { expediente: number | { id: number } } | [expediente: number
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::index
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:22
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:23
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
 index.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ index.get = (args: { expediente: number | { id: number } } | [expediente: number
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::index
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:22
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:23
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
 index.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ index.head = (args: { expediente: number | { id: number } } | [expediente: numbe
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::index
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:22
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:23
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
 const indexForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const indexForm = (args: { expediente: number | { id: number } } | [expediente: 
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::index
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:22
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:23
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
 indexForm.get = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ indexForm.get = (args: { expediente: number | { id: number } } | [expediente: nu
 
 /**
 * @see \App\Http\Controllers\Estudiante\CierreExpedienteController::index
-* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:22
+* @see app/Http/Controllers/Estudiante/CierreExpedienteController.php:23
 * @route '/estudiante/expedientes/{expediente}/cierre'
 */
 indexForm.head = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

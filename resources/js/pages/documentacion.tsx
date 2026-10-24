@@ -43,6 +43,7 @@ const GUIAS: Record<string, Guia> = {
                     'Filtra por año (el de la orden de impresión o, si no la tiene, el de su aprobación), por unidad académica y por carrera. Al elegir una unidad, solo verás las carreras de esa unidad.',
                     'Haz clic en un departamento para ver sus investigaciones y sus principales bienes y servicios; con "Ver más" abres el detalle organizado por municipio.',
                     'Con "Generar PDF" descargas lo que estás viendo, con los filtros aplicados. También puedes generar el PDF de un departamento.',
+                    'Con "Exportar Excel" descargas los datos para analizarlos: departamentos, municipios, cada EPS con su indicador de articulación, bienes y servicios, investigaciones y poblaciones vulnerables. La pestaña de ODS también se exporta a Excel.',
                 ],
             },
             {
@@ -85,7 +86,7 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Llenar los seis ejes',
                 pasos: [
-                    'Bienes y servicios: lo que generaste para la comunidad. Elige la línea de intervención para encontrar el bien o servicio en el catálogo, e indica la cantidad, los beneficiarios y la fecha.',
+                    'Bienes y servicios: lo que generaste para la comunidad. Elige la línea de intervención para encontrar el bien o servicio en el catálogo, e indica la cantidad, los beneficiarios y la fecha. Marca también las poblaciones vulnerables (mujeres, niñez, pueblos indígenas, etc.) que estuvieron entre los beneficiarios.',
                     'Publicaciones de investigación: título, tipo, autores, medio y, si lo tienes, el enlace.',
                     'Transferencia de conocimiento: capacitaciones, talleres o asesorías, con la comunidad y los participantes.',
                     'Territorio: elige el departamento y el municipio de la lista y, si quieres, marca el punto exacto en el mapa; el mapa sugiere el departamento y el municipio. La comunidad y la referencia son opcionales.',
@@ -183,6 +184,7 @@ const GUIAS: Record<string, Guia> = {
                     'Catálogos del EPS: bienes y servicios, y acciones de transferencia. Lo que ya está en uso se desactiva en lugar de eliminarse.',
                     'A cada bien o servicio le puedes dar un valor base en quetzales: el aporte de un EPS es la cantidad entregada por ese valor.',
                     'Cada bien o servicio se ancla a una línea de intervención, una política pública, un área de intervención y un ODS. Cada uno de esos cuatro es un catálogo propio que mantienes aquí; uno que tiene bienes anclados no se elimina.',
+                    'Poblaciones vulnerables: los grupos que los estudiantes marcan entre los beneficiarios de cada bien o servicio. Una que ya se usó no se elimina: se desactiva.',
                     'Carreras: escribe el carné de un estudiante y consulta el registro académico. Verás sus carreras: las nuevas las agregas y las que ya están se marcan como agregadas. Una carrera asignada a un supervisor no se elimina.',
                     'Instituciones aliadas: ministerios, ONG y socios que participaron o cooperaron con los proyectos. Los estudiantes las eligen de este catálogo y no pueden crearlas; son las que se cuantifican en las estadísticas. Una que ya figura en algún EPS no se elimina.',
                     'Departamentos y municipios: los estudiantes eligen su ubicación de estos catálogos. Cada uno lleva una coordenada de referencia que puedes marcar en el mapa.',
@@ -272,6 +274,10 @@ const GLOSARIO = [
     [
         'Orden de impresión',
         'Documento que el estudiante puede adjuntar a su EPS. Es opcional: lo que valida el EPS es la aprobación de supervisión.',
+    ],
+    [
+        'Indicador de articulación',
+        'Cuántas funciones universitarias combina un EPS además de la docencia, de 0 a 4: extensión (bienes y servicios), investigación (publicaciones), transferencia de conocimiento (acciones) y vinculación (instituciones aliadas). Niveles: 1 Inicial, 2 Básica, 3 Articulada y 4 Integral.',
     ],
     [
         'Aporte',
