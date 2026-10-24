@@ -85,7 +85,7 @@ export default function HeroSection({
                     <Reveal delay={200}>
                         <p className="mt-8 max-w-xl text-lg leading-relaxed text-white/65">
                             <strong className="font-semibold text-white">
-                                EPSNET
+                                SIRSE USAC
                             </strong>{' '}
                             es la red que une a los estudiantes en Ejercicio
                             Profesional Supervisado de la Universidad de San

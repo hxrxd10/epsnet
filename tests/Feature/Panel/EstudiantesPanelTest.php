@@ -5,6 +5,7 @@ use App\Enums\EstadoExpediente;
 use App\Enums\TipoCambioBitacora;
 use App\Models\Adjunto;
 use App\Models\Bitacora;
+use App\Models\Carrera;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\Rol;
@@ -16,7 +17,7 @@ function usuarioDeUnidad(?UnidadAcademica $unidad = null): User
 {
     $usuario = User::factory()->create();
     $usuario->forceFill(['rol_id' => Rol::delSistema(ClaveRol::UnidadAcademica)->id])->save();
-    $unidad?->forceFill(['administrador_id' => $usuario->id])->save();
+    $unidad !== null && $usuario->forceFill(['unidad_academica_id' => $unidad->id])->save();
 
     return $usuario;
 }
@@ -216,9 +217,9 @@ describe('aprobación (doble verificación)', function () {
         'con el acepto en falso' => [['acepto' => false]],
     ]);
 
-    it('permite aprobar sin orden de impresión un EPS con información aunque el estudiante no lo haya cerrado', function () {
+    it('permite aprobar sin orden de impresión un EPS en revisión', function () {
         $unidad = UnidadAcademica::factory()->create();
-        $expediente = expedienteDeUnidad($unidad);
+        $expediente = expedienteDeUnidad($unidad, ['estado_expediente' => EstadoExpediente::Completo, 'aprobacion_solicitada_at' => now()]);
         $expediente->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Jornada médica', 'fecha' => '2026-03-01']);
         $this->actingAs(usuarioDeUnidad($unidad));
 
@@ -242,8 +243,9 @@ describe('aprobación (doble verificación)', function () {
         expect($expediente->fresh()->estado_expediente)->toBe(EstadoExpediente::Completo);
     });
 
-    it('no permite aprobar un EPS que el estudiante aún no completa', function () {
+    it('no permite aprobar un EPS que el estudiante aún no envía a aprobación, aunque tenga información', function () {
         $expediente = expedienteDeUnidad(UnidadAcademica::factory()->create());
+        $expediente->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Jornada médica', 'fecha' => '2026-03-01']);
         $this->actingAs(User::factory()->administrador()->create());
 
         $this->post(route('panel.estudiantes.verificacion.store', $expediente))->assertForbidden();
@@ -266,4 +268,58 @@ it('muestra en el detalle del EPS las fechas como dd-mm-aaaa', function () {
 
     expect($texto)->toContain('10-03-2026')->toContain('05-04-2026')->toContain('20-05-2026')->toContain('15-06-2026')
         ->not->toContain('2026-03-10')->not->toContain('2026-04-05')->not->toContain('2026-05-20')->not->toContain('2026-06-15');
+});
+
+describe('supervisores por carrera', function () {
+    /**
+     * Unidad con dos carreras, un EPS en revisión en cada una y un supervisor que solo tiene la primera.
+     *
+     * @return array{supervisor: User, propio: Expediente, ajeno: Expediente}
+     */
+    function supervisorDeUnaCarrera(): array
+    {
+        $unidad = UnidadAcademica::factory()->create();
+        $pedagogia = Carrera::factory()->create(['unidad_academica_id' => $unidad->id, 'codigo_unidad' => '07', 'codigo_extension' => '00', 'codigo_carrera' => '28']);
+        $supervisor = usuarioDeUnidad($unidad);
+        $supervisor->carreras()->attach($pedagogia);
+        $enRevision = ['estado_expediente' => EstadoExpediente::Completo, 'aprobacion_solicitada_at' => now(), 'codigo_unidad' => '07'];
+
+        return [
+            'supervisor' => $supervisor,
+            'propio' => expedienteDeUnidad($unidad, [...$enRevision, 'codigo_extension' => '00', 'codigo_carrera' => '28']),
+            // Misma carrera en otra extensión: es otra carrera para el registro académico.
+            'ajeno' => expedienteDeUnidad($unidad, [...$enRevision, 'codigo_extension' => '05', 'codigo_carrera' => '28']),
+        ];
+    }
+
+    it('solo le muestra los EPS de sus carreras en el listado, la bandeja y el aviso del menú', function () {
+        ['supervisor' => $supervisor, 'propio' => $propio] = supervisorDeUnaCarrera();
+        $this->actingAs($supervisor);
+
+        $this->get(route('panel.estudiantes.index'))
+            ->assertInertia(fn (Assert $page) => $page->has('expedientes', 1)->where('expedientes.0.id', $propio->id));
+        $this->get(route('panel.bandeja.index'))
+            ->assertInertia(fn (Assert $page) => $page->has('solicitudes', 1)->where('solicitudes.0.id', $propio->id)->where('solicitudesPendientes', 1));
+    });
+
+    it('no le deja ver ni aprobar los EPS de otras carreras de su unidad', function () {
+        ['supervisor' => $supervisor, 'propio' => $propio, 'ajeno' => $ajeno] = supervisorDeUnaCarrera();
+        $this->actingAs($supervisor);
+
+        $this->get(route('panel.estudiantes.show', $ajeno))->assertNotFound();
+        $this->post(route('panel.estudiantes.verificacion.store', $ajeno), ['acepto' => true])->assertNotFound();
+        $this->post(route('panel.estudiantes.verificacion.store', $propio), ['acepto' => true])->assertRedirect();
+
+        expect($ajeno->fresh()->estado_expediente)->toBe(EstadoExpediente::Completo)
+            ->and($propio->fresh()->estado_expediente)->toBe(EstadoExpediente::Verificado);
+    });
+
+    it('sin carreras asignadas ve todos los EPS de su unidad', function () {
+        ['supervisor' => $supervisor, 'propio' => $propio, 'ajeno' => $ajeno] = supervisorDeUnaCarrera();
+        $supervisor->carreras()->detach();
+        $this->actingAs($supervisor->fresh());
+
+        $this->get(route('panel.estudiantes.index'))->assertInertia(fn (Assert $page) => $page->has('expedientes', 2));
+        $this->get(route('panel.estudiantes.show', $ajeno))->assertOk();
+    });
 });

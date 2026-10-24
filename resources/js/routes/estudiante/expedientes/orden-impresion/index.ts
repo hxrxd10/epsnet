@@ -186,7 +186,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\OrdenImpresionController::destroy
-* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
+* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:63
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
 export const destroy = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -201,7 +201,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\OrdenImpresionController::destroy
-* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
+* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:63
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
 destroy.url = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -234,7 +234,7 @@ destroy.url = (args: { expediente: number | { id: number } } | [expediente: numb
 
 /**
 * @see \App\Http\Controllers\Estudiante\OrdenImpresionController::destroy
-* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
+* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:63
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
 destroy.delete = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -244,7 +244,7 @@ destroy.delete = (args: { expediente: number | { id: number } } | [expediente: n
 
 /**
 * @see \App\Http\Controllers\Estudiante\OrdenImpresionController::destroy
-* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
+* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:63
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
 const destroyForm = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -259,7 +259,7 @@ const destroyForm = (args: { expediente: number | { id: number } } | [expediente
 
 /**
 * @see \App\Http\Controllers\Estudiante\OrdenImpresionController::destroy
-* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:66
+* @see app/Http/Controllers/Estudiante/OrdenImpresionController.php:63
 * @route '/estudiante/expedientes/{expediente}/orden-impresion'
 */
 destroyForm.delete = (args: { expediente: number | { id: number } } | [expediente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

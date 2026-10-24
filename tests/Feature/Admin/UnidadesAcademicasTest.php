@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\TipoUnidadAcademica;
+use App\Models\Carrera;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
 use App\Models\User;
@@ -51,10 +52,13 @@ it('niega el acceso a quien no es administrador', function (string $estado) {
     expect(UnidadAcademica::count())->toBe(1);
 })->with(['invitado', 'estudiante']);
 
-it('lista las unidades con su ubicación, sus EPS y su administrador', function () {
+it('lista las unidades con su ubicación, sus EPS, sus carreras y sus usuarios', function () {
     administradorUnidades();
     $unidad = UnidadAcademica::factory()->create(['nombre' => 'CUNOC', 'tipo' => TipoUnidadAcademica::CentroUniversitario, 'latitud' => 14.8353, 'longitud' => -91.5106]);
     Expediente::factory()->count(2)->create(['unidad_academica_id' => $unidad->id]);
+    Carrera::factory()->create(['unidad_academica_id' => $unidad->id]);
+    User::factory()->create(['name' => 'Zoila Supervisora'])->forceFill(['unidad_academica_id' => $unidad->id])->save();
+    User::factory()->create(['name' => 'Ana Coordinadora'])->forceFill(['unidad_academica_id' => $unidad->id])->save();
     UnidadAcademica::factory()->create(['nombre' => 'Facultad de Agronomía']);
 
     $this->get(route('admin.unidades.index'))
@@ -67,6 +71,8 @@ it('lista las unidades con su ubicación, sus EPS y su administrador', function 
             ->where('unidades.0.tipo_etiqueta', 'Centro universitario')
             ->where('unidades.0.latitud', '14.8353000')
             ->where('unidades.0.expedientes', 2)
+            ->where('unidades.0.carreras', 1)
+            ->where('unidades.0.usuarios', ['Ana Coordinadora', 'Zoila Supervisora'])
             ->where('unidades.1.latitud', null));
 });
 
@@ -120,7 +126,7 @@ it('actualiza una unidad conservando su propio nombre', function () {
     expect($unidad->fresh())->siglas->toBe('HUM')->activa->toBeFalse()->latitud->toBe('14.5866000');
 });
 
-it('elimina una unidad sin EPS ni administrador', function () {
+it('elimina una unidad sin EPS, carreras ni usuarios', function () {
     administradorUnidades();
     $unidad = UnidadAcademica::factory()->create();
 
@@ -129,16 +135,18 @@ it('elimina una unidad sin EPS ni administrador', function () {
     $this->assertSoftDeleted($unidad);
 });
 
-it('no elimina una unidad con EPS o con administrador: hay que desactivarla', function (string $motivo) {
+it('no elimina una unidad con EPS, carreras o usuarios: hay que desactivarla', function (string $motivo) {
     administradorUnidades();
     $unidad = UnidadAcademica::factory()->create();
-    $motivo === 'eps'
-        ? Expediente::factory()->create(['unidad_academica_id' => $unidad->id])
-        : $unidad->update(['administrador_id' => User::factory()->create()->id]);
+    match ($motivo) {
+        'eps' => Expediente::factory()->create(['unidad_academica_id' => $unidad->id]),
+        'carreras' => Carrera::factory()->create(['unidad_academica_id' => $unidad->id]),
+        'usuarios' => User::factory()->create()->forceFill(['unidad_academica_id' => $unidad->id])->save(),
+    };
 
     $this->delete(route('admin.unidades.destroy', $unidad))
         ->assertRedirect(route('admin.unidades.index'))
         ->assertInertiaFlash('toast.type', 'error');
 
     expect($unidad->fresh()->trashed())->toBeFalse();
-})->with(['eps', 'administrador']);
+})->with(['eps', 'carreras', 'usuarios']);

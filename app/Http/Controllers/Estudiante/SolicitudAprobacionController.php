@@ -15,20 +15,16 @@ use Inertia\Inertia;
 class SolicitudAprobacionController extends Controller
 {
     /**
-     * Un estudiante sin orden de impresión (p. ej. porque no tiene un informe escrito) envía su EPS a la bandeja
-     * de la unidad académica, que lo revisa y aprueba en orden de llegada.
+     * Todo EPS necesita la aprobación de supervisión: el estudiante lo envía a la bandeja de su unidad
+     * académica, que lo revisa en orden de llegada. La orden de impresión es opcional.
      */
     public function store(Expediente $expediente): RedirectResponse
     {
-        if ($expediente->estado_expediente !== EstadoExpediente::Activo) {
-            throw ValidationException::withMessages(['solicitud' => 'Tu EPS ya está completo o aprobado: no necesita una solicitud.']);
+        if ($expediente->estado_expediente === EstadoExpediente::Verificado) {
+            throw ValidationException::withMessages(['solicitud' => 'Tu EPS ya está aprobado: no necesita otra solicitud.']);
         }
 
-        if ($expediente->ordenImpresion()->exists()) {
-            throw ValidationException::withMessages(['solicitud' => 'Ya tienes tu orden de impresión: completa tu EPS con ella.']);
-        }
-
-        if ($expediente->aprobacion_solicitada_at !== null) {
+        if ($expediente->estado_expediente === EstadoExpediente::Completo) {
             throw ValidationException::withMessages(['solicitud' => 'Ya enviaste tu EPS a aprobación: tu unidad académica lo revisará en orden de llegada.']);
         }
 
@@ -36,12 +32,12 @@ class SolicitudAprobacionController extends Controller
             throw ValidationException::withMessages(['registros' => 'Registra al menos un elemento en alguno de los ejes antes de enviar tu EPS a aprobación.']);
         }
 
-        $expediente->update(['aprobacion_solicitada_at' => now()]);
+        $expediente->enviarAAprobacion();
 
         Bitacora::registrar(
             $expediente->moduloBitacora(),
             TipoCambioBitacora::SolicitudAprobacion,
-            "Envió a aprobación de su unidad académica el {$expediente->resumenBitacora()} (sin orden de impresión)",
+            "Envió a aprobación de su unidad académica el {$expediente->resumenBitacora()}".($expediente->ordenImpresion()->exists() ? '' : ' (sin orden de impresión)'),
             $expediente,
         );
 

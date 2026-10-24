@@ -30,6 +30,7 @@ class BienServicioController extends Controller
                     'tipo' => $registro->tipo->value,
                     'tipo_etiqueta' => $registro->tipo->etiqueta(),
                     'descripcion' => $registro->descripcion,
+                    'cantidad' => $registro->cantidad,
                     'beneficiarios' => $registro->beneficiarios,
                     'cantidad_beneficiarios' => $registro->cantidad_beneficiarios,
                     'fecha' => $registro->fecha->toDateString(),
@@ -37,6 +38,13 @@ class BienServicioController extends Controller
                 ->values(),
             'tipos' => TipoBienServicio::opciones(),
             'catalogo' => $this->opcionesDelCatalogo($expediente),
+            'lineas' => Catalogo::query()
+                ->delCatalogo(TipoCatalogo::LineasIntervencion)
+                ->whereIn('id', Catalogo::query()->delCatalogo(TipoCatalogo::BienesServicios)->whereNotNull('linea_intervencion_id')->select('linea_intervencion_id'))
+                ->orderBy('nombre')
+                ->get(['id', 'nombre'])
+                ->map(fn (Catalogo $linea): array => ['value' => (string) $linea->id, 'label' => $linea->nombre])
+                ->all(),
         ]);
     }
 
@@ -64,7 +72,7 @@ class BienServicioController extends Controller
     /**
      * Elementos activos del catálogo de bienes y servicios, más los que ya usa este expediente.
      *
-     * @return list<array{value: string, label: string}>
+     * @return list<array{value: string, label: string, linea: string|null}>
      */
     private function opcionesDelCatalogo(Expediente $expediente): array
     {
@@ -75,7 +83,12 @@ class BienServicioController extends Controller
             ->where(fn ($consulta) => $consulta->where('activo', true)->orWhereIn('id', $usados))
             ->orderBy('nombre')
             ->get()
-            ->map(fn (Catalogo $elemento): array => ['value' => (string) $elemento->id, 'label' => $elemento->nombre])
+            ->map(fn (Catalogo $elemento): array => [
+                'value' => (string) $elemento->id,
+                'label' => $elemento->nombre,
+                'linea' => $elemento->linea_intervencion_id === null ? null : (string) $elemento->linea_intervencion_id,
+            ])
+            ->values()
             ->all();
     }
 }

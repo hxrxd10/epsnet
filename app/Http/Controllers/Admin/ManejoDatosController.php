@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\TipoCatalogo;
 use App\Http\Controllers\Controller;
+use App\Models\Carrera;
 use App\Models\Catalogo;
 use App\Models\Departamento;
 use App\Models\InstitucionAliada;
@@ -58,6 +59,14 @@ class ManejoDatosController extends Controller
                     'total' => InstitucionAliada::count(),
                     'activos' => null,
                     'href' => route('admin.instituciones.index', absolute: false),
+                ],
+                [
+                    'clave' => 'carreras',
+                    'etiqueta' => 'Carreras',
+                    'descripcion' => 'Carreras de cada unidad académica, agregadas consultando un carné en el registro académico. Se asignan a los supervisores de EPS.',
+                    'total' => Carrera::count(),
+                    'activos' => null,
+                    'href' => route('admin.carreras.index', absolute: false),
                 ],
                 [
                     'clave' => 'unidades',

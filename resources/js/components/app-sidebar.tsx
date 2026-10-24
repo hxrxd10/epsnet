@@ -4,9 +4,10 @@ import {
     BookMarked,
     BookOpen,
     Database,
+    FlaskConical,
     Inbox,
-    ScrollText,
     LayoutGrid,
+    ScrollText,
     UserCog,
     Users,
 } from 'lucide-react';
@@ -29,6 +30,7 @@ import { index as usuarios } from '@/routes/admin/usuarios';
 import { index as estadisticas } from '@/routes/estadisticas';
 import { index as bandeja } from '@/routes/panel/bandeja';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
+import { index as investigaciones } from '@/routes/investigaciones';
 import { index as repositorio } from '@/routes/repositorio';
 import type { NavItem } from '@/types';
 
@@ -36,6 +38,7 @@ const plataforma: NavItem[] = [
     { title: 'Panel', href: dashboard(), icon: LayoutGrid },
     { title: 'Estadísticas', href: estadisticas(), icon: BarChart3 },
     { title: 'Repositorio', href: repositorio(), icon: BookMarked },
+    { title: 'Investigaciones', href: investigaciones(), icon: FlaskConical },
     { title: 'Documentación', href: documentacion(), icon: BookOpen },
 ];
 

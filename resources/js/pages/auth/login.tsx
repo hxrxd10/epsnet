@@ -118,6 +118,6 @@ export default function Login({ status, canResetPassword }: Props) {
 }
 
 Login.layout = {
-    title: 'Inicia sesión en EPSNET',
+    title: 'Inicia sesión en SIRSE USAC',
     description: 'Ingresa tu correo y tu contraseña para continuar',
 };

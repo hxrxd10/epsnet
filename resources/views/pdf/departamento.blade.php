@@ -19,7 +19,7 @@
                             <tr>
                                 @foreach ($fila as $metrica)
                                     <td style="width: 50%;">
-                                        <div class="valor">{{ number_format($totalesDepartamento[$metrica->value]) }}</div>
+                                        <div class="valor">{{ $metrica->formatear($totalesDepartamento[$metrica->value]) }}</div>
                                         <div class="nombre">{{ $metrica->etiqueta() }}</div>
                                     </td>
                                 @endforeach
@@ -45,6 +45,7 @@
                         · {{ number_format($municipio['metricas']['eps']) }} EPS
                         · {{ number_format($municipio['metricas']['beneficiarios']) }} beneficiarios
                         · {{ number_format($municipio['metricas']['acciones']) }} acciones
+                        · {{ \App\Enums\MetricaEstadistica::Aporte->formatear($municipio['metricas']['aporte']) }} de aporte
                     </span>
                 </h2>
 
@@ -53,13 +54,14 @@
                     <p class="apagado">No hay bienes ni servicios registrados.</p>
                 @else
                     <table class="datos">
-                        <tr><th>Bien o servicio</th><th>Tipo</th><th class="num">Registros</th><th class="num">Beneficiarios</th></tr>
+                        <tr><th>Bien o servicio</th><th>Tipo</th><th class="num">Cantidad</th><th class="num">Beneficiarios</th><th class="num">Aporte</th></tr>
                         @foreach ($municipio['bienes_servicios'] as $item)
                             <tr>
                                 <td>{{ $item['nombre'] }}</td>
                                 <td>{{ $item['tipo'] === 'bien' ? 'Bien' : 'Servicio' }}</td>
                                 <td class="num">{{ number_format($item['cantidad']) }}</td>
                                 <td class="num">{{ number_format($item['beneficiarios']) }}</td>
+                                <td class="num">{{ \App\Enums\MetricaEstadistica::Aporte->formatear($item['aporte']) }}</td>
                             </tr>
                         @endforeach
                     </table>

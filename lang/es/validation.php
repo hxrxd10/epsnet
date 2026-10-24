@@ -53,6 +53,8 @@ return [
         'descripcion' => 'la descripción',
         'beneficiarios' => 'los beneficiarios',
         'cantidad_beneficiarios' => 'la cantidad de beneficiarios',
+        'cantidad' => 'la cantidad',
+        'valor_base' => 'el valor base',
         'fecha' => 'la fecha',
         'titulo' => 'el título',
         'autores' => 'los autores',

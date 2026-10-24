@@ -1,11 +1,12 @@
 <?php
 
 use App\Models\BienServicio;
+use App\Models\Carrera;
+use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\InstitucionAliada;
 use App\Models\PublicacionInvestigacion;
-use App\Models\UnidadAcademica;
 use App\Models\User;
 use Database\Seeders\DepartamentoSeeder;
 use Database\Seeders\MunicipioSeeder;
@@ -120,11 +121,18 @@ it('impide instituciones aliadas duplicadas con el mismo nombre', function () {
     InstitucionAliada::factory()->create(['nombre' => 'Cruz Roja Guatemalteca']);
 })->throws(QueryException::class);
 
-it('impide asignar el mismo administrador a dos unidades académicas', function () {
-    $administrador = User::factory()->create();
+it('impide registrar dos veces la misma carrera del registro académico', function () {
+    Carrera::factory()->create(['codigo_unidad' => '07', 'codigo_extension' => '00', 'codigo_carrera' => '03']);
 
-    UnidadAcademica::factory()->create(['administrador_id' => $administrador->id]);
-    UnidadAcademica::factory()->create(['administrador_id' => $administrador->id]);
+    Carrera::factory()->create(['codigo_unidad' => '07', 'codigo_extension' => '00', 'codigo_carrera' => '03']);
+})->throws(QueryException::class);
+
+it('impide asignar dos veces la misma carrera a un supervisor', function () {
+    $supervisor = User::factory()->create();
+    $carrera = Carrera::factory()->create();
+
+    $supervisor->carreras()->attach($carrera);
+    $supervisor->carreras()->attach($carrera);
 })->throws(QueryException::class);
 
 it('elimina expedientes y registros de los ejes al eliminar definitivamente al estudiante', function () {
@@ -230,4 +238,15 @@ it('conserva como texto el nombre de la institución receptora que ya tenían lo
     expect(Schema::hasTable('instituciones_receptoras'))->toBeFalse()
         ->and(Schema::hasColumn('actores_participantes', 'institucion_receptora_id'))->toBeFalse()
         ->and(DB::table('actores_participantes')->value('institucion_receptora'))->toBe('Escuela Oficial Rural Mixta');
+});
+
+it('no pisa las coordenadas que DIGEU afinó al volver a sembrar los departamentos', function () {
+    $this->seed(DepartamentoSeeder::class);
+    $peten = Departamento::where('codigo', '17')->sole();
+    $peten->update(['latitud' => 16.5, 'longitud' => -90.1]);
+
+    $this->seed(DepartamentoSeeder::class);
+
+    expect(Departamento::count())->toBe(22)
+        ->and($peten->fresh())->latitud->toEqual(16.5)->longitud->toEqual(-90.1);
 });

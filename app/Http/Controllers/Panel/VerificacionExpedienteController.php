@@ -15,7 +15,7 @@ use Inertia\Inertia;
 class VerificacionExpedienteController extends Controller
 {
     /**
-     * Aprueba el EPS (doble verificación): queda visible en el repositorio.
+     * Aprobación de supervisión: el EPS queda visible en el repositorio y cuenta en las estadísticas.
      */
     public function store(Request $request, Expediente $expediente): RedirectResponse
     {
@@ -45,7 +45,8 @@ class VerificacionExpedienteController extends Controller
     }
 
     /**
-     * Retira la aprobación: el EPS sigue completo pero deja de mostrarse en el repositorio.
+     * Retira la aprobación: el EPS vuelve a la bandeja, en revisión, y deja de contar en el
+     * repositorio y las estadísticas.
      */
     public function destroy(Request $request, Expediente $expediente): RedirectResponse
     {

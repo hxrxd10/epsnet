@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BitacoraController;
+use App\Http\Controllers\Admin\CarreraController;
 use App\Http\Controllers\Admin\CatalogoController;
 use App\Http\Controllers\Admin\DepartamentoController;
 use App\Http\Controllers\Admin\InstitucionAliadaController;
@@ -11,6 +12,8 @@ use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\EstadisticaController;
 use App\Http\Controllers\EstadisticaPdfController;
+use App\Http\Controllers\FotoExpedienteController;
+use App\Http\Controllers\InvestigacionController;
 use App\Http\Controllers\Panel\BandejaController;
 use App\Http\Controllers\Panel\EstudianteController;
 use App\Http\Controllers\Panel\OrdenImpresionController as PanelOrdenImpresionController;
@@ -36,6 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('repositorio', [RepositorioController::class, 'index'])->name('repositorio.index');
     Route::get('repositorio/{expediente}', [RepositorioController::class, 'show'])->name('repositorio.show');
+    Route::get('investigaciones', [InvestigacionController::class, 'index'])->name('investigaciones.index');
+
+    Route::get('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'show'])
+        ->middleware('can:verFoto,expediente')
+        ->name('expedientes.foto');
 });
 
 // Bandeja de solicitudes de aprobación: DIGEU ve todas y cada unidad académica las suyas.
@@ -63,7 +71,12 @@ Route::middleware(['auth', 'verified', 'rol:digeu'])->prefix('admin')->name('adm
     Route::resource('instituciones', InstitucionAliadaController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['instituciones' => 'institucion']);
     Route::resource('unidades', UnidadAcademicaController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['unidades' => 'unidad']);
 
+    Route::get('carreras', [CarreraController::class, 'index'])->name('carreras.index');
+    Route::post('carreras', [CarreraController::class, 'store'])->name('carreras.store');
+    Route::delete('carreras/{carrera}', [CarreraController::class, 'destroy'])->name('carreras.destroy');
+
     Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+    Route::post('usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
     Route::put('usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
 
     Route::get('catalogos/{catalogo}', [CatalogoController::class, 'index'])->name('catalogos.index');

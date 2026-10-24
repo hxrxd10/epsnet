@@ -123,91 +123,59 @@ it('acepta imágenes como orden de impresión', function (string $nombre) {
     expect($expediente->ordenImpresion()->sole()->nombre_original)->toBe($nombre);
 })->with(['orden.jpg', 'orden.png']);
 
-it('completa el EPS cuando hay orden de impresión y registros', function () {
+it('no completa ni aprueba el EPS solo con la orden de impresión', function () {
     $expediente = expedienteConRegistros();
-    subirOrden($expediente);
 
-    $this->post(route('estudiante.expedientes.cierre.store', $expediente))
-        ->assertRedirect(route('estudiante.expedientes.cierre.index', $expediente))
-        ->assertSessionHasNoErrors();
+    subirOrden($expediente)->assertSessionHasNoErrors();
 
     expect($expediente->fresh())
-        ->estado_expediente->toBe(EstadoExpediente::Completo)
-        ->completado_at->not->toBeNull()
-        ->and(Expediente::validos()->pluck('id')->all())->toBe([$expediente->id]);
-});
-
-it('no completa el EPS sin orden de impresión', function () {
-    $expediente = expedienteConRegistros();
-
-    $this->post(route('estudiante.expedientes.cierre.store', $expediente))
-        ->assertSessionHasErrors(['orden_impresion' => 'Sube tu orden de impresión para completar tu EPS.']);
-
-    expect($expediente->fresh()->estado_expediente)->toBe(EstadoExpediente::Activo)
+        ->estado_expediente->toBe(EstadoExpediente::Activo)
+        ->aprobacion_solicitada_at->toBeNull()
         ->and(Expediente::validos()->count())->toBe(0);
 });
 
-it('no completa un EPS sin registros en los ejes', function () {
-    $estudiante = Estudiante::factory()->create();
-    RegistroAcademicoFalso::iniciarSesion($estudiante);
-    $expediente = Expediente::factory()->for($estudiante)->create();
-    subirOrden($expediente);
-
-    $this->post(route('estudiante.expedientes.cierre.store', $expediente))
-        ->assertSessionHasErrors(['registros' => 'Registra al menos un elemento en alguno de los ejes antes de completar tu EPS.']);
-
-    expect($expediente->fresh()->estado_expediente)->toBe(EstadoExpediente::Activo);
-});
-
-it('conserva la fecha de cierre al guardar de nuevo un EPS completo', function () {
+it('mantiene en revisión el EPS al eliminar su orden de impresión', function () {
     $expediente = expedienteConRegistros();
     subirOrden($expediente);
-    $this->post(route('estudiante.expedientes.cierre.store', $expediente));
-    $cierre = $expediente->fresh()->completado_at;
+    $expediente->enviarAAprobacion();
 
-    $this->travel(2)->days();
-    $this->post(route('estudiante.expedientes.cierre.store', $expediente))->assertSessionHasNoErrors();
-
-    expect($expediente->fresh()->completado_at->equalTo($cierre))->toBeTrue();
-});
-
-it('devuelve el EPS a en progreso al eliminar la orden de impresión', function () {
-    $expediente = expedienteConRegistros();
-    subirOrden($expediente);
-    $this->post(route('estudiante.expedientes.cierre.store', $expediente));
     $this->delete(route('estudiante.expedientes.orden-impresion.destroy', $expediente))
         ->assertRedirect(route('estudiante.expedientes.cierre.index', $expediente));
 
     expect($expediente->fresh())
-        ->estado_expediente->toBe(EstadoExpediente::Activo)
-        ->completado_at->toBeNull()
+        ->estado_expediente->toBe(EstadoExpediente::Completo)
+        ->aprobacion_solicitada_at->not->toBeNull()
         ->and(Adjunto::count())->toBe(0)
-        ->and(AdjuntoContenido::count())->toBe(0)
-        ->and(Expediente::validos()->count())->toBe(0);
+        ->and(AdjuntoContenido::count())->toBe(0);
 });
 
-it('quita la verificación de la unidad al reemplazar la orden de impresión', function () {
+it('devuelve a la bandeja un EPS aprobado al cambiar su orden de impresión', function (Closure $cambio) {
     $expediente = expedienteConRegistros();
     subirOrden($expediente);
     $expediente->update([
         'estado_expediente' => EstadoExpediente::Verificado,
-        'completado_at' => now(),
-        'verificado_at' => now(),
+        'completado_at' => now()->subWeek(),
+        'verificado_at' => now()->subDay(),
     ]);
 
-    subirOrden($expediente, ordenPdf('nueva.pdf'));
+    $cambio->call($this, $expediente);
 
     expect($expediente->fresh())
         ->estado_expediente->toBe(EstadoExpediente::Completo)
-        ->verificado_at->toBeNull();
-});
+        ->verificado_at->toBeNull()
+        ->aprobacion_solicitada_at->not->toBeNull()
+        ->and(Expediente::validos()->count())->toBe(0);
+})->with([
+    'al reemplazarla' => [fn (Expediente $expediente) => subirOrden($expediente, ordenPdf('nueva.pdf'))],
+    'al eliminarla' => [fn (Expediente $expediente) => $this->delete(route('estudiante.expedientes.orden-impresion.destroy', $expediente))],
+]);
 
-it('considera válidos para las estadísticas los EPS completos y verificados', function () {
+it('considera válidos para las estadísticas solo los EPS aprobados', function () {
     Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Activo]);
-    $completo = Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Completo]);
-    $verificado = Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Verificado]);
+    Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Completo]);
+    $aprobado = Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Verificado]);
 
-    expect(Expediente::validos()->pluck('id')->sort()->values()->all())->toBe([$completo->id, $verificado->id]);
+    expect(Expediente::validos()->pluck('id')->all())->toBe([$aprobado->id]);
 });
 
 it('permite descargar la orden de impresión guardada, con su contenido original', function () {
@@ -241,7 +209,7 @@ it('oculta el cierre y la orden de impresión de otros estudiantes', function ()
     RegistroAcademicoFalso::iniciarSesion(Estudiante::factory()->create());
 
     $this->get(route('estudiante.expedientes.cierre.index', $ajeno))->assertNotFound();
-    $this->post(route('estudiante.expedientes.cierre.store', $ajeno))->assertNotFound();
+    $this->post(route('estudiante.expedientes.solicitud.store', $ajeno))->assertNotFound();
     $this->get(route('estudiante.expedientes.orden-impresion.show', $ajeno))->assertNotFound();
     $this->post(route('estudiante.expedientes.orden-impresion.store', $ajeno), ['orden_impresion' => ordenPdf()])->assertNotFound();
     $this->delete(route('estudiante.expedientes.orden-impresion.destroy', $ajeno))->assertNotFound();

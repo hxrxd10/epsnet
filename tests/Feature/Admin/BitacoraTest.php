@@ -200,8 +200,7 @@ describe('aprobación', function () {
     it('anota quién aprobó el EPS y la constancia de que lo descrito se ejecutó', function () {
         $unidad = UnidadAcademica::factory()->create();
         $coordinador = User::factory()->create(['email' => 'coordinador@usac.example']);
-        $coordinador->forceFill(['rol_id' => Rol::delSistema(ClaveRol::UnidadAcademica)->id])->save();
-        $unidad->update(['administrador_id' => $coordinador->id]);
+        $coordinador->forceFill(['rol_id' => Rol::delSistema(ClaveRol::UnidadAcademica)->id, 'unidad_academica_id' => $unidad->id])->save();
         $expediente = Expediente::factory()->for(Estudiante::factory()->create(['nombre1' => 'Ana', 'apellido1' => 'López', 'apellido2' => 'Pérez']))
             ->create(['unidad_academica_id' => $unidad->id, 'estado_expediente' => EstadoExpediente::Completo, 'nombre_carrera' => 'Psicología']);
         $this->actingAs($coordinador);

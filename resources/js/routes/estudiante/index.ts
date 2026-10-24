@@ -85,7 +85,7 @@ acceso.form = accesoForm
 
 /**
 * @see \App\Http\Controllers\Estudiante\ExpedienteController::carreras
-* @see app/Http/Controllers/Estudiante/ExpedienteController.php:33
+* @see app/Http/Controllers/Estudiante/ExpedienteController.php:32
 * @route '/estudiante/carreras'
 */
 export const carreras = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -100,7 +100,7 @@ carreras.definition = {
 
 /**
 * @see \App\Http\Controllers\Estudiante\ExpedienteController::carreras
-* @see app/Http/Controllers/Estudiante/ExpedienteController.php:33
+* @see app/Http/Controllers/Estudiante/ExpedienteController.php:32
 * @route '/estudiante/carreras'
 */
 carreras.url = (options?: RouteQueryOptions) => {
@@ -109,7 +109,7 @@ carreras.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Estudiante\ExpedienteController::carreras
-* @see app/Http/Controllers/Estudiante/ExpedienteController.php:33
+* @see app/Http/Controllers/Estudiante/ExpedienteController.php:32
 * @route '/estudiante/carreras'
 */
 carreras.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -119,7 +119,7 @@ carreras.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Estudiante\ExpedienteController::carreras
-* @see app/Http/Controllers/Estudiante/ExpedienteController.php:33
+* @see app/Http/Controllers/Estudiante/ExpedienteController.php:32
 * @route '/estudiante/carreras'
 */
 carreras.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -129,7 +129,7 @@ carreras.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Estudiante\ExpedienteController::carreras
-* @see app/Http/Controllers/Estudiante/ExpedienteController.php:33
+* @see app/Http/Controllers/Estudiante/ExpedienteController.php:32
 * @route '/estudiante/carreras'
 */
 const carrerasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -139,7 +139,7 @@ const carrerasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =
 
 /**
 * @see \App\Http\Controllers\Estudiante\ExpedienteController::carreras
-* @see app/Http/Controllers/Estudiante/ExpedienteController.php:33
+* @see app/Http/Controllers/Estudiante/ExpedienteController.php:32
 * @route '/estudiante/carreras'
 */
 carrerasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -149,7 +149,7 @@ carrerasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\Estudiante\ExpedienteController::carreras
-* @see app/Http/Controllers/Estudiante/ExpedienteController.php:33
+* @see app/Http/Controllers/Estudiante/ExpedienteController.php:32
 * @route '/estudiante/carreras'
 */
 carrerasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -1,8 +1,10 @@
 <?php
 
+use App\Actions\Expedientes\ArmarDetalleExpediente;
 use App\Models\ActorParticipante;
 use App\Models\Alianza;
 use App\Models\BienServicio;
+use App\Models\Catalogo;
 use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
@@ -201,6 +203,54 @@ it('acepta contenidos de unas 4000 palabras y rechaza los que exceden el límite
 
     $this->post(route('estudiante.expedientes.bienes-servicios.store', $expediente), [...$base, 'descripcion' => str_repeat('a', 40001)])
         ->assertSessionHasErrors(['descripcion' => 'La descripción no puede tener más de 40000 caracteres.']);
+});
+
+it('guarda la cantidad entregada de un bien o servicio y la valida', function (mixed $cantidad, ?string $error) {
+    $expediente = expedienteDelEstudiante();
+
+    $respuesta = $this->post(route('estudiante.expedientes.bienes-servicios.store', $expediente), [
+        'tipo' => 'bien', 'descripcion' => 'Pupitres', 'fecha' => '2026-03-10', 'cantidad' => $cantidad,
+    ]);
+
+    if ($error === null) {
+        $respuesta->assertSessionHasNoErrors();
+        expect($expediente->bienesServicios()->sole()->cantidad)->toBe($cantidad === '' ? null : (int) $cantidad);
+    } else {
+        $respuesta->assertSessionHasErrors(['cantidad' => $error]);
+        expect($expediente->bienesServicios()->count())->toBe(0);
+    }
+})->with([
+    'cuarenta' => ['40', null],
+    'sin cantidad' => ['', null],
+    'cero' => ['0', 'La cantidad debe ser al menos 1.'],
+    'con decimales' => ['2.5', 'La cantidad debe ser un número entero.'],
+]);
+
+it('ofrece los bienes y servicios del catálogo con su línea de intervención para filtrarlos', function () {
+    $expediente = expedienteDelEstudiante();
+    $huerto = Catalogo::factory()->anclado()->create(['nombre' => 'Huerto escolar']);
+    Catalogo::factory()->create(['nombre' => 'Sin línea']);
+
+    $this->get(route('estudiante.expedientes.bienes-servicios.index', $expediente))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('lineas', [['value' => (string) $huerto->linea_intervencion_id, 'label' => $huerto->lineaIntervencion->nombre]])
+            ->where('catalogo', fn ($catalogo) => collect($catalogo)->firstWhere('label', 'Huerto escolar')['linea'] === (string) $huerto->linea_intervencion_id
+                && collect($catalogo)->firstWhere('label', 'Sin línea')['linea'] === null));
+});
+
+it('muestra en el detalle del EPS la línea, política, área y ODS del bien o servicio', function () {
+    $expediente = expedienteDelEstudiante();
+    $huerto = Catalogo::factory()->anclado()->create(['nombre' => 'Huerto escolar']);
+    $expediente->bienesServicios()->create(['tipo' => 'bien', 'catalogo_id' => $huerto->id, 'descripcion' => 'Huerto', 'cantidad' => 3, 'fecha' => '2026-03-10']);
+
+    $registro = app(ArmarDetalleExpediente::class)->handle($expediente)[0]['registros'][0];
+
+    expect($registro['titulo'])->toBe('Huerto escolar')
+        ->and($registro['meta'])->toContain('Cantidad: 3', $huerto->areaIntervencion->nombre, $huerto->ods->nombre)
+        ->and(collect($registro['textos'])->pluck('valor', 'etiqueta')->only(['Línea de intervención', 'Política pública'])->all())->toBe([
+            'Línea de intervención' => $huerto->lineaIntervencion->nombre,
+            'Política pública' => $huerto->politicaPublica->nombre,
+        ]);
 });
 
 it('acepta un título de investigación de 4000 palabras', function () {

@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ClaveRol;
+use App\Models\Rol;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,15 +17,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class]);
+        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class, CatalogoBienesServiciosSeeder::class]);
 
         // Solo en desarrollo: administrador de prueba (contraseña "password").
-        if (app()->isLocal()) {
-            User::factory()->administrador()->create([
+        if (app()->isLocal() && User::where('email', 'admin@epsnet.test')->doesntExist()) {
+            User::forceCreate([
                 'name' => 'Administrador DIGEU',
                 'email' => 'admin@epsnet.test',
+                'email_verified_at' => now(),
+                'password' => 'password',
+                'rol_id' => Rol::delSistema(ClaveRol::Digeu)->id,
             ]);
         }
     }

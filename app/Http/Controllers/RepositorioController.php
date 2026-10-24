@@ -30,6 +30,7 @@ class RepositorioController extends Controller
             ->with([
                 'estudiante',
                 'unidadAcademica',
+                'foto',
                 'ubicaciones.departamento',
                 'ubicaciones.municipio',
                 'bienesServicios:id,expediente_id,descripcion,fecha',
@@ -64,6 +65,7 @@ class RepositorioController extends Controller
                 'acciones' => $expediente->transferencias_count,
                 'publicaciones' => $expediente->publicaciones_count,
                 'aprobado' => $expediente->verificado_at?->toDateString(),
+                'foto' => $expediente->urlFoto(),
             ])->values(),
             'pagina' => [
                 'actual' => $expedientes->currentPage(),
@@ -81,7 +83,7 @@ class RepositorioController extends Controller
     {
         abort_unless($expediente->estado_expediente === EstadoExpediente::Verificado, 404);
 
-        $expediente->load(['estudiante', 'unidadAcademica']);
+        $expediente->load(['estudiante', 'unidadAcademica', 'foto']);
 
         return Inertia::render('repositorio/show', [
             'expediente' => [
@@ -90,6 +92,7 @@ class RepositorioController extends Controller
                 'carrera' => $expediente->nombre_carrera,
                 'unidad' => $expediente->unidadAcademica->nombre,
                 'aprobado' => $expediente->verificado_at?->toDateString(),
+                'foto' => $expediente->urlFoto(),
             ],
             'ejes' => $detalle->handle($expediente),
         ]);

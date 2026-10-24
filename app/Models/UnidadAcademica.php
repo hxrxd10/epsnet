@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -24,7 +23,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $direccion
  * @property string|null $latitud
  * @property string|null $longitud
- * @property int|null $administrador_id
  * @property bool $activa
  */
 #[Table('unidades_academicas')]
@@ -38,7 +36,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'direccion',
     'latitud',
     'longitud',
-    'administrador_id',
     'activa',
 ])]
 class UnidadAcademica extends Model
@@ -60,11 +57,32 @@ class UnidadAcademica extends Model
     }
 
     /**
-     * @return BelongsTo<User, $this>
+     * Usuarios de la unidad académica (coordinación y supervisores de EPS).
+     *
+     * @return HasMany<User, $this>
      */
-    public function administrador(): BelongsTo
+    public function usuarios(): HasMany
     {
-        return $this->belongsTo(User::class, 'administrador_id');
+        return $this->hasMany(User::class);
+    }
+
+    /**
+     * @return HasMany<Carrera, $this>
+     */
+    public function carreras(): HasMany
+    {
+        return $this->hasMany(Carrera::class);
+    }
+
+    /**
+     * La unidad académica con este nombre del registro académico; se crea si aún no existe.
+     */
+    public static function paraNombre(string $nombre): self
+    {
+        return self::withTrashed()->firstOrCreate(
+            ['nombre' => $nombre],
+            ['tipo' => TipoUnidadAcademica::desdeNombre($nombre), 'activa' => true],
+        );
     }
 
     /**

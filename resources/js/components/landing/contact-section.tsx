@@ -65,7 +65,7 @@ export default function ContactSection({
                     </h2>
                     <p className="mt-8 max-w-xl text-lg leading-relaxed text-white/65">
                         ¿Tu facultad, escuela o centro universitario aún no
-                        forma parte de EPSNET? DIGEU crea las cuentas de las
+                        forma parte de SIRSE USAC? DIGEU crea las cuentas de las
                         unidades académicas, y cada unidad registra a sus
                         estudiantes.
                     </p>
@@ -133,9 +133,9 @@ export default function ContactSection({
                     </nav>
                 </div>
                 <p className="mt-8 text-xs text-white/40">
-                    © {new Date().getFullYear()} EPSNET · Sistema Unificado de
-                    Registro y Seguimiento del Ejercicio Profesional
-                    Supervisado.
+                    © {new Date().getFullYear()} SIRSE USAC · Sistema Unificado
+                    de Registro y Seguimiento del EPS de la Universidad de San
+                    Carlos de Guatemala.
                 </p>
             </footer>
         </section>

@@ -1,0 +1,1 @@
+var e=new Intl.NumberFormat(`es-GT`,{style:`currency`,currency:`GTQ`,minimumFractionDigits:2,maximumFractionDigits:2}),t=t=>e.format(Number(t));export{t};

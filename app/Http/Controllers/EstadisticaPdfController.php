@@ -44,7 +44,7 @@ class EstadisticaPdfController extends Controller
                 ->take(12)->values()->all(),
             'conBienes' => $departamentos->filter(fn (array $departamento): bool => $departamento['top_bienes_servicios'] !== [])->values()->all(),
             'mapa' => MapaEstadisticoSvg::dataUri($valores),
-        ])->download('estadisticas-epsnet-'.now()->format('d-m-Y').'.pdf');
+        ])->download('estadisticas-sirse-usac-'.now()->format('d-m-Y').'.pdf');
     }
 
     /**

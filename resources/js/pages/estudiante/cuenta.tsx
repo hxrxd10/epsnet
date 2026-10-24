@@ -14,7 +14,7 @@ export default function Cuenta({ perfil }: { perfil: EstudianteSesion }) {
         <EstudianteLayout
             paso={1}
             titulo="Crea tu acceso"
-            descripcion="Tu identidad quedó confirmada. Elige el correo y la contraseña con los que ingresarás a EPSNET a partir de ahora."
+            descripcion="Tu identidad quedó confirmada. Elige el correo y la contraseña con los que ingresarás a SIRSE USAC a partir de ahora."
         >
             <Head title="Crear cuenta de estudiante" />
 

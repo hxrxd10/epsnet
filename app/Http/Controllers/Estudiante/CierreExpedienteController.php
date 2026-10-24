@@ -7,9 +7,7 @@ use App\Enums\Eje;
 use App\Enums\EstadoExpediente;
 use App\Http\Controllers\Controller;
 use App\Models\Expediente;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,8 +16,8 @@ class CierreExpedienteController extends Controller
     use ArmaPasoDelExpediente;
 
     /**
-     * Último paso: resumen de todo lo registrado para que el estudiante corrija lo que necesite
-     * y orden de impresión que valida el EPS.
+     * Último paso: resumen de todo lo registrado para que el estudiante corrija lo que necesite,
+     * orden de impresión (opcional) y envío del EPS a aprobación de supervisión.
      */
     public function index(Expediente $expediente): Response
     {
@@ -37,13 +35,12 @@ class CierreExpedienteController extends Controller
             'resumen' => $resumen,
             'total_registros' => collect($resumen)->sum(fn (array $eje): int => count($eje['items'])),
             'completado_at' => $expediente->completado_at?->toIso8601String(),
-            'puede_solicitar' => $expediente->estado_expediente === EstadoExpediente::Activo
-                && $orden === null
-                && $expediente->aprobacion_solicitada_at === null,
+            'puede_solicitar' => $expediente->estado_expediente === EstadoExpediente::Activo,
             'solicitud' => $expediente->posicionEnBandeja() === null ? null : [
                 'enviada_at' => $expediente->aprobacion_solicitada_at->toIso8601String(),
                 ...$expediente->posicionEnBandeja(),
             ],
+            'foto' => $expediente->urlFoto(),
             'orden_impresion' => $orden === null ? null : [
                 'nombre' => $orden->nombre_original,
                 'mime_type' => $orden->mime_type,
@@ -52,37 +49,6 @@ class CierreExpedienteController extends Controller
                 'descarga' => route('estudiante.expedientes.orden-impresion.show', $expediente, absolute: false),
             ],
         ]);
-    }
-
-    /**
-     * Guarda el expediente como completo. Requiere la orden de impresión y al menos un registro.
-     */
-    public function store(Expediente $expediente): RedirectResponse
-    {
-        if (! $expediente->ordenImpresion()->exists()) {
-            throw ValidationException::withMessages([
-                'orden_impresion' => 'Sube tu orden de impresión para completar tu EPS.',
-            ]);
-        }
-
-        $total = collect(Eje::cases())->sum(fn (Eje $eje): int => $expediente->{$eje->relacion()}()->count());
-
-        if ($total === 0) {
-            throw ValidationException::withMessages([
-                'registros' => 'Registra al menos un elemento en alguno de los ejes antes de completar tu EPS.',
-            ]);
-        }
-
-        if ($expediente->estado_expediente === EstadoExpediente::Activo) {
-            $expediente->update([
-                'estado_expediente' => EstadoExpediente::Completo,
-                'completado_at' => now(),
-            ]);
-        }
-
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Tu EPS quedó completo y cuenta para las estadísticas.']);
-
-        return to_route('estudiante.expedientes.cierre.index', $expediente);
     }
 
     /**

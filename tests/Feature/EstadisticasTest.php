@@ -13,7 +13,7 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /**
- * EPS válido con su orden de impresión fechada y su primera ubicación.
+ * EPS aprobado (válido para las estadísticas) con su orden de impresión fechada y su primera ubicación.
  *
  * @param  array<string, mixed>  $atributos
  */
@@ -22,7 +22,8 @@ function epsEstadistico(Departamento $departamento, string $municipio, string $f
     $expediente = Expediente::factory()
         ->for(Estudiante::factory())
         ->create([
-            'estado_expediente' => EstadoExpediente::Completo,
+            'estado_expediente' => EstadoExpediente::Verificado,
+            'verificado_at' => "{$fechaOrden} 10:00:00",
             'nombre_carrera' => 'Licenciatura en Pedagogía',
             ...$atributos,
         ]);
@@ -59,7 +60,7 @@ it('muestra las estadísticas a cualquier rol con sesión', function (string $ro
 it('suma por departamento lo registrado en cada eje', function () {
     $sacatepequez = departamentoEstadistico('03', 'Sacatepéquez');
     $peten = departamentoEstadistico('17', 'Petén');
-    $mobiliario = Catalogo::factory()->create(['nombre' => 'Mobiliario escolar']);
+    $mobiliario = Catalogo::factory()->create(['nombre' => 'Mobiliario escolar', 'valor_base' => 350]);
     $ministerio = InstitucionAliada::factory()->create(['nombre' => 'Ministerio de Educación']);
     $ong = InstitucionAliada::factory()->create(['nombre' => 'Cruz Roja']);
 
@@ -90,14 +91,43 @@ it('suma por departamento lo registrado en cada eje', function () {
                     'eps' => 2,
                     'estudiantes' => 2,
                     'bienes_servicios' => 2,
+                    'aporte' => 700,
                     'beneficiarios' => 50,
                     'acciones' => 1,
                     'participantes' => 25,
                     'investigaciones' => 1,
                     'instituciones' => 2,
                 ],
-                'top_bienes_servicios' => [['nombre' => 'Mobiliario escolar', 'tipo' => 'bien', 'cantidad' => 2, 'beneficiarios' => 50]],
+                'top_bienes_servicios' => [['nombre' => 'Mobiliario escolar', 'tipo' => 'bien', 'cantidad' => 2, 'beneficiarios' => 50, 'aporte' => 700]],
             ]));
+});
+
+it('calcula el aporte en quetzales: la cantidad de cada bien o servicio por su valor base', function () {
+    $sacatepequez = departamentoEstadistico('03', 'Sacatepéquez');
+    $pupitres = Catalogo::factory()->create(['nombre' => 'Pupitres', 'valor_base' => 350.50]);
+    $jornada = Catalogo::factory()->create(['nombre' => 'Jornada médica', 'categoria' => 'servicio', 'valor_base' => 1200]);
+    $sinValor = Catalogo::factory()->create(['nombre' => 'Asesoría', 'categoria' => 'servicio']);
+
+    $eps = epsEstadistico($sacatepequez, 'Antigua Guatemala');
+    $eps->bienesServicios()->create(['tipo' => 'bien', 'catalogo_id' => $pupitres->id, 'cantidad' => 40, 'descripcion' => 'Pupitres', 'fecha' => '2026-04-01']);
+    $eps->bienesServicios()->create(['tipo' => 'servicio', 'catalogo_id' => $jornada->id, 'descripcion' => 'Sin cantidad: cuenta como una', 'fecha' => '2026-04-02']);
+    $eps->bienesServicios()->create(['tipo' => 'servicio', 'catalogo_id' => $sinValor->id, 'cantidad' => 5, 'descripcion' => 'Sin valor base', 'fecha' => '2026-04-03']);
+    $eps->bienesServicios()->create(['tipo' => 'bien', 'cantidad' => 3, 'descripcion' => 'Fuera del catálogo', 'fecha' => '2026-04-04']);
+    epsEstadistico($sacatepequez, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Completo])
+        ->bienesServicios()->create(['tipo' => 'bien', 'catalogo_id' => $pupitres->id, 'cantidad' => 100, 'descripcion' => 'Aún en revisión', 'fecha' => '2026-04-05']);
+    $this->actingAs(User::factory()->invitado()->create());
+
+    $this->get(route('estadisticas.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('totales.aporte', 15220)
+            ->where('totales.bienes_servicios', 49)
+            ->where('departamentos', fn ($lista) => collect($lista)->firstWhere('codigo', '03')['metricas']['aporte'] === 15220));
+
+    $this->get(route('estadisticas.departamento', $sacatepequez))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('metricas.aporte', 15220)
+            ->where('municipios.0.bienes_servicios.0.nombre', 'Pupitres')
+            ->where('municipios.0.bienes_servicios.0.aporte', 14020));
 });
 
 it('atribuye cada EPS solo a su primera ubicación y aparta los que no tienen', function () {
@@ -117,10 +147,11 @@ it('atribuye cada EPS solo a su primera ubicación y aparta los que no tienen', 
             ->where('departamentos', fn ($lista) => collect($lista)->pluck('metricas.investigaciones', 'codigo')->only(['03', '17'])->all() === ['03' => 1, '17' => 0]));
 });
 
-it('cuenta solo los EPS completos o verificados', function () {
+it('cuenta solo los EPS aprobados por supervisión', function () {
     $departamento = departamentoEstadistico('03', 'Sacatepéquez');
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Verificado]);
-    epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Activo]);
+    epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Completo, 'verificado_at' => null, 'aprobacion_solicitada_at' => now()]);
+    epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Activo, 'verificado_at' => null]);
     $this->actingAs(User::factory()->invitado()->create());
 
     $this->get(route('estadisticas.index'))->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1));
@@ -206,8 +237,8 @@ it('organiza el departamento por municipio con bienes y servicios e investigacio
             ->where('municipios', fn ($municipios) => collect($municipios)->pluck('nombre')->all() === ['Antigua Guatemala', 'Jocotenango'])
             ->where('municipios.0.metricas.eps', 2)
             ->where('municipios.0.bienes_servicios', [
-                ['nombre' => 'Jornada médica', 'tipo' => 'servicio', 'cantidad' => 2, 'beneficiarios' => 50],
-                ['nombre' => 'Mobiliario escolar', 'tipo' => 'bien', 'cantidad' => 1, 'beneficiarios' => 40],
+                ['nombre' => 'Jornada médica', 'tipo' => 'servicio', 'cantidad' => 2, 'beneficiarios' => 50, 'aporte' => 0],
+                ['nombre' => 'Mobiliario escolar', 'tipo' => 'bien', 'cantidad' => 1, 'beneficiarios' => 40, 'aporte' => 0],
             ])
             ->where('municipios.0.investigaciones.0.titulo', 'Lectura temprana')
             ->where('municipios.0.investigaciones.0.tipo', 'Artículo')
@@ -244,7 +275,7 @@ it('toma el año de la aprobación cuando el EPS no tiene orden de impresión', 
     $conOrden = epsEstadistico($departamento, 'Antigua Guatemala', '2025-03-10');
     $sinOrden = epsEstadistico($departamento, 'Antigua Guatemala', '2023-01-01', ['estado_expediente' => EstadoExpediente::Verificado, 'verificado_at' => '2024-06-15 10:00:00']);
     $sinOrden->ordenImpresion()->delete();
-    $sinOrdenNiAprobacion = epsEstadistico($departamento, 'Antigua Guatemala', '2023-01-01');
+    $sinOrdenNiAprobacion = epsEstadistico($departamento, 'Antigua Guatemala', '2023-01-01', ['verificado_at' => null]);
     $sinOrdenNiAprobacion->ordenImpresion()->delete();
     $this->actingAs(User::factory()->invitado()->create());
 

@@ -1,9 +1,13 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowRight, FileDown, MapPin } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadisticos';
 import MapaEstadistico from '@/components/estadisticas/mapa-estadistico';
-import { METRICAS, formatearNumero } from '@/components/estadisticas/metricas';
+import {
+    METRICAS,
+    formatearMetrica,
+    formatearNumero,
+} from '@/components/estadisticas/metricas';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -41,6 +45,15 @@ export default function Estadisticas({
     const [codigo, setCodigo] = useState<string | null>(null);
 
     const metrica = METRICAS.find((item) => item.clave === clave)!;
+    const valoresMapa = useMemo(
+        () =>
+            departamentos.map((item) => ({
+                codigo: item.codigo,
+                nombre: item.nombre,
+                valor: item.metricas[clave],
+            })),
+        [departamentos, clave],
+    );
     const seleccionado = departamentos.find((item) => item.codigo === codigo);
     const consulta = Object.fromEntries(
         Object.entries(filtros).filter(([, valor]) => valor !== ''),
@@ -92,7 +105,7 @@ export default function Estadisticas({
                                     {metrica.etiqueta}
                                 </p>
                                 <p className="mt-1 text-4xl font-semibold tracking-tight tabular-nums">
-                                    {formatearNumero(totales[clave])}
+                                    {formatearMetrica(clave, totales[clave])}
                                 </p>
                             </div>
                             <p className="max-w-[14rem] text-right text-xs text-white/50">
@@ -103,13 +116,12 @@ export default function Estadisticas({
                         <div className="mt-4">
                             <MapaEstadistico
                                 etiqueta={metrica.etiqueta.toLowerCase()}
+                                formato={(valor, compacto) =>
+                                    formatearMetrica(clave, valor, compacto)
+                                }
                                 seleccionado={codigo}
                                 onSeleccionar={setCodigo}
-                                departamentos={departamentos.map((item) => ({
-                                    codigo: item.codigo,
-                                    nombre: item.nombre,
-                                    valor: item.metricas[clave],
-                                }))}
+                                departamentos={valoresMapa}
                             />
                         </div>
 
@@ -155,7 +167,8 @@ export default function Estadisticas({
                                                     : 'text-muted-foreground',
                                             )}
                                         >
-                                            {formatearNumero(
+                                            {formatearMetrica(
+                                                item.clave,
                                                 totales[item.clave],
                                             )}
                                         </span>
@@ -228,6 +241,14 @@ export default function Estadisticas({
                                                             .acciones,
                                                     )}{' '}
                                                     acciones
+                                                </Badge>
+                                                <Badge variant="secondary">
+                                                    {formatearMetrica(
+                                                        'aporte',
+                                                        seleccionado.metricas
+                                                            .aporte,
+                                                    )}{' '}
+                                                    de aporte
                                                 </Badge>
                                             </div>
 

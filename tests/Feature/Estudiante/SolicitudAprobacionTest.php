@@ -29,8 +29,9 @@ function expedienteSolicitante(array $atributos = [], bool $conRegistros = true)
     return $expediente;
 }
 
-it('deja al estudiante sin orden de impresión enviar su EPS a aprobación', function () {
+it('envía el EPS a la bandeja de supervisión, con o sin orden de impresión', function (bool $conOrden) {
     $expediente = expedienteSolicitante();
+    $conOrden && Adjunto::factory()->create(['entidad_id' => $expediente->id]);
 
     $this->post(route('estudiante.expedientes.solicitud.store', $expediente))
         ->assertRedirect(route('estudiante.expedientes.cierre.index', $expediente))
@@ -38,8 +39,11 @@ it('deja al estudiante sin orden de impresión enviar su EPS a aprobación', fun
 
     expect($expediente->fresh())
         ->aprobacion_solicitada_at->not->toBeNull()
-        ->estado_expediente->toBe(EstadoExpediente::Activo);
-});
+        ->completado_at->not->toBeNull()
+        ->estado_expediente->toBe(EstadoExpediente::Completo)
+        ->and(Expediente::pendientesDeAprobacion()->pluck('id')->all())->toBe([$expediente->id])
+        ->and(Expediente::validos()->count())->toBe(0);
+})->with(['con orden de impresión' => true, 'sin orden de impresión' => false]);
 
 it('deja constancia del envío en la bitácora', function () {
     $expediente = expedienteSolicitante();
@@ -73,34 +77,30 @@ it('ofrece el envío en el cierre y, una vez enviado, muestra su lugar en la ban
             ->where('solicitud.total', 3));
 });
 
-it('no ofrece el envío a quien ya tiene orden de impresión ni a quien ya completó o aprobó su EPS', function (array $atributos, bool $conOrden) {
+it('no ofrece el envío a quien ya envió o aprobó su EPS', function (array $atributos) {
     $expediente = expedienteSolicitante($atributos);
-    $conOrden && Adjunto::factory()->create(['entidad_id' => $expediente->id]);
 
     $this->get(route('estudiante.expedientes.cierre.index', $expediente))->assertInertia(fn (Assert $page) => $page->where('puede_solicitar', false));
 })->with([
-    'con orden de impresión' => [[], true],
-    'EPS completo' => [['estado_expediente' => EstadoExpediente::Completo], false],
-    'EPS aprobado' => [['estado_expediente' => EstadoExpediente::Verificado], false],
+    'EPS en revisión' => [['estado_expediente' => EstadoExpediente::Completo]],
+    'EPS aprobado' => [['estado_expediente' => EstadoExpediente::Verificado]],
 ]);
 
-it('rechaza el envío cuando no corresponde', function (array $atributos, bool $conOrden, bool $conRegistros, string $campo) {
+it('rechaza el envío cuando no corresponde', function (array $atributos, bool $conRegistros, string $campo) {
     $expediente = expedienteSolicitante($atributos, $conRegistros);
-    $conOrden && Adjunto::factory()->create(['entidad_id' => $expediente->id]);
 
     $this->post(route('estudiante.expedientes.solicitud.store', $expediente))->assertSessionHasErrors($campo);
 
     expect($expediente->fresh()->aprobacion_solicitada_at)->toBeNull()
         ->and(Bitacora::where('tipo_cambio', TipoCambioBitacora::SolicitudAprobacion)->count())->toBe(0);
 })->with([
-    'ya tiene orden de impresión' => [[], true, true, 'solicitud'],
-    'ya está completo' => [['estado_expediente' => EstadoExpediente::Completo], false, true, 'solicitud'],
-    'ya está aprobado' => [['estado_expediente' => EstadoExpediente::Verificado], false, true, 'solicitud'],
-    'no registró nada' => [[], false, false, 'registros'],
+    'ya está en revisión' => [['estado_expediente' => EstadoExpediente::Completo], true, 'solicitud'],
+    'ya está aprobado' => [['estado_expediente' => EstadoExpediente::Verificado], true, 'solicitud'],
+    'no registró nada' => [[], false, 'registros'],
 ]);
 
 it('no permite enviar dos veces ni cambia la fecha de llegada', function () {
-    $expediente = expedienteSolicitante(['aprobacion_solicitada_at' => '2026-09-01 10:00:00']);
+    $expediente = expedienteSolicitante(['estado_expediente' => EstadoExpediente::Completo, 'aprobacion_solicitada_at' => '2026-09-01 10:00:00']);
 
     $this->post(route('estudiante.expedientes.solicitud.store', $expediente))->assertSessionHasErrors('solicitud');
 

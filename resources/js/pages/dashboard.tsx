@@ -51,7 +51,7 @@ export default function Dashboard() {
             {
                 icono: Inbox,
                 titulo: 'Bandeja de solicitudes',
-                texto: 'EPS que los estudiantes enviaron a aprobación sin orden de impresión, en orden de llegada.',
+                texto: 'EPS que los estudiantes enviaron a aprobación de supervisión, en orden de llegada.',
                 href: bandeja(),
             },
             {
@@ -86,7 +86,7 @@ export default function Dashboard() {
             {
                 icono: Inbox,
                 titulo: 'Bandeja de solicitudes',
-                texto: 'EPS que tus estudiantes enviaron a aprobación sin orden de impresión, en orden de llegada.',
+                texto: 'EPS que tus estudiantes enviaron a aprobación de supervisión, en orden de llegada.',
                 href: bandeja(),
             },
             {
@@ -110,7 +110,7 @@ export default function Dashboard() {
     tarjetas.push({
         icono: BookOpen,
         titulo: 'Documentación',
-        texto: 'Guía de uso de EPSNET según tu rol.',
+        texto: 'Guía de uso de SIRSE USAC según tu rol.',
         href: documentacion(),
     });
 
@@ -123,7 +123,7 @@ export default function Dashboard() {
                         Hola, {auth.user.name}
                     </h1>
                     <p className="text-muted-foreground mt-1 text-sm">
-                        Bienvenido a EPSNET.
+                        Bienvenido a SIRSE USAC.
                     </p>
                 </div>
 

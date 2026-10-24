@@ -1,7 +1,11 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, ExternalLink, FileDown } from 'lucide-react';
 import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadisticos';
-import { METRICAS, formatearNumero } from '@/components/estadisticas/metricas';
+import {
+    METRICAS,
+    formatearMetrica,
+    formatearNumero,
+} from '@/components/estadisticas/metricas';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatearFecha } from '@/lib/fechas';
@@ -42,10 +46,13 @@ function TablaBienesServicios({ items }: { items: ItemBienServicio[] }) {
                         </th>
                         <th className="px-3 py-2 font-medium">Tipo</th>
                         <th className="px-3 py-2 text-right font-medium">
-                            Registros
+                            Cantidad
+                        </th>
+                        <th className="px-3 py-2 text-right font-medium">
+                            Beneficiarios
                         </th>
                         <th className="py-2 pl-3 text-right font-medium">
-                            Beneficiarios
+                            Aporte
                         </th>
                     </tr>
                 </thead>
@@ -64,8 +71,11 @@ function TablaBienesServicios({ items }: { items: ItemBienServicio[] }) {
                             <td className="px-3 py-2 text-right font-mono tabular-nums">
                                 {formatearNumero(item.cantidad)}
                             </td>
-                            <td className="py-2 pl-3 text-right font-mono tabular-nums">
+                            <td className="px-3 py-2 text-right font-mono tabular-nums">
                                 {formatearNumero(item.beneficiarios)}
+                            </td>
+                            <td className="py-2 pl-3 text-right font-mono tabular-nums">
+                                {formatearMetrica('aporte', item.aporte)}
                             </td>
                         </tr>
                     ))}
@@ -145,7 +155,10 @@ export default function EstadisticasDepartamento({
                                 {item.etiqueta}
                             </dt>
                             <dd className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
-                                {formatearNumero(metricas[item.clave])}
+                                {formatearMetrica(
+                                    item.clave,
+                                    metricas[item.clave],
+                                )}
                             </dd>
                         </div>
                     ))}

@@ -1,7 +1,10 @@
 <?php
 
 use App\Enums\EstadoExpediente;
+use App\Enums\TipoCatalogo;
 use App\Models\Adjunto;
+use App\Models\BienServicio;
+use App\Models\Catalogo;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\User;
@@ -112,7 +115,7 @@ it('completa las instituciones aliadas en una demo sembrada antes de que existie
     expect(DB::table('alianzas')->count())->toBe($total);
 });
 
-it('deja solicitudes en la bandeja de la unidad de demostración, con información y sin orden de impresión', function () {
+it('deja solicitudes en revisión en la bandeja de la unidad de demostración, con información', function () {
     $this->seed(DatosDemoSeeder::class);
 
     $pendientes = Expediente::pendientesDeAprobacion();
@@ -120,7 +123,7 @@ it('deja solicitudes en la bandeja de la unidad de demostración, con informaci�
 
     expect($pendientes->clone()->count())->toBeGreaterThan(10)
         ->and($pendientes->clone()->where('unidad_academica_id', $humanidades->id)->count())->toBeGreaterThan(3)
-        ->and($pendientes->clone()->whereHas('ordenImpresion')->count())->toBe(0)
+        ->and($pendientes->clone()->where('estado_expediente', '!=', EstadoExpediente::Completo)->count())->toBe(0)
         ->and($pendientes->clone()->where('aprobacion_solicitada_at', '>', now())->count())->toBe(0)
         ->and($pendientes->clone()->get()->every(fn (Expediente $expediente): bool => $expediente->bienesServicios()->exists()))->toBeTrue();
 });
@@ -137,4 +140,35 @@ it('completa la bandeja en una demo sembrada antes de que existiera, sin repetir
     $this->seed(DatosDemoSeeder::class);
 
     expect(Expediente::pendientesDeAprobacion()->count())->toBe($enviadas);
+});
+
+it('usa solo los bienes y servicios del catálogo real, con su línea, política, área, ODS y valor', function () {
+    $this->seed(DatosDemoSeeder::class);
+
+    $catalogo = Catalogo::delCatalogo(TipoCatalogo::BienesServicios);
+
+    expect($catalogo->clone()->count())->toBe(239)
+        ->and($catalogo->clone()->where(fn ($consulta) => $consulta->whereNull('linea_intervencion_id')->orWhereNull('ods_id')->orWhereNull('valor_base'))->count())->toBe(0)
+        ->and(BienServicio::whereNull('catalogo_id')->count())->toBe(0)
+        ->and(BienServicio::whereNotIn('catalogo_id', $catalogo->clone()->select('id'))->count())->toBe(0)
+        ->and(BienServicio::distinct()->count('catalogo_id'))->toBeGreaterThan(100);
+});
+
+it('reemplaza los bienes y servicios de demostración anteriores en una demo ya sembrada', function () {
+    $this->seed(DatosDemoSeeder::class);
+    $anterior = Catalogo::factory()->create(['nombre' => 'Filtros de agua', 'categoria' => 'bien']);
+    $enUso = Catalogo::factory()->create(['nombre' => 'Refuerzo escolar', 'categoria' => 'servicio']);
+    $registros = BienServicio::orderBy('id')->limit(3)->get();
+    $registros->each(fn (BienServicio $registro) => $registro->forceFill(['catalogo_id' => $anterior->id, 'descripcion' => 'Filtros de agua en Aldea X'])->saveQuietly());
+    $ajeno = BienServicio::factory()->create(['catalogo_id' => $enUso->id]);
+
+    $this->seed(DatosDemoSeeder::class);
+
+    $reasignados = BienServicio::whereKey($registros->modelKeys())->with('catalogo')->get();
+
+    expect(Catalogo::find($anterior->id))->toBeNull()
+        ->and($reasignados->every(fn (BienServicio $registro): bool => $registro->catalogo->linea_intervencion_id !== null && $registro->catalogo->categoria === 'bien'))->toBeTrue()
+        ->and($reasignados->every(fn (BienServicio $registro): bool => $registro->descripcion === "{$registro->catalogo->nombre} en Aldea X"))->toBeTrue()
+        ->and($enUso->fresh())->not->toBeNull()
+        ->and($ajeno->fresh()->catalogo_id)->toBe($enUso->id);
 });

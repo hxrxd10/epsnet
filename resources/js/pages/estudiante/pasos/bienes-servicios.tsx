@@ -18,15 +18,19 @@ type Registro = {
     tipo: string;
     tipo_etiqueta: string;
     descripcion: string;
+    cantidad: number | null;
     beneficiarios: string | null;
     cantidad_beneficiarios: number | null;
     fecha: string;
 };
 
+type OpcionCatalogo = Opcion & { linea: string | null };
+
 type Props = PasoProps & {
     registros: Registro[];
     tipos: Opcion[];
-    catalogo: Opcion[];
+    catalogo: OpcionCatalogo[];
+    lineas: Opcion[];
 };
 
 export default function BienesServicios({
@@ -36,13 +40,32 @@ export default function BienesServicios({
     registros,
     tipos,
     catalogo,
+    lineas,
 }: Props) {
+    const lineaDe = (catalogoId: string): string =>
+        catalogo.find((opcion) => opcion.value === catalogoId)?.linea ?? '';
+
     const campos: Campo[] = [
+        {
+            name: 'linea',
+            label: 'Línea de intervención',
+            tipo: 'select',
+            opciones: lineas,
+            placeholder: 'Todas las líneas',
+            ayuda: 'Elige la línea de intervención para encontrar más rápido el bien o servicio.',
+            visibleSi: () => lineas.length > 0,
+        },
         {
             name: 'catalogo_id',
             label: 'Bien o servicio del catálogo',
             tipo: 'select',
-            opciones: catalogo,
+            dependeDe: 'linea',
+            opciones: (valores) =>
+                valores.linea
+                    ? catalogo.filter(
+                          (opcion) => opcion.linea === valores.linea,
+                      )
+                    : catalogo,
             placeholder: 'Selecciona uno o deja "Sin especificar"',
             ayuda: 'Si no aparece en la lista, déjalo sin especificar e indica el tipo.',
             visibleSi: () => catalogo.length > 0,
@@ -70,6 +93,14 @@ export default function BienesServicios({
             requerido: true,
             filas: 6,
             ayuda: 'Describe qué generaste durante tu EPS y el resultado obtenido.',
+        },
+        {
+            name: 'cantidad',
+            label: 'Cantidad entregada',
+            tipo: 'number',
+            min: 1,
+            ayuda: 'Cuántas unidades del bien o servicio entregaste (por ejemplo, 40 pupitres o 12 jornadas). Si lo dejas vacío, cuenta como una.',
+            ancho: 'mitad',
         },
         {
             name: 'beneficiarios',
@@ -108,18 +139,22 @@ export default function BienesServicios({
                 registros={registros}
                 campos={campos}
                 valoresIniciales={{
+                    linea: '',
                     catalogo_id: '',
                     tipo: '',
                     fecha: '',
                     descripcion: '',
+                    cantidad: '',
                     beneficiarios: '',
                     cantidad_beneficiarios: '',
                 }}
                 aFormulario={(registro) => ({
+                    linea: lineaDe(registro.catalogo_id?.toString() ?? ''),
                     catalogo_id: registro.catalogo_id?.toString() ?? '',
                     tipo: registro.tipo,
                     fecha: registro.fecha,
                     descripcion: registro.descripcion,
+                    cantidad: registro.cantidad?.toString() ?? '',
                     beneficiarios: registro.beneficiarios ?? '',
                     cantidad_beneficiarios:
                         registro.cantidad_beneficiarios?.toString() ?? '',
@@ -130,12 +165,15 @@ export default function BienesServicios({
                         titulo={registro.descripcion}
                         meta={[
                             formatearFecha(registro.fecha),
+                            registro.cantidad !== null &&
+                                `${registro.cantidad} ${registro.cantidad === 1 ? 'unidad' : 'unidades'}`,
                             registro.cantidad_beneficiarios !== null &&
                                 `${registro.cantidad_beneficiarios} beneficiarios`,
                         ]}
                         texto={registro.beneficiarios}
                     />
                 )}
+                antesDeEnviar={({ linea: _linea, ...valores }) => valores}
                 urlGuardar={store.url(expediente.id)}
                 urlActualizar={(id) =>
                     update.url({ expediente: expediente.id, registro: id })

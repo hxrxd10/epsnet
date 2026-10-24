@@ -16,8 +16,8 @@ class UnidadAcademicaController extends Controller
     {
         return Inertia::render('admin/unidades', [
             'unidades' => UnidadAcademica::query()
-                ->with('administrador:id,name')
-                ->withCount('expedientes')
+                ->with('usuarios:id,name,unidad_academica_id')
+                ->withCount(['expedientes', 'carreras'])
                 ->orderBy('nombre')
                 ->get()
                 ->map(fn (UnidadAcademica $unidad): array => [
@@ -33,7 +33,8 @@ class UnidadAcademicaController extends Controller
                     'latitud' => $unidad->latitud,
                     'longitud' => $unidad->longitud,
                     'activa' => $unidad->activa,
-                    'administrador' => $unidad->administrador?->name,
+                    'usuarios' => $unidad->usuarios->pluck('name')->sort()->values()->all(),
+                    'carreras' => $unidad->carreras_count,
                     'expedientes' => $unidad->expedientes_count,
                 ])
                 ->values(),
@@ -61,12 +62,12 @@ class UnidadAcademicaController extends Controller
     }
 
     /**
-     * Una unidad con EPS o con un administrador asignado no se elimina: se desactiva.
+     * Una unidad con EPS, carreras o usuarios asignados no se elimina: se desactiva.
      */
     public function destroy(UnidadAcademica $unidad): RedirectResponse
     {
-        if ($unidad->expedientes()->exists() || $unidad->administrador_id !== null) {
-            Inertia::flash('toast', ['type' => 'error', 'message' => 'Esta unidad tiene EPS o un administrador asignado. Desactívala en lugar de eliminarla.']);
+        if ($unidad->expedientes()->exists() || $unidad->carreras()->exists() || $unidad->usuarios()->exists()) {
+            Inertia::flash('toast', ['type' => 'error', 'message' => 'Esta unidad tiene EPS, carreras o usuarios asignados. Desactívala en lugar de eliminarla.']);
 
             return to_route('admin.unidades.index');
         }

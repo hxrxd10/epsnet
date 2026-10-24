@@ -40,6 +40,7 @@ type Props = {
         completado_at: string | null;
         verificado_at: string | null;
         verificado_por: string | null;
+        foto: string | null;
         solicitud_at: string | null;
     };
     orden_impresion: {
@@ -106,9 +107,11 @@ export default function Estudiante({
                             <span className="font-medium">
                                 Solicitud de aprobación
                             </span>{' '}
-                            enviada por el estudiante el{' '}
-                            {formatearFechaHora(expediente.solicitud_at)}, sin
-                            orden de impresión.
+                            enviada el{' '}
+                            {formatearFechaHora(expediente.solicitud_at)}
+                            {orden_impresion === null
+                                ? ', sin orden de impresión.'
+                                : ', con orden de impresión.'}
                         </p>
                         {desdeBandeja && (
                             <Link
@@ -173,27 +176,16 @@ export default function Estudiante({
                             <DialogTitle>Aprobar EPS</DialogTitle>
                             <DialogDescription>
                                 {expediente.estudiante} · {expediente.carrera}.
-                                Al aprobarlo, el EPS aparece en el repositorio.
+                                Al aprobarlo, el EPS aparece en el repositorio y
+                                cuenta en las estadísticas.
                             </DialogDescription>
                         </DialogHeader>
-                        {(orden_impresion === null ||
-                            expediente.estado === 'activo') && (
-                            <ul className="bg-muted text-muted-foreground list-disc space-y-1 rounded-lg p-3 pl-7 text-sm">
-                                {orden_impresion === null && (
-                                    <li>
-                                        Este EPS no tiene orden de impresión
-                                        (por ejemplo, porque no hay un informe
-                                        escrito). Puedes aprobarlo igual: tu
-                                        acepto es la constancia.
-                                    </li>
-                                )}
-                                {expediente.estado === 'activo' && (
-                                    <li>
-                                        El estudiante aún no cierra su EPS; se
-                                        aprueba con lo que tiene registrado.
-                                    </li>
-                                )}
-                            </ul>
+                        {orden_impresion === null && (
+                            <p className="bg-muted text-muted-foreground rounded-lg p-3 text-sm">
+                                Este EPS no tiene orden de impresión (es
+                                opcional). Puedes aprobarlo igual: tu acepto es
+                                la constancia.
+                            </p>
                         )}
                         <div className="flex items-start gap-3">
                             <Checkbox
@@ -275,6 +267,20 @@ export default function Estudiante({
                         )}
                     </div>
                 </section>
+
+                {expediente.foto && (
+                    <figure className="max-w-3xl">
+                        <img
+                            src={expediente.foto}
+                            alt={`Foto del EPS de ${expediente.estudiante}`}
+                            className="border-sidebar-border/70 max-h-[28rem] w-full rounded-xl border object-cover"
+                        />
+                        <figcaption className="text-muted-foreground mt-2 text-xs">
+                            La foto que eligió el estudiante. Se mostrará en el
+                            repositorio cuando el EPS esté aprobado.
+                        </figcaption>
+                    </figure>
+                )}
 
                 <DetalleEjes ejes={ejes} />
             </div>

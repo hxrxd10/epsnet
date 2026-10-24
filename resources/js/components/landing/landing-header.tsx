@@ -39,7 +39,11 @@ export default function LandingHeader({
                 )}
             >
                 <div className="flex h-16 items-center justify-between gap-6 pr-3 pl-5">
-                    <a href="#inicio" className="shrink-0" aria-label="EPSNET">
+                    <a
+                        href="#inicio"
+                        className="shrink-0"
+                        aria-label="SIRSE USAC"
+                    >
                         <img
                             src="/images/logo.png"
                             alt="USAC · DIGEU"

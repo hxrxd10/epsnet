@@ -75,13 +75,13 @@ class EstudianteController extends Controller
                 ? UnidadAcademica::orderBy('nombre')->get(['id', 'nombre'])->map(fn (UnidadAcademica $unidad): array => ['value' => (string) $unidad->id, 'label' => $unidad->nombre])->all()
                 : [],
             'sinUnidad' => $usuario->esUnidadAcademica() && $usuario->unidadAcademica === null,
-            'ambito' => $usuario->esAdministrador() ? 'Todas las unidades académicas' : ($usuario->unidadAcademica?->nombre ?? 'Sin unidad asignada'),
+            'ambito' => $usuario->ambitoDeConsulta(),
         ]);
     }
 
     public function show(Request $request, Expediente $expediente, ArmarDetalleExpediente $detalle): Response
     {
-        $expediente->load(['estudiante', 'unidadAcademica', 'verificadoPor', 'ordenImpresion']);
+        $expediente->load(['estudiante', 'unidadAcademica', 'verificadoPor', 'ordenImpresion', 'foto']);
 
         return Inertia::render('estudiantes/show', [
             'expediente' => [
@@ -100,6 +100,7 @@ class EstudianteController extends Controller
                 'verificado_at' => $expediente->verificado_at?->toIso8601String(),
                 'verificado_por' => $expediente->verificadoPor?->name,
                 'solicitud_at' => $expediente->estado_expediente === EstadoExpediente::Verificado ? null : $expediente->aprobacion_solicitada_at?->toIso8601String(),
+                'foto' => $expediente->urlFoto(),
             ],
             'desdeBandeja' => $request->query('desde') === 'bandeja',
             'orden_impresion' => $expediente->ordenImpresion === null ? null : [

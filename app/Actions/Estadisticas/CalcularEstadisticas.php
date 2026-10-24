@@ -19,7 +19,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
- * Consolida los EPS completos o verificados en estadísticas por departamento y municipio.
+ * Consolida los EPS aprobados en estadísticas por departamento y municipio. El aporte de un EPS es la
+ * cantidad de cada bien o servicio que entregó por su valor base del catálogo, en quetzales.
  *
  * El año de un EPS es el de su orden de impresión y todo lo que registró se atribuye a su primera
  * ubicación territorial.
@@ -38,7 +39,7 @@ class CalcularEstadisticas
      * Estadísticas de todo el país para pintar el mapa.
      *
      * @param  Filtros  $filtros
-     * @return array{totales: array<string, int>, sin_ubicacion: array<string, int>, departamentos: list<array<string, mixed>>}
+     * @return array{totales: array<string, int|float>, sin_ubicacion: array<string, int|float>, departamentos: list<array<string, mixed>>}
      */
     public function resumen(array $filtros): array
     {
@@ -85,7 +86,7 @@ class CalcularEstadisticas
      * Todo lo consolidado de un departamento, organizado por municipio.
      *
      * @param  Filtros  $filtros
-     * @return array{metricas: array<string, int>, municipios: list<array<string, mixed>>}
+     * @return array{metricas: array<string, int|float>, municipios: list<array<string, mixed>>}
      */
     public function departamento(Departamento $departamento, array $filtros): array
     {
@@ -257,13 +258,14 @@ class CalcularEstadisticas
 
         $bienes = BienServicio::query()
             ->whereIn('expediente_id', $ids)
-            ->selectRaw('expediente_id, catalogo_id, tipo, count(*) as total, coalesce(sum(cantidad_beneficiarios), 0) as beneficiarios')
+            ->selectRaw('expediente_id, catalogo_id, tipo, coalesce(sum(coalesce(cantidad, 1)), 0) as total, coalesce(sum(cantidad_beneficiarios), 0) as beneficiarios')
             ->groupBy('expediente_id', 'catalogo_id', 'tipo')
             ->get()
             ->groupBy('expediente_id');
         $catalogo = Catalogo::query()
             ->whereIn('id', $bienes->flatten()->pluck('catalogo_id')->filter()->unique())
-            ->pluck('nombre', 'id');
+            ->get(['id', 'nombre', 'valor_base'])
+            ->keyBy('id');
         $acciones = TransferenciaConocimiento::query()
             ->whereIn('expediente_id', $ids)
             ->selectRaw('expediente_id, count(*) as total, coalesce(sum(numero_participantes), 0) as participantes')
@@ -286,16 +288,19 @@ class CalcularEstadisticas
             $items = [];
 
             foreach ($bienes->get($expediente->id, []) as $fila) {
-                $nombre = $catalogo[$fila->catalogo_id] ?? self::SIN_CLASIFICAR;
+                $elemento = $catalogo[$fila->catalogo_id] ?? null;
+                $nombre = $elemento->nombre ?? self::SIN_CLASIFICAR;
                 $clave = "{$fila->tipo->value}|{$nombre}";
-                $items[$clave] ??= ['nombre' => $nombre, 'tipo' => $fila->tipo->value, 'cantidad' => 0, 'beneficiarios' => 0];
+                $items[$clave] ??= ['nombre' => $nombre, 'tipo' => $fila->tipo->value, 'cantidad' => 0, 'beneficiarios' => 0, 'aporte' => 0.0];
                 $items[$clave]['cantidad'] += (int) $fila->total;
                 $items[$clave]['beneficiarios'] += (int) $fila->beneficiarios;
+                $items[$clave]['aporte'] += (int) $fila->total * (float) ($elemento->valor_base ?? 0);
             }
 
             return [
                 'estudiante' => $expediente->estudiante_id,
                 'bienes' => array_sum(array_column($items, 'cantidad')),
+                'aporte' => array_sum(array_column($items, 'aporte')),
                 'beneficiarios' => array_sum(array_column($items, 'beneficiarios')),
                 'acciones' => (int) ($acciones[$expediente->id]->total ?? 0),
                 'participantes' => (int) ($acciones[$expediente->id]->participantes ?? 0),

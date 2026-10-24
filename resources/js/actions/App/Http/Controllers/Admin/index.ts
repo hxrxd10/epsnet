@@ -4,6 +4,7 @@ import DepartamentoController from './DepartamentoController'
 import MunicipioController from './MunicipioController'
 import InstitucionAliadaController from './InstitucionAliadaController'
 import UnidadAcademicaController from './UnidadAcademicaController'
+import CarreraController from './CarreraController'
 import UsuarioController from './UsuarioController'
 import CatalogoController from './CatalogoController'
 
@@ -14,6 +15,7 @@ const Admin = {
     MunicipioController: Object.assign(MunicipioController, MunicipioController),
     InstitucionAliadaController: Object.assign(InstitucionAliadaController, InstitucionAliadaController),
     UnidadAcademicaController: Object.assign(UnidadAcademicaController, UnidadAcademicaController),
+    CarreraController: Object.assign(CarreraController, CarreraController),
     UsuarioController: Object.assign(UsuarioController, UsuarioController),
     CatalogoController: Object.assign(CatalogoController, CatalogoController),
 }

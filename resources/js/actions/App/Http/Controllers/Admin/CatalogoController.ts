@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::index
-* @see app/Http/Controllers/Admin/CatalogoController.php:15
+* @see app/Http/Controllers/Admin/CatalogoController.php:17
 * @route '/admin/catalogos/{catalogo}'
 */
 export const index = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::index
-* @see app/Http/Controllers/Admin/CatalogoController.php:15
+* @see app/Http/Controllers/Admin/CatalogoController.php:17
 * @route '/admin/catalogos/{catalogo}'
 */
 index.url = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -43,7 +43,7 @@ index.url = (args: { catalogo: string | number } | [catalogo: string | number ] 
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::index
-* @see app/Http/Controllers/Admin/CatalogoController.php:15
+* @see app/Http/Controllers/Admin/CatalogoController.php:17
 * @route '/admin/catalogos/{catalogo}'
 */
 index.get = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -53,7 +53,7 @@ index.get = (args: { catalogo: string | number } | [catalogo: string | number ] 
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::index
-* @see app/Http/Controllers/Admin/CatalogoController.php:15
+* @see app/Http/Controllers/Admin/CatalogoController.php:17
 * @route '/admin/catalogos/{catalogo}'
 */
 index.head = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -63,7 +63,7 @@ index.head = (args: { catalogo: string | number } | [catalogo: string | number ]
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::index
-* @see app/Http/Controllers/Admin/CatalogoController.php:15
+* @see app/Http/Controllers/Admin/CatalogoController.php:17
 * @route '/admin/catalogos/{catalogo}'
 */
 const indexForm = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ const indexForm = (args: { catalogo: string | number } | [catalogo: string | num
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::index
-* @see app/Http/Controllers/Admin/CatalogoController.php:15
+* @see app/Http/Controllers/Admin/CatalogoController.php:17
 * @route '/admin/catalogos/{catalogo}'
 */
 indexForm.get = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -83,7 +83,7 @@ indexForm.get = (args: { catalogo: string | number } | [catalogo: string | numbe
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::index
-* @see app/Http/Controllers/Admin/CatalogoController.php:15
+* @see app/Http/Controllers/Admin/CatalogoController.php:17
 * @route '/admin/catalogos/{catalogo}'
 */
 indexForm.head = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -100,7 +100,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::store
-* @see app/Http/Controllers/Admin/CatalogoController.php:48
+* @see app/Http/Controllers/Admin/CatalogoController.php:71
 * @route '/admin/catalogos/{catalogo}'
 */
 export const store = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -115,7 +115,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::store
-* @see app/Http/Controllers/Admin/CatalogoController.php:48
+* @see app/Http/Controllers/Admin/CatalogoController.php:71
 * @route '/admin/catalogos/{catalogo}'
 */
 store.url = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -142,7 +142,7 @@ store.url = (args: { catalogo: string | number } | [catalogo: string | number ] 
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::store
-* @see app/Http/Controllers/Admin/CatalogoController.php:48
+* @see app/Http/Controllers/Admin/CatalogoController.php:71
 * @route '/admin/catalogos/{catalogo}'
 */
 store.post = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -152,7 +152,7 @@ store.post = (args: { catalogo: string | number } | [catalogo: string | number ]
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::store
-* @see app/Http/Controllers/Admin/CatalogoController.php:48
+* @see app/Http/Controllers/Admin/CatalogoController.php:71
 * @route '/admin/catalogos/{catalogo}'
 */
 const storeForm = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -162,7 +162,7 @@ const storeForm = (args: { catalogo: string | number } | [catalogo: string | num
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::store
-* @see app/Http/Controllers/Admin/CatalogoController.php:48
+* @see app/Http/Controllers/Admin/CatalogoController.php:71
 * @route '/admin/catalogos/{catalogo}'
 */
 storeForm.post = (args: { catalogo: string | number } | [catalogo: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -174,7 +174,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::update
-* @see app/Http/Controllers/Admin/CatalogoController.php:57
+* @see app/Http/Controllers/Admin/CatalogoController.php:80
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 export const update = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -189,7 +189,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::update
-* @see app/Http/Controllers/Admin/CatalogoController.php:57
+* @see app/Http/Controllers/Admin/CatalogoController.php:80
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 update.url = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions) => {
@@ -215,7 +215,7 @@ update.url = (args: { catalogo: string | number, item: string | number } | [cata
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::update
-* @see app/Http/Controllers/Admin/CatalogoController.php:57
+* @see app/Http/Controllers/Admin/CatalogoController.php:80
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 update.put = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -225,7 +225,7 @@ update.put = (args: { catalogo: string | number, item: string | number } | [cata
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::update
-* @see app/Http/Controllers/Admin/CatalogoController.php:57
+* @see app/Http/Controllers/Admin/CatalogoController.php:80
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 const updateForm = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -240,7 +240,7 @@ const updateForm = (args: { catalogo: string | number, item: string | number } |
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::update
-* @see app/Http/Controllers/Admin/CatalogoController.php:57
+* @see app/Http/Controllers/Admin/CatalogoController.php:80
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 updateForm.put = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -257,7 +257,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::destroy
-* @see app/Http/Controllers/Admin/CatalogoController.php:69
+* @see app/Http/Controllers/Admin/CatalogoController.php:92
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 export const destroy = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -272,7 +272,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::destroy
-* @see app/Http/Controllers/Admin/CatalogoController.php:69
+* @see app/Http/Controllers/Admin/CatalogoController.php:92
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 destroy.url = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions) => {
@@ -298,7 +298,7 @@ destroy.url = (args: { catalogo: string | number, item: string | number } | [cat
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::destroy
-* @see app/Http/Controllers/Admin/CatalogoController.php:69
+* @see app/Http/Controllers/Admin/CatalogoController.php:92
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 destroy.delete = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -308,7 +308,7 @@ destroy.delete = (args: { catalogo: string | number, item: string | number } | [
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::destroy
-* @see app/Http/Controllers/Admin/CatalogoController.php:69
+* @see app/Http/Controllers/Admin/CatalogoController.php:92
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 const destroyForm = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -323,7 +323,7 @@ const destroyForm = (args: { catalogo: string | number, item: string | number } 
 
 /**
 * @see \App\Http\Controllers\Admin\CatalogoController::destroy
-* @see app/Http/Controllers/Admin/CatalogoController.php:69
+* @see app/Http/Controllers/Admin/CatalogoController.php:92
 * @route '/admin/catalogos/{catalogo}/{item}'
 */
 destroyForm.delete = (args: { catalogo: string | number, item: string | number } | [catalogo: string | number, item: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

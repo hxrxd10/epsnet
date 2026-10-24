@@ -24,7 +24,7 @@ class OrdenImpresionController extends Controller
 
     /**
      * Guarda o reemplaza la orden de impresión (contenido en base64 en la base de datos). Si el
-     * expediente ya estaba verificado por la unidad, queda completo a la espera de una nueva verificación.
+     * EPS ya estaba aprobado, vuelve a la bandeja de supervisión para aprobarse de nuevo.
      */
     public function store(OrdenImpresionRequest $request, Expediente $expediente): RedirectResponse
     {
@@ -47,11 +47,7 @@ class OrdenImpresionController extends Controller
             $adjunto->contenido()->create(['contenido' => base64_encode($bytes)]);
 
             if ($expediente->estado_expediente === EstadoExpediente::Verificado) {
-                $expediente->update([
-                    'estado_expediente' => EstadoExpediente::Completo,
-                    'verificado_at' => null,
-                    'verificado_por' => null,
-                ]);
+                $expediente->enviarAAprobacion();
             }
         });
 
@@ -61,22 +57,20 @@ class OrdenImpresionController extends Controller
     }
 
     /**
-     * Elimina la orden de impresión: sin ella el expediente vuelve a estar en progreso.
+     * Elimina la orden de impresión (es opcional). Si el EPS ya estaba aprobado, vuelve a la bandeja
+     * de supervisión para aprobarse de nuevo.
      */
     public function destroy(Expediente $expediente): RedirectResponse
     {
         DB::transaction(function () use ($expediente): void {
             $expediente->ordenImpresion()->get()->each->delete();
 
-            $expediente->update([
-                'estado_expediente' => EstadoExpediente::Activo,
-                'completado_at' => null,
-                'verificado_at' => null,
-                'verificado_por' => null,
-            ]);
+            if ($expediente->estado_expediente === EstadoExpediente::Verificado) {
+                $expediente->enviarAAprobacion();
+            }
         });
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Orden de impresión eliminada. Tu EPS vuelve a estar en progreso.']);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Orden de impresión eliminada.']);
 
         return to_route('estudiante.expedientes.cierre.index', $expediente);
     }

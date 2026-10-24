@@ -4,6 +4,7 @@ export type ClaveMetrica =
     | 'eps'
     | 'estudiantes'
     | 'bienes_servicios'
+    | 'aporte'
     | 'beneficiarios'
     | 'acciones'
     | 'participantes'
@@ -17,6 +18,7 @@ export type ItemBienServicio = {
     tipo: 'bien' | 'servicio';
     cantidad: number;
     beneficiarios: number;
+    aporte: number;
 };
 
 export type DepartamentoEstadistico = {

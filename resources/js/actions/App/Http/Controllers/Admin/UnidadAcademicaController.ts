@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::store
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:45
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:46
 * @route '/admin/unidades'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -97,7 +97,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::store
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:45
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:46
 * @route '/admin/unidades'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::store
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:45
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:46
 * @route '/admin/unidades'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -116,7 +116,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::store
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:45
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:46
 * @route '/admin/unidades'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -126,7 +126,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::store
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:45
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:46
 * @route '/admin/unidades'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -138,7 +138,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::update
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:54
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:55
 * @route '/admin/unidades/{unidad}'
 */
 export const update = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -153,7 +153,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::update
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:54
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:55
 * @route '/admin/unidades/{unidad}'
 */
 update.url = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -186,7 +186,7 @@ update.url = (args: { unidad: number | { id: number } } | [unidad: number | { id
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::update
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:54
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:55
 * @route '/admin/unidades/{unidad}'
 */
 update.put = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -196,7 +196,7 @@ update.put = (args: { unidad: number | { id: number } } | [unidad: number | { id
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::update
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:54
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:55
 * @route '/admin/unidades/{unidad}'
 */
 update.patch = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -206,7 +206,7 @@ update.patch = (args: { unidad: number | { id: number } } | [unidad: number | { 
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::update
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:54
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:55
 * @route '/admin/unidades/{unidad}'
 */
 const updateForm = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -221,7 +221,7 @@ const updateForm = (args: { unidad: number | { id: number } } | [unidad: number 
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::update
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:54
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:55
 * @route '/admin/unidades/{unidad}'
 */
 updateForm.put = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -236,7 +236,7 @@ updateForm.put = (args: { unidad: number | { id: number } } | [unidad: number | 
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::update
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:54
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:55
 * @route '/admin/unidades/{unidad}'
 */
 updateForm.patch = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -253,7 +253,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::destroy
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:66
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:67
 * @route '/admin/unidades/{unidad}'
 */
 export const destroy = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -268,7 +268,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::destroy
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:66
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:67
 * @route '/admin/unidades/{unidad}'
 */
 destroy.url = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -301,7 +301,7 @@ destroy.url = (args: { unidad: number | { id: number } } | [unidad: number | { i
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::destroy
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:66
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:67
 * @route '/admin/unidades/{unidad}'
 */
 destroy.delete = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -311,7 +311,7 @@ destroy.delete = (args: { unidad: number | { id: number } } | [unidad: number | 
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::destroy
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:66
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:67
 * @route '/admin/unidades/{unidad}'
 */
 const destroyForm = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -326,7 +326,7 @@ const destroyForm = (args: { unidad: number | { id: number } } | [unidad: number
 
 /**
 * @see \App\Http\Controllers\Admin\UnidadAcademicaController::destroy
-* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:66
+* @see app/Http/Controllers/Admin/UnidadAcademicaController.php:67
 * @route '/admin/unidades/{unidad}'
 */
 destroyForm.delete = (args: { unidad: number | { id: number } } | [unidad: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

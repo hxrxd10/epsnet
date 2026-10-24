@@ -11,28 +11,28 @@ enum EstadoExpediente: string
     /** El estudiante todavía está llenando su información. */
     case Activo = 'activo';
 
-    /** El estudiante revisó el resumen y subió su orden de impresión: cuenta para las estadísticas. */
+    /** El estudiante envió su EPS a aprobación: espera en la bandeja de supervisión. */
     case Completo = 'completo';
 
-    /** La unidad académica aprobó el expediente (doble verificación). */
+    /** La supervisión de la unidad académica aprobó el EPS: cuenta para las estadísticas. */
     case Verificado = 'verificado';
 
     public function etiqueta(): string
     {
         return match ($this) {
             self::Activo => 'En progreso',
-            self::Completo => 'Completo',
-            self::Verificado => 'Verificado',
+            self::Completo => 'En revisión',
+            self::Verificado => 'Aprobado',
         };
     }
 
     /**
-     * Estados cuya información es válida para las estadísticas.
+     * Estados cuya información es válida para las estadísticas: solo los EPS aprobados por supervisión.
      *
      * @return list<self>
      */
     public static function validos(): array
     {
-        return [self::Completo, self::Verificado];
+        return [self::Verificado];
     }
 }

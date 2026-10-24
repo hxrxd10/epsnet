@@ -20,6 +20,8 @@ type Props = {
     onSeleccionar: (codigo: string | null) => void;
     /** Nombre de lo que se cuenta, para el texto accesible y el tooltip. */
     etiqueta: string;
+    /** Cómo se escribe cada valor (por defecto, como número entero). */
+    formato?: (valor: number, compacto?: boolean) => string;
 };
 
 const [VIEWBOX_X, VIEWBOX_Y] = MAP_VIEWBOX;
@@ -29,6 +31,7 @@ export default function MapaEstadistico({
     seleccionado,
     onSeleccionar,
     etiqueta,
+    formato = formatearNumero,
 }: Props) {
     const [activo, setActivo] = useState<string | null>(null);
 
@@ -81,7 +84,7 @@ export default function MapaEstadistico({
                                 role="button"
                                 tabIndex={0}
                                 aria-pressed={esSeleccionado}
-                                aria-label={`${datos?.nombre ?? mapa.codigo}: ${formatearNumero(valor)} ${etiqueta}`}
+                                aria-label={`${datos?.nombre ?? mapa.codigo}: ${formato(valor)} ${etiqueta}`}
                                 fill="white"
                                 fillOpacity={
                                     esSeleccionado ? 0.16 : esActivo ? 0.08 : 0
@@ -141,7 +144,7 @@ export default function MapaEstadistico({
                                 paintOrder="stroke"
                                 className="font-mono"
                             >
-                                {formatearNumero(valor)}
+                                {formato(valor, true)}
                             </text>
                         );
                     })}
@@ -160,7 +163,7 @@ export default function MapaEstadistico({
                         {datosEnfocado.nombre}
                     </p>
                     <p className="font-mono text-xs text-white/60">
-                        {formatearNumero(datosEnfocado.valor)} {etiqueta}
+                        {formato(datosEnfocado.valor)} {etiqueta}
                     </p>
                 </div>
             )}

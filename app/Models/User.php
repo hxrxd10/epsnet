@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -28,6 +29,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $two_factor_confirmed_at
  * @property string|null $remember_token
  * @property int|null $rol_id
+ * @property int|null $unidad_academica_id
  * @property bool $activo
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -73,13 +75,40 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Unidad académica que administra este usuario (rol de unidad académica).
+     * Unidad académica a la que pertenece este usuario (rol de unidad académica).
      *
-     * @return HasOne<UnidadAcademica, $this>
+     * @return BelongsTo<UnidadAcademica, $this>
      */
-    public function unidadAcademica(): HasOne
+    public function unidadAcademica(): BelongsTo
     {
-        return $this->hasOne(UnidadAcademica::class, 'administrador_id');
+        return $this->belongsTo(UnidadAcademica::class);
+    }
+
+    /**
+     * Carreras que este supervisor puede ver y aprobar. Sin carreras asignadas ve toda su unidad.
+     *
+     * @return BelongsToMany<Carrera, $this>
+     */
+    public function carreras(): BelongsToMany
+    {
+        return $this->belongsToMany(Carrera::class)->withTimestamps();
+    }
+
+    /**
+     * Si el usuario puede consultar (y aprobar) el expediente: DIGEU todos; una unidad académica los
+     * de su unidad, limitados a sus carreras cuando tiene carreras asignadas.
+     */
+    public function alcanzaExpediente(Expediente $expediente): bool
+    {
+        if ($this->esAdministrador()) {
+            return true;
+        }
+
+        if (! $this->esUnidadAcademica() || $this->unidad_academica_id === null || $this->unidad_academica_id !== $expediente->unidad_academica_id) {
+            return false;
+        }
+
+        return $this->carreras->isEmpty() || $this->carreras->contains(fn (Carrera $carrera): bool => $carrera->incluye($expediente));
     }
 
     public function tieneRol(ClaveRol $clave): bool
@@ -102,6 +131,27 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->tieneRol(ClaveRol::UnidadAcademica);
     }
 
+    /**
+     * Qué EPS consulta el usuario, para mostrarlo en el panel: «Todas las unidades académicas»,
+     * el nombre de su unidad o su unidad con las carreras que supervisa.
+     */
+    public function ambitoDeConsulta(): string
+    {
+        if ($this->esAdministrador()) {
+            return 'Todas las unidades académicas';
+        }
+
+        if ($this->unidadAcademica === null) {
+            return 'Sin unidad asignada';
+        }
+
+        if ($this->carreras->isEmpty()) {
+            return $this->unidadAcademica->nombre;
+        }
+
+        return $this->unidadAcademica->nombre.' · '.$this->carreras->pluck('nombre')->implode(', ');
+    }
+
     public function moduloBitacora(): string
     {
         return 'Usuarios';
@@ -118,6 +168,11 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected function valoresBitacora(array $valores): array
     {
+        if (array_key_exists('unidad_academica_id', $valores)) {
+            $valores['unidad_academica'] = UnidadAcademica::find($valores['unidad_academica_id'])?->nombre;
+            unset($valores['unidad_academica_id']);
+        }
+
         if (array_key_exists('rol_id', $valores)) {
             $valores['rol'] = Rol::find($valores['rol_id'])?->clave;
             unset($valores['rol_id']);

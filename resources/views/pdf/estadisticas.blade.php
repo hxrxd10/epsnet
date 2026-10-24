@@ -6,7 +6,7 @@
     @include('pdf.partials.estilos')
 </head>
 <body>
-    @include('pdf.partials.encabezado', ['titulo' => 'Estadísticas de la red de EPS', 'subtitulo' => 'Sistema Unificado de Registro y Seguimiento del EPS'])
+    @include('pdf.partials.encabezado', ['titulo' => 'Estadísticas de la red de EPS', 'subtitulo' => 'SIRSE USAC · Sistema Unificado de Registro y Seguimiento del EPS de la Universidad de San Carlos de Guatemala'])
     <div class="contenido">
         @include('pdf.partials.filtros')
 
@@ -16,7 +16,7 @@
                 <tr>
                     @foreach ($fila as $metrica)
                         <td>
-                            <div class="valor">{{ number_format($totales[$metrica->value]) }}</div>
+                            <div class="valor">{{ $metrica->formatear($totales[$metrica->value]) }}</div>
                             <div class="nombre">{{ $metrica->etiqueta() }}</div>
                         </td>
                     @endforeach
@@ -42,7 +42,7 @@
                             <tr>
                                 <td>{{ $posicion + 1 }}</td>
                                 <td>{{ $departamento['nombre'] }}</td>
-                                <td class="num">{{ number_format($departamento['metricas'][$metricaElegida->value]) }}</td>
+                                <td class="num">{{ $metricaElegida->formatear($departamento['metricas'][$metricaElegida->value]) }}</td>
                             </tr>
                         @endforeach
                     </table>
@@ -62,14 +62,14 @@
                 <tr>
                     <td>{{ $departamento['nombre'] }}</td>
                     @foreach ($metricas as $metrica)
-                        <td class="num">{{ number_format($departamento['metricas'][$metrica->value]) }}</td>
+                        <td class="num">{{ $metrica->formatear($departamento['metricas'][$metrica->value]) }}</td>
                     @endforeach
                 </tr>
             @endforeach
             <tr class="total">
                 <td>Total del país</td>
                 @foreach ($metricas as $metrica)
-                    <td class="num">{{ number_format($totales[$metrica->value]) }}</td>
+                    <td class="num">{{ $metrica->formatear($totales[$metrica->value]) }}</td>
                 @endforeach
             </tr>
         </table>

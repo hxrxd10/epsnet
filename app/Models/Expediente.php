@@ -183,6 +183,27 @@ class Expediente extends Model
     }
 
     /**
+     * La mejor foto del EPS, que se muestra en el repositorio.
+     *
+     * @return MorphOne<Adjunto, $this>
+     */
+    public function foto(): MorphOne
+    {
+        return $this->morphOne(Adjunto::class, 'entidad', 'entidad_tipo', 'entidad_id')
+            ->where('categoria', Adjunto::FOTO_EPS);
+    }
+
+    /**
+     * Dirección de la foto (con su huella para que el navegador la renueve al cambiarla), o null.
+     */
+    public function urlFoto(): ?string
+    {
+        $foto = $this->foto;
+
+        return $foto === null ? null : route('expedientes.foto', ['expediente' => $this, 'v' => substr((string) $foto->sha256, 0, 12)], absolute: false);
+    }
+
+    /**
      * @return MorphMany<Adjunto, $this>
      */
     public function adjuntos(): MorphMany
@@ -191,7 +212,7 @@ class Expediente extends Model
     }
 
     /**
-     * Expedientes cuya información es válida para las estadísticas (completos o verificados).
+     * Expedientes cuya información es válida para las estadísticas (aprobados por supervisión).
      *
      * @param  Builder<Expediente>  $query
      */
@@ -217,8 +238,8 @@ class Expediente extends Model
     }
 
     /**
-     * Expedientes que el usuario puede consultar: todos para DIGEU y los de su unidad para una
-     * unidad académica; ninguno para el resto.
+     * Expedientes que el usuario puede consultar: todos para DIGEU; para una unidad académica los de
+     * su unidad, limitados a sus carreras cuando tiene carreras asignadas; ninguno para el resto.
      *
      * @param  Builder<Expediente>  $query
      */
@@ -229,13 +250,24 @@ class Expediente extends Model
             return;
         }
 
-        if ($usuario->esUnidadAcademica() && $usuario->unidadAcademica !== null) {
-            $query->where('unidad_academica_id', $usuario->unidadAcademica->id);
+        if (! $usuario->esUnidadAcademica() || $usuario->unidad_academica_id === null) {
+            $query->whereKey([]);
 
             return;
         }
 
-        $query->whereKey([]);
+        $query->where('unidad_academica_id', $usuario->unidad_academica_id);
+
+        if ($usuario->carreras->isNotEmpty()) {
+            $query->where(function (Builder $consulta) use ($usuario): void {
+                foreach ($usuario->carreras as $carrera) {
+                    $consulta->orWhere(fn (Builder $deLaCarrera) => $deLaCarrera
+                        ->where('codigo_unidad', $carrera->codigo_unidad)
+                        ->where('codigo_extension', $carrera->codigo_extension)
+                        ->where('codigo_carrera', $carrera->codigo_carrera));
+                }
+            });
+        }
     }
 
     /**
@@ -276,15 +308,25 @@ class Expediente extends Model
     }
 
     /**
-     * Retira la aprobación: el expediente vuelve a estar completo.
+     * Envía el EPS a la bandeja de supervisión: queda en revisión hasta que se apruebe.
      */
-    public function quitarVerificacion(): void
+    public function enviarAAprobacion(): void
     {
         $this->update([
             'estado_expediente' => EstadoExpediente::Completo,
+            'completado_at' => $this->completado_at ?? now(),
+            'aprobacion_solicitada_at' => now(),
             'verificado_at' => null,
             'verificado_por' => null,
         ]);
+    }
+
+    /**
+     * Retira la aprobación: el EPS vuelve a la bandeja, en revisión, para aprobarse de nuevo.
+     */
+    public function quitarVerificacion(): void
+    {
+        $this->enviarAAprobacion();
     }
 
     /**

@@ -49,7 +49,8 @@ type Unidad = {
     latitud: string | null;
     longitud: string | null;
     activa: boolean;
-    administrador: string | null;
+    usuarios: string[];
+    carreras: number;
     expedientes: number;
 };
 
@@ -233,10 +234,16 @@ export default function Unidades({
                                                 : 'Sin ubicación'}
                                         </span>
                                         <span>{unidad.expedientes} EPS</span>
-                                        {unidad.administrador && (
+                                        <span>
+                                            {unidad.carreras}{' '}
+                                            {unidad.carreras === 1
+                                                ? 'carrera'
+                                                : 'carreras'}
+                                        </span>
+                                        {unidad.usuarios.length > 0 && (
                                             <span>
-                                                Administra:{' '}
-                                                {unidad.administrador}
+                                                Usuarios:{' '}
+                                                {unidad.usuarios.join(', ')}
                                             </span>
                                         )}
                                     </p>
@@ -377,7 +384,7 @@ export default function Unidades({
 
             <DialogoEliminar
                 titulo="Eliminar unidad académica"
-                descripcion={`${eliminando?.nombre ?? ''}. Si tiene EPS o un administrador asignado, no se eliminará: desactívala.`}
+                descripcion={`${eliminando?.nombre ?? ''}. Si tiene EPS, carreras o usuarios asignados, no se eliminará: desactívala.`}
                 abierto={eliminando !== null}
                 procesando={borrando}
                 onCancelar={() => setEliminando(null)}

@@ -7,6 +7,7 @@ use App\Http\Controllers\Estudiante\BienServicioController;
 use App\Http\Controllers\Estudiante\CierreExpedienteController;
 use App\Http\Controllers\Estudiante\CuentaController;
 use App\Http\Controllers\Estudiante\ExpedienteController;
+use App\Http\Controllers\Estudiante\FotoExpedienteController;
 use App\Http\Controllers\Estudiante\OrdenImpresionController;
 use App\Http\Controllers\Estudiante\ProgramaExpedienteController;
 use App\Http\Controllers\Estudiante\PublicacionInvestigacionController;
@@ -62,11 +63,13 @@ Route::prefix('estudiante')->name('estudiante.')->group(function () {
             Route::put('expedientes/{expediente}/programa', [ProgramaExpedienteController::class, 'update'])->name('expedientes.programa.update');
 
             Route::get('expedientes/{expediente}/cierre', [CierreExpedienteController::class, 'index'])->name('expedientes.cierre.index');
-            Route::post('expedientes/{expediente}/cierre', [CierreExpedienteController::class, 'store'])->name('expedientes.cierre.store');
 
             Route::get('expedientes/{expediente}/orden-impresion', [OrdenImpresionController::class, 'show'])->name('expedientes.orden-impresion.show');
             Route::post('expedientes/{expediente}/orden-impresion', [OrdenImpresionController::class, 'store'])->name('expedientes.orden-impresion.store');
             Route::delete('expedientes/{expediente}/orden-impresion', [OrdenImpresionController::class, 'destroy'])->name('expedientes.orden-impresion.destroy');
+
+            Route::post('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'store'])->name('expedientes.foto.store');
+            Route::delete('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'destroy'])->name('expedientes.foto.destroy');
         });
     });
 });

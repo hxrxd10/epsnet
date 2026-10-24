@@ -102,5 +102,5 @@ export default function Register() {
 Register.layout = {
     title: 'Crea tu cuenta',
     description:
-        'Con tu cuenta puedes consultar las estadísticas de EPSNET. Si eres estudiante, después puedes verificar tu identidad para registrar tu EPS.',
+        'Con tu cuenta puedes consultar las estadísticas de SIRSE USAC. Si eres estudiante, después puedes verificar tu identidad para registrar tu EPS.',
 };

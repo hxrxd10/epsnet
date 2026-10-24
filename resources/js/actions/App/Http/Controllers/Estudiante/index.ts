@@ -12,6 +12,7 @@ import SolicitudAprobacionController from './SolicitudAprobacionController'
 import ProgramaExpedienteController from './ProgramaExpedienteController'
 import CierreExpedienteController from './CierreExpedienteController'
 import OrdenImpresionController from './OrdenImpresionController'
+import FotoExpedienteController from './FotoExpedienteController'
 
 const Estudiante = {
     AccesoController: Object.assign(AccesoController, AccesoController),
@@ -28,6 +29,7 @@ const Estudiante = {
     ProgramaExpedienteController: Object.assign(ProgramaExpedienteController, ProgramaExpedienteController),
     CierreExpedienteController: Object.assign(CierreExpedienteController, CierreExpedienteController),
     OrdenImpresionController: Object.assign(OrdenImpresionController, OrdenImpresionController),
+    FotoExpedienteController: Object.assign(FotoExpedienteController, FotoExpedienteController),
 }
 
 export default Estudiante

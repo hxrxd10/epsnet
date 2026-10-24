@@ -12,6 +12,7 @@ type Props = {
         carrera: string;
         unidad: string;
         aprobado: string | null;
+        foto: string | null;
     };
     ejes: EjeDetalle[];
 };
@@ -34,6 +35,14 @@ export default function RepositorioEps({ expediente, ejes }: Props) {
                             ` · Aprobado el ${formatearFecha(expediente.aprobado)}`}
                     </p>
                 </div>
+
+                {expediente.foto && (
+                    <img
+                        src={expediente.foto}
+                        alt={`Foto del EPS de ${expediente.estudiante}`}
+                        className="border-sidebar-border/70 max-h-[28rem] w-full max-w-3xl rounded-xl border object-cover"
+                    />
+                )}
 
                 <DetalleEjes ejes={ejes} />
             </div>

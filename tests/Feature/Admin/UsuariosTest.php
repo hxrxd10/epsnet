@@ -1,10 +1,14 @@
 <?php
 
 use App\Enums\ClaveRol;
+use App\Models\Carrera;
 use App\Models\Estudiante;
 use App\Models\Rol;
 use App\Models\UnidadAcademica;
 use App\Models\User;
+use App\Notifications\CuentaCreada;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Inertia\Testing\AssertableInertia as Assert;
 
 function iniciarComoAdministrador(): User
@@ -26,8 +30,10 @@ describe('acceso', function () {
 
         $this->get(route('admin.usuarios.index'))->assertForbidden();
         $this->put(route('admin.usuarios.update', $objetivo), ['rol' => 'digeu'])->assertForbidden();
+        $this->post(route('admin.usuarios.store'), ['name' => 'X', 'email' => 'x@example.com', 'rol' => 'digeu'])->assertForbidden();
 
-        expect($objetivo->fresh()->tieneRol(ClaveRol::Invitado))->toBeTrue();
+        expect($objetivo->fresh()->tieneRol(ClaveRol::Invitado))->toBeTrue()
+            ->and(User::where('email', 'x@example.com')->exists())->toBeFalse();
     })->with(['invitado', 'estudiante']);
 
     it('niega el acceso a una unidad académica', function () {
@@ -39,12 +45,13 @@ describe('acceso', function () {
 });
 
 describe('listado', function () {
-    it('lista a los usuarios con su rol y su unidad', function () {
+    it('lista a los usuarios con su rol, su unidad y sus carreras', function () {
         iniciarComoAdministrador();
         $unidad = UnidadAcademica::factory()->create(['nombre' => 'Facultad de Humanidades']);
+        $pedagogia = Carrera::factory()->create(['unidad_academica_id' => $unidad->id, 'nombre' => 'Pedagogía']);
         $coordinador = User::factory()->create(['name' => 'Beatriz Coordinadora']);
-        $coordinador->forceFill(['rol_id' => Rol::delSistema(ClaveRol::UnidadAcademica)->id])->save();
-        $unidad->forceFill(['administrador_id' => $coordinador->id])->save();
+        $coordinador->forceFill(['rol_id' => Rol::delSistema(ClaveRol::UnidadAcademica)->id, 'unidad_academica_id' => $unidad->id])->save();
+        $coordinador->carreras()->attach($pedagogia);
         User::factory()->invitado()->create(['name' => 'Ana Invitada']);
 
         $this->get(route('admin.usuarios.index'))
@@ -56,6 +63,8 @@ describe('listado', function () {
                 ->where('usuarios.0.rol', 'invitado')
                 ->where('usuarios.1.name', 'Beatriz Coordinadora')
                 ->where('usuarios.1.unidad', 'Facultad de Humanidades')
+                ->where('usuarios.1.carreras', [['id' => $pedagogia->id, 'nombre' => 'Pedagogía']])
+                ->where('unidades.0.carreras', [['value' => (string) $pedagogia->id, 'label' => 'Pedagogía (Plan Diario)']])
                 ->where('rolesAsignables', fn ($roles) => collect($roles)->pluck('value')->sort()->values()->all() === ['digeu', 'invitado', 'unidad_academica']));
     });
 
@@ -105,62 +114,63 @@ describe('cambio de rol', function () {
         $this->put(route('admin.usuarios.update', $invitado), ['rol' => 'unidad_academica', 'unidad_academica_id' => $unidad->id])
             ->assertSessionHasNoErrors();
 
-        expect($invitado->fresh()->esUnidadAcademica())->toBeTrue()
-            ->and($unidad->fresh()->administrador_id)->toBe($invitado->id)
-            ->and($invitado->fresh()->unidadAcademica->id)->toBe($unidad->id);
+        expect($invitado->fresh())
+            ->esUnidadAcademica()->toBeTrue()
+            ->unidad_academica_id->toBe($unidad->id)
+            ->and($invitado->fresh()->carreras)->toBeEmpty();
     });
 
-    it('exige una unidad válida para el rol de unidad académica', function (array $datos, array $errores) {
+    it('permite varios usuarios en la misma unidad, cada uno con sus carreras', function () {
+        iniciarComoAdministrador();
+        $unidad = UnidadAcademica::factory()->create();
+        [$pedagogia, $derecho] = Carrera::factory()->count(2)->create(['unidad_academica_id' => $unidad->id]);
+        $primero = User::factory()->invitado()->create();
+        $segundo = User::factory()->invitado()->create();
+
+        $this->put(route('admin.usuarios.update', $primero), ['rol' => 'unidad_academica', 'unidad_academica_id' => $unidad->id, 'carreras' => [$pedagogia->id]])
+            ->assertSessionHasNoErrors();
+        $this->put(route('admin.usuarios.update', $segundo), ['rol' => 'unidad_academica', 'unidad_academica_id' => $unidad->id, 'carreras' => [$derecho->id]])
+            ->assertSessionHasNoErrors();
+
+        expect($primero->fresh()->carreras->pluck('id')->all())->toBe([$pedagogia->id])
+            ->and($segundo->fresh()->carreras->pluck('id')->all())->toBe([$derecho->id])
+            ->and($unidad->usuarios()->count())->toBe(2);
+    });
+
+    it('exige una unidad válida y carreras de esa unidad para el rol de unidad académica', function (Closure $datos, array $errores) {
         iniciarComoAdministrador();
         $invitado = User::factory()->invitado()->create();
 
-        $this->put(route('admin.usuarios.update', $invitado), ['rol' => 'unidad_academica', ...$datos])->assertSessionHasErrors($errores);
+        $this->put(route('admin.usuarios.update', $invitado), ['rol' => 'unidad_academica', ...$datos->call($this)])->assertSessionHasErrors($errores);
 
-        expect($invitado->fresh()->tieneRol(ClaveRol::Invitado))->toBeTrue();
+        expect($invitado->fresh()->tieneRol(ClaveRol::Invitado))->toBeTrue()
+            ->and($invitado->fresh()->carreras)->toBeEmpty();
     })->with([
-        'sin unidad' => [[], ['unidad_academica_id' => 'Selecciona la unidad académica que administrará.']],
-        'unidad inexistente' => [['unidad_academica_id' => 9999], ['unidad_academica_id']],
+        'sin unidad' => [fn () => [], ['unidad_academica_id' => 'Selecciona la unidad académica del usuario.']],
+        'unidad inexistente' => [fn () => ['unidad_academica_id' => 9999], ['unidad_academica_id']],
+        'carrera de otra unidad' => [fn () => [
+            'unidad_academica_id' => UnidadAcademica::factory()->create()->id,
+            'carreras' => [Carrera::factory()->create()->id],
+        ], ['carreras.0' => 'Las carreras deben ser de la unidad académica elegida.']],
     ]);
 
-    it('no asigna una unidad que ya administra otra persona', function () {
+    it('cambia las carreras y las quita al cambiar de rol', function () {
         iniciarComoAdministrador();
-        $titular = User::factory()->invitado()->create(['name' => 'Titular']);
         $unidad = UnidadAcademica::factory()->create();
-        $unidad->forceFill(['administrador_id' => $titular->id])->save();
-        $otro = User::factory()->invitado()->create();
-
-        $this->put(route('admin.usuarios.update', $otro), ['rol' => 'unidad_academica', 'unidad_academica_id' => $unidad->id])
-            ->assertSessionHasErrors(['unidad_academica_id' => 'Esa unidad ya la administra Titular. Cámbiale o quítale la unidad primero.']);
-
-        expect($unidad->fresh()->administrador_id)->toBe($titular->id);
-    });
-
-    it('permite volver a guardar la misma unidad de quien ya la administra', function () {
-        iniciarComoAdministrador();
+        [$pedagogia, $derecho] = Carrera::factory()->count(2)->create(['unidad_academica_id' => $unidad->id]);
         $coordinador = User::factory()->invitado()->create();
-        $unidad = UnidadAcademica::factory()->create();
+        $this->put(route('admin.usuarios.update', $coordinador), ['rol' => 'unidad_academica', 'unidad_academica_id' => $unidad->id, 'carreras' => [$pedagogia->id]]);
 
-        $this->put(route('admin.usuarios.update', $coordinador), ['rol' => 'unidad_academica', 'unidad_academica_id' => $unidad->id]);
-        $this->put(route('admin.usuarios.update', $coordinador), ['rol' => 'unidad_academica', 'unidad_academica_id' => $unidad->id])
-            ->assertSessionHasNoErrors();
-    });
+        $this->put(route('admin.usuarios.update', $coordinador), ['rol' => 'unidad_academica', 'unidad_academica_id' => $unidad->id, 'carreras' => [$derecho->id]]);
 
-    it('libera la unidad al cambiar de rol o de unidad', function () {
-        iniciarComoAdministrador();
-        $coordinador = User::factory()->invitado()->create();
-        $primera = UnidadAcademica::factory()->create();
-        $segunda = UnidadAcademica::factory()->create();
-        $this->put(route('admin.usuarios.update', $coordinador), ['rol' => 'unidad_academica', 'unidad_academica_id' => $primera->id]);
-
-        $this->put(route('admin.usuarios.update', $coordinador), ['rol' => 'unidad_academica', 'unidad_academica_id' => $segunda->id]);
-
-        expect($primera->fresh()->administrador_id)->toBeNull()
-            ->and($segunda->fresh()->administrador_id)->toBe($coordinador->id);
+        expect($coordinador->fresh()->carreras->pluck('id')->all())->toBe([$derecho->id]);
 
         $this->put(route('admin.usuarios.update', $coordinador), ['rol' => 'invitado']);
 
-        expect($segunda->fresh()->administrador_id)->toBeNull()
-            ->and($coordinador->fresh()->tieneRol(ClaveRol::Invitado))->toBeTrue();
+        expect($coordinador->fresh())
+            ->tieneRol(ClaveRol::Invitado)->toBeTrue()
+            ->unidad_academica_id->toBeNull()
+            ->and($coordinador->fresh()->carreras)->toBeEmpty();
     });
 
     it('no permite asignar el rol de estudiante ni roles inexistentes', function (string $rol) {
@@ -189,4 +199,53 @@ describe('cambio de rol', function () {
 
         expect($estudiante->fresh()->esEstudiante())->toBeTrue();
     });
+});
+
+describe('creación de cuentas', function () {
+    it('crea la cuenta de un supervisor con su unidad y sus carreras y le envía el enlace para definir su contraseña', function () {
+        Notification::fake();
+        iniciarComoAdministrador();
+        $unidad = UnidadAcademica::factory()->create(['nombre' => 'Centro Universitario de Occidente']);
+        $carrera = Carrera::factory()->create(['unidad_academica_id' => $unidad->id]);
+
+        $this->post(route('admin.usuarios.store'), [
+            'name' => 'Carlos Supervisor',
+            'email' => 'carlos@cunoc.example',
+            'rol' => 'unidad_academica',
+            'unidad_academica_id' => $unidad->id,
+            'carreras' => [$carrera->id],
+        ])->assertRedirect(route('admin.usuarios.index'))->assertSessionHasNoErrors();
+
+        $usuario = User::where('email', 'carlos@cunoc.example')->sole();
+
+        expect($usuario)
+            ->name->toBe('Carlos Supervisor')
+            ->esUnidadAcademica()->toBeTrue()
+            ->unidad_academica_id->toBe($unidad->id)
+            ->email_verified_at->not->toBeNull()
+            ->and($usuario->carreras->pluck('id')->all())->toBe([$carrera->id]);
+
+        Notification::assertSentTo($usuario, CuentaCreada::class, function (CuentaCreada $aviso) use ($usuario): bool {
+            return $aviso->unidad === 'Centro Universitario de Occidente'
+                && Password::broker()->tokenExists($usuario, $aviso->token)
+                && str_contains($aviso->toMail($usuario)->actionUrl, route('password.reset', $aviso->token));
+        });
+    });
+
+    it('valida los datos de la cuenta nueva', function (array $datos, array $errores) {
+        Notification::fake();
+        iniciarComoAdministrador();
+        User::factory()->create(['email' => 'repetido@example.com']);
+
+        $this->post(route('admin.usuarios.store'), ['name' => 'Alguien', 'email' => 'nuevo@example.com', 'rol' => 'digeu', ...$datos])
+            ->assertSessionHasErrors($errores);
+
+        Notification::assertNothingSent();
+        expect(User::where('email', 'nuevo@example.com')->exists())->toBeFalse();
+    })->with([
+        'sin nombre' => [['name' => ''], ['name' => 'Escribe el nombre de la persona.']],
+        'correo repetido' => [['email' => 'repetido@example.com'], ['email' => 'Ya existe una cuenta con este correo. Búscala en la lista y edita su acceso.']],
+        'rol de estudiante' => [['rol' => 'estudiante'], ['rol']],
+        'unidad académica sin unidad' => [['rol' => 'unidad_academica'], ['unidad_academica_id']],
+    ]);
 });

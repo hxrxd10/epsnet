@@ -74,9 +74,11 @@ export default function DefinitionSection() {
                             profesión en comunidades e instituciones del país,
                             bajo supervisión académica.{' '}
                             <strong className="font-semibold text-white">
-                                EPSNET
+                                SIRSE USAC
                             </strong>{' '}
-                            es la red que los conecta: un sistema único para
+                            (Sistema Unificado de Registro y Seguimiento del EPS
+                            de la Universidad de San Carlos de Guatemala) es la
+                            red que los conecta: un sistema único para
                             registrar, dar seguimiento y medir el impacto de
                             cada ejercicio en todo el territorio nacional.
                         </p>

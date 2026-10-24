@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
  * @property int|null $catalogo_id
  * @property TipoBienServicio $tipo
  * @property string $descripcion
+ * @property int|null $cantidad
  * @property string|null $beneficiarios
  * @property int|null $cantidad_beneficiarios
  * @property Carbon $fecha
@@ -30,6 +31,7 @@ use Illuminate\Support\Str;
     'catalogo_id',
     'tipo',
     'descripcion',
+    'cantidad',
     'beneficiarios',
     'cantidad_beneficiarios',
     'fecha',
@@ -46,6 +48,7 @@ class BienServicio extends Model
     {
         return [
             'tipo' => TipoBienServicio::class,
+            'cantidad' => 'integer',
             'cantidad_beneficiarios' => 'integer',
             'fecha' => 'date',
         ];

@@ -30,12 +30,25 @@ class ArmarDetalleExpediente
     private function registros(Expediente $expediente, Eje $eje): Collection
     {
         return match ($eje) {
-            Eje::BienesServicios => $expediente->bienesServicios()->with('catalogo')->orderBy('fecha')->get()
+            Eje::BienesServicios => $expediente->bienesServicios()
+                ->with(['catalogo.lineaIntervencion', 'catalogo.politicaPublica', 'catalogo.areaIntervencion', 'catalogo.ods'])
+                ->orderBy('fecha')->get()
                 ->map(fn ($r): array => $this->registro(
                     $r->tipo->etiqueta(),
                     $r->catalogo?->nombre ?? str($r->descripcion)->squish()->limit(90)->toString(),
-                    [$r->fecha->format('d-m-Y'), $r->cantidad_beneficiarios !== null ? "{$r->cantidad_beneficiarios} beneficiarios" : null],
-                    ['Descripción' => $r->descripcion, 'Beneficiarios' => $r->beneficiarios],
+                    [
+                        $r->fecha->format('d-m-Y'),
+                        $r->cantidad !== null ? "Cantidad: {$r->cantidad}" : null,
+                        $r->cantidad_beneficiarios !== null ? "{$r->cantidad_beneficiarios} beneficiarios" : null,
+                        $r->catalogo?->areaIntervencion?->nombre,
+                        $r->catalogo?->ods?->nombre,
+                    ],
+                    [
+                        'Línea de intervención' => $r->catalogo?->lineaIntervencion?->nombre,
+                        'Política pública' => $r->catalogo?->politicaPublica?->nombre,
+                        'Descripción' => $r->descripcion,
+                        'Beneficiarios' => $r->beneficiarios,
+                    ],
                 )),
             Eje::Publicaciones => $expediente->publicaciones()->orderBy('id')->get()
                 ->map(fn ($r): array => $this->registro(

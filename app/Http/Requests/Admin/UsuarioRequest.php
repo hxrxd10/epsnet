@@ -3,12 +3,9 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\ClaveRol;
-use App\Models\UnidadAcademica;
-use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Validator;
 
 class UsuarioRequest extends FormRequest
 {
@@ -28,42 +25,46 @@ class UsuarioRequest extends FormRequest
     }
 
     /**
+     * Una unidad académica puede tener varios usuarios; cada uno ve toda su unidad o solo las carreras
+     * que se le asignen (que deben ser de esa unidad).
+     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
+        $esUnidad = $this->input('rol') === ClaveRol::UnidadAcademica->value;
+
         return [
             'rol' => ['required', Rule::enum(ClaveRol::class)->only(self::rolesAsignables())],
             'unidad_academica_id' => [
-                Rule::requiredIf($this->input('rol') === ClaveRol::UnidadAcademica->value),
+                Rule::requiredIf($esUnidad),
                 'nullable',
                 'integer',
                 Rule::exists('unidades_academicas', 'id')->whereNull('deleted_at'),
+            ],
+            'carreras' => ['nullable', 'array'],
+            'carreras.*' => [
+                'integer',
+                'distinct',
+                Rule::exists('carreras', 'id')->where('unidad_academica_id', $esUnidad ? (int) $this->input('unidad_academica_id') : 0),
             ],
         ];
     }
 
     /**
-     * Una unidad académica tiene un solo administrador.
+     * Rol, unidad y carreras ya normalizados: solo una unidad académica tiene unidad y carreras.
      *
-     * @return list<callable(Validator): void>
+     * @return array{rol: ClaveRol, unidad_academica_id: int|null, carreras: list<int>}
      */
-    public function after(): array
+    public function acceso(): array
     {
+        $rol = ClaveRol::from($this->validated('rol'));
+        $esUnidad = $rol === ClaveRol::UnidadAcademica;
+
         return [
-            function (Validator $validador): void {
-                if ($validador->errors()->isNotEmpty() || $this->input('rol') !== ClaveRol::UnidadAcademica->value) {
-                    return;
-                }
-
-                /** @var User $usuario */
-                $usuario = $this->route('usuario');
-                $administrador = UnidadAcademica::find($this->input('unidad_academica_id'))?->administrador;
-
-                if ($administrador !== null && $administrador->id !== $usuario->id) {
-                    $validador->errors()->add('unidad_academica_id', "Esa unidad ya la administra {$administrador->name}. Cámbiale o quítale la unidad primero.");
-                }
-            },
+            'rol' => $rol,
+            'unidad_academica_id' => $esUnidad ? (int) $this->validated('unidad_academica_id') : null,
+            'carreras' => $esUnidad ? array_values(array_map('intval', $this->validated('carreras') ?? [])) : [],
         ];
     }
 
@@ -75,7 +76,8 @@ class UsuarioRequest extends FormRequest
         return [
             'rol.required' => 'Selecciona el rol.',
             'rol.enum' => 'El rol elegido no se puede asignar.',
-            'unidad_academica_id.required' => 'Selecciona la unidad académica que administrará.',
+            'unidad_academica_id.required' => 'Selecciona la unidad académica del usuario.',
+            'carreras.*.exists' => 'Las carreras deben ser de la unidad académica elegida.',
         ];
     }
 }

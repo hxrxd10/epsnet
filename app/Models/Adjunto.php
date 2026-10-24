@@ -10,11 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Metadatos de un archivo adjunto a cualquier registro (por ahora, la orden de impresión de un
+ * Metadatos de un archivo adjunto a cualquier registro (la orden de impresión y la foto de un
  * expediente). El contenido se guarda en base64 en `adjunto_contenidos`.
  *
  * @property int $id
@@ -47,6 +48,9 @@ class Adjunto extends Model
     use Auditable, HasFactory;
 
     public const string ORDEN_IMPRESION = 'orden_impresion';
+
+    /** La mejor foto del EPS, que elige el estudiante y se muestra en el repositorio. */
+    public const string FOTO_EPS = 'foto_eps';
 
     public $timestamps = false;
 
@@ -108,9 +112,32 @@ class Adjunto extends Model
         );
     }
 
+    /**
+     * Respuesta para mostrar el archivo en la página (p. ej. una imagen), con caché del navegador
+     * mientras el contenido no cambie.
+     */
+    public function enLinea(): Response
+    {
+        $contenido = $this->contenido;
+
+        abort_if($contenido === null, 404);
+
+        return response($contenido->bytes(), 200, [
+            'Content-Type' => $this->mime_type ?? 'application/octet-stream',
+            'Content-Disposition' => 'inline',
+            'Cache-Control' => 'private, max-age=86400',
+            'ETag' => '"'.$this->sha256.'"',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
     public function moduloBitacora(): string
     {
-        return $this->categoria === self::ORDEN_IMPRESION ? 'Orden de impresión' : 'Adjuntos';
+        return match ($this->categoria) {
+            self::ORDEN_IMPRESION => 'Orden de impresión',
+            self::FOTO_EPS => 'Foto del EPS',
+            default => 'Adjuntos',
+        };
     }
 
     protected function descripcionBitacora(): string

@@ -76,7 +76,7 @@ class BandejaController extends Controller
                 ? UnidadAcademica::orderBy('nombre')->get(['id', 'nombre'])->map(fn (UnidadAcademica $unidad): array => ['value' => (string) $unidad->id, 'label' => $unidad->nombre])->all()
                 : [],
             'sinUnidad' => $usuario->esUnidadAcademica() && $usuario->unidadAcademica === null,
-            'ambito' => $usuario->esAdministrador() ? 'Todas las unidades académicas' : ($usuario->unidadAcademica?->nombre ?? 'Sin unidad asignada'),
+            'ambito' => $usuario->ambitoDeConsulta(),
         ]);
     }
 }

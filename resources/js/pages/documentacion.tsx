@@ -8,6 +8,7 @@ import { index as estadisticas } from '@/routes/estadisticas';
 import { acceso, carreras } from '@/routes/estudiante';
 import { index as bandeja } from '@/routes/panel/bandeja';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
+import { index as investigaciones } from '@/routes/investigaciones';
 import { index as repositorio } from '@/routes/repositorio';
 
 type Seccion = {
@@ -37,17 +38,19 @@ const GUIAS: Record<string, Guia> = {
                 titulo: 'Consultar las estadísticas',
                 pasos: [
                     'Entra a "Estadísticas": el mapa de Guatemala muestra lo que ha hecho la red de EPS en cada departamento.',
-                    'Elige en la barra de la derecha qué quieres ver: investigaciones, bienes y servicios, beneficiarios, acciones, participantes, instituciones, estudiantes o EPS.',
+                    'Elige en la barra de la derecha qué quieres ver: investigaciones, bienes y servicios, aporte en quetzales, beneficiarios, acciones, participantes, instituciones, estudiantes o EPS. Solo cuentan los EPS aprobados por supervisión.',
+                    'El aporte es lo que suman en dinero los bienes y servicios: la cantidad entregada de cada uno por su valor base, que fija DIGEU en el catálogo.',
                     'Filtra por año (el de la orden de impresión o, si no la tiene, el de su aprobación), por unidad académica y por carrera. Al elegir una unidad, solo verás las carreras de esa unidad.',
                     'Haz clic en un departamento para ver sus investigaciones y sus principales bienes y servicios; con "Ver más" abres el detalle organizado por municipio.',
                     'Con "Generar PDF" descargas lo que estás viendo, con los filtros aplicados. También puedes generar el PDF de un departamento.',
                 ],
             },
             {
-                titulo: 'Consultar el repositorio',
+                titulo: 'Consultar el repositorio y las investigaciones',
                 pasos: [
-                    'En "Repositorio" están los EPS aprobados por su unidad académica, con una descripción de lo que se hizo en cada uno.',
+                    'En "Repositorio" están los EPS aprobados por supervisión, con su mejor foto y una descripción de lo que se hizo en cada uno.',
                     'Busca por estudiante o carrera y filtra por unidad; abre un EPS para ver todo lo registrado.',
+                    'En "Investigaciones" están solo las publicaciones de investigación de esos EPS. Busca por título, autores, resumen o carrera y filtra por tipo y unidad.',
                 ],
             },
             {
@@ -61,6 +64,7 @@ const GUIAS: Record<string, Guia> = {
         accesos: [
             { titulo: 'Estadísticas', href: estadisticas().url },
             { titulo: 'Repositorio', href: repositorio().url },
+            { titulo: 'Investigaciones', href: investigaciones().url },
             { titulo: 'Soy estudiante', href: acceso().url },
         ],
     },
@@ -80,7 +84,7 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Llenar los seis ejes',
                 pasos: [
-                    'Bienes y servicios: lo que generaste para la comunidad (elige del catálogo, indica los beneficiarios y la fecha).',
+                    'Bienes y servicios: lo que generaste para la comunidad. Elige la línea de intervención para encontrar el bien o servicio en el catálogo, e indica la cantidad, los beneficiarios y la fecha.',
                     'Publicaciones de investigación: título, tipo, autores, medio y, si lo tienes, el enlace.',
                     'Transferencia de conocimiento: capacitaciones, talleres o asesorías, con la comunidad y los participantes.',
                     'Territorio: elige el departamento y el municipio de la lista y, si quieres, marca el punto exacto en el mapa; el mapa sugiere el departamento y el municipio. La comunidad y la referencia son opcionales.',
@@ -94,17 +98,11 @@ const GUIAS: Record<string, Guia> = {
                 titulo: 'Cerrar tu EPS',
                 pasos: [
                     'En el último paso revisa el resumen de lo que registraste.',
-                    'Sube tu orden de impresión (PDF o imagen de hasta 10 MB) y guarda: tu EPS pasa a "Completo" y cuenta para las estadísticas.',
-                    'Tu unidad académica lo revisará y, al aprobarlo, aparecerá en el repositorio.',
-                ],
-            },
-            {
-                titulo: 'Si no tienes orden de impresión',
-                pasos: [
-                    'Puede pasar que no haya un informe escrito y, por eso, no tengas orden de impresión. En ese caso no puedes completar tu EPS, pero sí enviarlo a aprobación.',
-                    'En el último paso usa "Enviar a aprobación de mi unidad". Necesitas haber registrado al menos un elemento en los ejes.',
-                    'Tu EPS llega a la bandeja de solicitudes de tu unidad académica, que las revisa en orden de llegada. El sistema te dice el lugar que ocupa tu solicitud.',
-                    'Cuando tu unidad lo aprueba, tu EPS queda verificado, aparece en el repositorio y cuenta para las estadísticas.',
+                    'Elige la mejor foto de tu EPS: se muestra en el repositorio cuando tu EPS esté aprobado.',
+                    'Si tienes tu orden de impresión, súbela (PDF o imagen de hasta 10 MB). Es opcional y, por sí sola, no aprueba tu EPS.',
+                    'Todo EPS necesita la aprobación de supervisión: usa "Enviar mi EPS a aprobación". Necesitas haber registrado al menos un elemento en los ejes.',
+                    'Tu EPS queda "En revisión" en la bandeja de tu unidad académica, que las revisa en orden de llegada. El sistema te dice el lugar que ocupa tu solicitud.',
+                    'Cuando la supervisión lo aprueba, tu EPS queda "Aprobado", aparece en el repositorio y cuenta para las estadísticas.',
                 ],
             },
         ],
@@ -112,6 +110,7 @@ const GUIAS: Record<string, Guia> = {
             { titulo: 'Mis carreras y EPS', href: carreras().url },
             { titulo: 'Estadísticas', href: estadisticas().url },
             { titulo: 'Repositorio', href: repositorio().url },
+            { titulo: 'Investigaciones', href: investigaciones().url },
         ],
     },
     unidad_academica: {
@@ -122,8 +121,8 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Revisar a tus estudiantes',
                 pasos: [
-                    'DIGEU te asigna la unidad académica que administras.',
-                    'En "Estudiantes y EPS" ves a todos los estudiantes de tu unidad y el avance de cada EPS. Busca por nombre, carné o carrera y filtra por estado.',
+                    'DIGEU crea tu cuenta y te asigna tu unidad académica. Si te asigna carreras (por ejemplo, un supervisor por carrera en un centro universitario), solo ves y apruebas los EPS de esas carreras; si no, ves toda tu unidad.',
+                    'En "Estudiantes y EPS" ves a los estudiantes que te corresponden y el avance de cada EPS. Busca por nombre, carné o carrera y filtra por estado.',
                     'Los EPS que se realizan dentro del EPSUM llevan una etiqueta que lo indica.',
                     'Abre un EPS para revisar todo lo registrado en los seis ejes y descargar la orden de impresión.',
                 ],
@@ -131,7 +130,7 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Bandeja de solicitudes',
                 pasos: [
-                    'Cuando un estudiante sin orden de impresión envía su EPS a aprobación, le llega a tu bandeja de solicitudes. El menú muestra cuántas esperan.',
+                    'Todo EPS llega a tu bandeja de solicitudes cuando el estudiante lo envía a aprobación, con o sin orden de impresión. El menú muestra cuántas esperan.',
                     'Las solicitudes van en orden de llegada: la que llegó primero está arriba, con su número de turno, la fecha y hora de envío y los días que lleva esperando.',
                     'Abre una para revisar todo lo registrado y apruébala con el acepto; al aprobar vuelves a la bandeja para seguir con la siguiente.',
                     'DIGEU ve las solicitudes de todas las unidades y puede filtrarlas por unidad.',
@@ -140,10 +139,10 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Aprobar un EPS',
                 pasos: [
-                    'Cuando el EPS esté completo, usa "Aprobar EPS". Si el estudiante no tiene orden de impresión (por ejemplo, porque no hay un informe escrito), también puedes aprobarlo: basta con que tenga información registrada y con tu acepto.',
+                    'Cuando el estudiante envía su EPS a aprobación, usa "Aprobar EPS". La orden de impresión es opcional: puedes aprobarlo sin ella, con tu acepto.',
                     'Debes marcar el acepto: confirmas que los bienes y servicios y todo lo descrito en el EPS está comprobado y que se ejecutó. Sin el acepto no se puede aprobar.',
-                    'El EPS queda verificado y aparece en el repositorio. La aprobación, con quién la hizo y su acepto, queda anotada en la bitácora.',
-                    'Puedes retirar la aprobación si hace falta: el EPS vuelve a "Completo".',
+                    'El EPS queda "Aprobado", aparece en el repositorio y cuenta en las estadísticas. La aprobación, con quién la hizo y su acepto, queda anotada en la bitácora.',
+                    'Puedes retirar la aprobación si hace falta: el EPS vuelve a tu bandeja, "En revisión". También vuelve si el estudiante cambia su orden de impresión.',
                 ],
             },
             {
@@ -159,6 +158,7 @@ const GUIAS: Record<string, Guia> = {
             { titulo: 'Estudiantes y EPS', href: estudiantes().url },
             { titulo: 'Estadísticas', href: estadisticas().url },
             { titulo: 'Repositorio', href: repositorio().url },
+            { titulo: 'Investigaciones', href: investigaciones().url },
         ],
     },
     digeu: {
@@ -169,25 +169,30 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Usuarios y estudiantes',
                 pasos: [
-                    'En "Usuarios" das el rol de DIGEU o de unidad académica a quienes se registraron como invitados; a una unidad académica le asignas la unidad que administra (una persona por unidad).',
+                    'En "Usuarios" creas las cuentas de las unidades académicas con "Crear cuenta": la persona recibe un correo para definir su contraseña. Una unidad puede tener varias cuentas.',
+                    'A cada cuenta de unidad académica le asignas su unidad y, si quieres, las carreras que puede ver y aprobar (por ejemplo, un supervisor por carrera). Sin carreras, ve toda su unidad.',
+                    'También puedes dar el rol de DIGEU o de unidad académica a quien ya se registró como invitado, con "Editar acceso".',
                     'En "Estudiantes y EPS" ves a todos los estudiantes de todas las unidades, con filtros por unidad y estado, y puedes aprobar EPS (con el acepto de que lo descrito se ejecutó).',
-                    'En "Bandeja de solicitudes" ves los EPS que los estudiantes enviaron a aprobación sin orden de impresión, de todas las unidades y en orden de llegada, para revisarlos y aprobarlos.',
+                    'En "Bandeja de solicitudes" ves los EPS que los estudiantes enviaron a aprobación, de todas las unidades y en orden de llegada, para revisarlos y aprobarlos.',
                 ],
             },
             {
                 titulo: 'Manejo de datos',
                 pasos: [
                     'Catálogos del EPS: bienes y servicios, y acciones de transferencia. Lo que ya está en uso se desactiva en lugar de eliminarse.',
+                    'A cada bien o servicio le puedes dar un valor base en quetzales: el aporte de un EPS es la cantidad entregada por ese valor.',
+                    'Cada bien o servicio se ancla a una línea de intervención, una política pública, un área de intervención y un ODS. Cada uno de esos cuatro es un catálogo propio que mantienes aquí; uno que tiene bienes anclados no se elimina.',
+                    'Carreras: escribe el carné de un estudiante y consulta el registro académico. Verás sus carreras: las nuevas las agregas y las que ya están se marcan como agregadas. Una carrera asignada a un supervisor no se elimina.',
                     'Instituciones aliadas: ministerios, ONG y socios que participaron o cooperaron con los proyectos. Los estudiantes las eligen de este catálogo y no pueden crearlas; son las que se cuantifican en las estadísticas. Una que ya figura en algún EPS no se elimina.',
                     'Departamentos y municipios: los estudiantes eligen su ubicación de estos catálogos. Cada uno lleva una coordenada de referencia que puedes marcar en el mapa.',
                     'Unidades académicas: facultades, escuelas y centros, con la ubicación de su edificio. Las unidades también se crean solas cuando un estudiante registra su carrera; aquí completas sus datos.',
-                    'Un municipio o departamento con EPS registrados, y una unidad con EPS o con administrador, no se eliminan: se desactivan.',
+                    'Un municipio o departamento con EPS registrados, y una unidad con EPS, carreras o usuarios, no se eliminan: se desactivan.',
                 ],
             },
             {
                 titulo: 'Estadísticas y reportes',
                 pasos: [
-                    'El mapa consolida todo el país. Filtra por año (el de la orden de impresión o, si no la tiene, el de su aprobación), unidad académica y carrera, y elige qué mostrar.',
+                    'El mapa consolida los EPS aprobados de todo el país, incluido el aporte en quetzales. Filtra por año (el de la orden de impresión o, si no la tiene, el de su aprobación), unidad académica y carrera, y elige qué mostrar.',
                     'Cada departamento tiene su página con todo organizado por municipio: bienes y servicios e investigaciones.',
                     'Con "Generar PDF" descargas el reporte del país o de un departamento, con los filtros aplicados.',
                 ],
@@ -245,12 +250,12 @@ const CONCEPTOS = [
 const ESTADOS = [
     ['En progreso', 'El estudiante todavía está llenando su información.'],
     [
-        'Completo',
-        'El estudiante revisó su resumen y subió su orden de impresión: sus datos ya cuentan para las estadísticas.',
+        'En revisión',
+        'El estudiante envió su EPS a aprobación: espera en la bandeja de supervisión de su unidad académica.',
     ],
     [
-        'Verificado',
-        'La unidad académica lo aprobó, confirmando que lo descrito se ejecutó: aparece en el repositorio. Se puede aprobar aun sin orden de impresión (por ejemplo, si no hay un informe escrito).',
+        'Aprobado',
+        'La supervisión lo aprobó, confirmando que lo descrito se ejecutó: aparece en el repositorio y cuenta para las estadísticas. La orden de impresión es opcional.',
     ],
 ];
 
@@ -263,7 +268,14 @@ const GLOSARIO = [
         'Facultad, escuela o centro universitario de la USAC.',
     ],
     ['Eje', 'Cada una de las seis áreas en que se documenta un EPS.'],
-    ['Orden de impresión', 'Documento con el que el estudiante valida su EPS.'],
+    [
+        'Orden de impresión',
+        'Documento que el estudiante puede adjuntar a su EPS. Es opcional: lo que valida el EPS es la aprobación de supervisión.',
+    ],
+    [
+        'Aporte',
+        'Lo que suman en quetzales los bienes y servicios de los EPS aprobados: la cantidad entregada de cada uno por su valor base del catálogo.',
+    ],
 ];
 
 export default function Documentacion() {
@@ -279,9 +291,9 @@ export default function Documentacion() {
                         Documentación
                     </h1>
                     <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
-                        EPSNET es el sistema unificado de registro y seguimiento
-                        del Ejercicio Profesional Supervisado de la USAC. Esta
-                        es la guía de uso para tu rol.
+                        SIRSE USAC es el Sistema Unificado de Registro y
+                        Seguimiento del EPS de la Universidad de San Carlos de
+                        Guatemala. Esta es la guía de uso para tu rol.
                     </p>
                 </div>
 

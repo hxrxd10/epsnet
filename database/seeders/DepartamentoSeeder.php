@@ -8,7 +8,8 @@ use Illuminate\Database\Seeder;
 class DepartamentoSeeder extends Seeder
 {
     /**
-     * Catálogo de los 22 departamentos de Guatemala con su cabecera departamental.
+     * Catálogo de los 22 departamentos de Guatemala con su cabecera departamental. Es idempotente: no pisa
+     * los datos ni las coordenadas que DIGEU haya afinado.
      */
     public function run(): void
     {
@@ -38,7 +39,7 @@ class DepartamentoSeeder extends Seeder
         ];
 
         foreach ($departamentos as [$codigo, $nombre, $cabecera, $latitud, $longitud]) {
-            Departamento::updateOrCreate(
+            Departamento::firstOrCreate(
                 ['codigo' => $codigo],
                 ['nombre' => $nombre, 'cabecera' => $cabecera, 'latitud' => $latitud, 'longitud' => $longitud],
             );

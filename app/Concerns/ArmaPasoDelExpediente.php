@@ -3,6 +3,7 @@
 namespace App\Concerns;
 
 use App\Enums\Eje;
+use App\Enums\EstadoExpediente;
 use App\Enums\ProgramaEps;
 use App\Models\Expediente;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +17,7 @@ use Inertia\Response;
 trait ArmaPasoDelExpediente
 {
     /**
-     * Número del último paso del asistente: el resumen y la orden de impresión.
+     * Número del último paso del asistente: el resumen, la orden de impresión y el envío a aprobación.
      */
     protected const int PASO_CIERRE = 7;
 
@@ -46,7 +47,6 @@ trait ArmaPasoDelExpediente
     protected function contextoDelAsistente(Expediente $expediente, int $eje): array
     {
         $expediente->loadCount(array_map(fn (Eje $caso): string => $caso->relacion(), Eje::cases()));
-        $expediente->loadExists('ordenImpresion');
 
         $pasos = array_map(fn (Eje $caso): array => [
             'eje' => $caso->value,
@@ -57,9 +57,9 @@ trait ArmaPasoDelExpediente
 
         $pasos[] = [
             'eje' => self::PASO_CIERRE,
-            'titulo' => 'Resumen y orden de impresión',
+            'titulo' => 'Resumen y envío a aprobación',
             'href' => route('estudiante.expedientes.cierre.index', $expediente, absolute: false),
-            'registros' => $expediente->ordenImpresion()->exists() ? 1 : 0,
+            'registros' => $expediente->estado_expediente === EstadoExpediente::Activo ? 0 : 1,
         ];
 
         return [

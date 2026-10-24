@@ -13,6 +13,7 @@ enum MetricaEstadistica: string
 
     case Investigaciones = 'investigaciones';
     case BienesServicios = 'bienes_servicios';
+    case Aporte = 'aporte';
     case Beneficiarios = 'beneficiarios';
     case Acciones = 'acciones';
     case Participantes = 'participantes';
@@ -25,6 +26,7 @@ enum MetricaEstadistica: string
         return match ($this) {
             self::Investigaciones => 'Investigaciones',
             self::BienesServicios => 'Bienes y servicios',
+            self::Aporte => 'Aporte (Q)',
             self::Beneficiarios => 'Beneficiarios',
             self::Acciones => 'Acciones de transferencia',
             self::Participantes => 'Participantes',
@@ -32,5 +34,15 @@ enum MetricaEstadistica: string
             self::Estudiantes => 'Estudiantes',
             self::Eps => 'EPS',
         };
+    }
+
+    /**
+     * El valor como se muestra: en quetzales para el aporte y como número entero para lo demás.
+     */
+    public function formatear(int|float $valor): string
+    {
+        return $this === self::Aporte
+            ? 'Q'.number_format($valor, 2)
+            : number_format($valor);
     }
 }

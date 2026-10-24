@@ -1,6 +1,6 @@
-EPSNET — Contexto del proyecto
+SIRSE USAC — Contexto del proyecto
 
-Sistema Unificado de Registro y Seguimiento del Ejercicio Profesional Supervisado, desarrollado en Laravel para USAC / DIGEU (Dirección General de Extensión Universitaria).
+SIRSE USAC: Sistema Unificado de Registro y Seguimiento del EPS de la Universidad de San Carlos de Guatemala, desarrollado en Laravel para USAC / DIGEU (Dirección General de Extensión Universitaria).
 
 Documentación completa
 

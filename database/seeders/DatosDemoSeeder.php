@@ -16,6 +16,8 @@ use App\Enums\TipoUnidadAcademica;
 use App\Models\Adjunto;
 use App\Models\AdjuntoContenido;
 use App\Models\Alianza;
+use App\Models\BienServicio;
+use App\Models\Carrera;
 use App\Models\Catalogo;
 use App\Models\Departamento;
 use App\Models\Estudiante;
@@ -39,7 +41,8 @@ use Illuminate\Support\Facades\DB;
  * Uso: php artisan db:seed --class=DatosDemoSeeder
  *
  * Los estudiantes llevan carné "DEMO-…" y las cuentas creadas usan la contraseña "password":
- * admin@epsnet.test (DIGEU), unidad@epsnet.test (Facultad de Humanidades), invitado@epsnet.test y
+ * admin@epsnet.test (DIGEU), unidad@epsnet.test (Facultad de Humanidades), supervisor@epsnet.test (una sola
+ * carrera de Humanidades), invitado@epsnet.test y
  * estudiante1@epsnet.test … estudiante8@epsnet.test (estudiantes con su EPS cargado). También deja una bitácora
  * de ejemplo con lo que harían esas cuentas.
  */
@@ -100,27 +103,26 @@ class DatosDemoSeeder extends Seeder
     ];
 
     /**
-     * Bienes y servicios: nombre, categoría y peso (los primeros son los más frecuentes).
-     *
-     * @var list<array{0: string, 1: string, 2: int}>
+     * Bienes y servicios de demostración que se usaban antes del catálogo real (CatalogoBienesServiciosSeeder).
+     * Se retiran de las demos sembradas antes: sus registros pasan a un bien o servicio real de la misma categoría.
      */
-    private const array BIENES_SERVICIOS = [
-        ['Jornada de salud comunitaria', 'servicio', 10],
-        ['Refuerzo escolar', 'servicio', 9],
-        ['Huertos familiares', 'bien', 8],
-        ['Biblioteca comunitaria', 'bien', 7],
-        ['Guía didáctica', 'bien', 7],
-        ['Asesoría legal gratuita', 'servicio', 6],
-        ['Alfabetización de adultos', 'servicio', 6],
-        ['Filtros de agua', 'bien', 5],
-        ['Mobiliario escolar', 'bien', 5],
-        ['Campaña de salud bucal', 'servicio', 5],
-        ['Estufas ahorradoras de leña', 'bien', 4],
-        ['Plan de gestión de riesgo', 'bien', 3],
-        ['Diagnóstico comunitario', 'servicio', 4],
-        ['Material de nutrición infantil', 'bien', 3],
-        ['Atención psicológica', 'servicio', 3],
-        ['Vacunación de animales de traspatio', 'servicio', 2],
+    private const array CATALOGO_ANTERIOR = [
+        'Jornada de salud comunitaria',
+        'Refuerzo escolar',
+        'Huertos familiares',
+        'Biblioteca comunitaria',
+        'Guía didáctica',
+        'Asesoría legal gratuita',
+        'Alfabetización de adultos',
+        'Filtros de agua',
+        'Mobiliario escolar',
+        'Campaña de salud bucal',
+        'Estufas ahorradoras de leña',
+        'Plan de gestión de riesgo',
+        'Diagnóstico comunitario',
+        'Material de nutrición infantil',
+        'Atención psicológica',
+        'Vacunación de animales de traspatio',
     ];
 
     /**
@@ -227,18 +229,22 @@ class DatosDemoSeeder extends Seeder
         if (Estudiante::where('carnet', 'like', self::PREFIJO_CARNET.'%')->exists()) {
             $agregadas = $this->completarAliadas();
             $solicitudes = $this->completarSolicitudes();
+            $carreras = Carrera::query()->exists() ? 0 : $this->sembrarCarreras();
+            $reemplazados = $this->reemplazarCatalogoAnterior();
 
-            $agregadas + $solicitudes > 0
+            $agregadas + $solicitudes + $carreras + $reemplazados > 0
                 ? $this->command?->info('Los datos de demostración ya estaban sembrados: '.implode(' y ', array_filter([
                     $agregadas > 0 ? "se agregaron el catálogo de instituciones aliadas y {$agregadas} alianzas" : null,
                     $solicitudes > 0 ? "se enviaron {$solicitudes} EPS a la bandeja de solicitudes" : null,
+                    $carreras > 0 ? "se agregaron {$carreras} carreras y la cuenta del supervisor" : null,
+                    $reemplazados > 0 ? "se reemplazaron {$reemplazados} bienes y servicios de demostración por los del catálogo real" : null,
                 ])).'.')
                 : $this->command?->warn('Los datos de demostración ya están sembrados.');
 
             return;
         }
 
-        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class]);
+        $this->call([RolSeeder::class, DepartamentoSeeder::class, MunicipioSeeder::class, CatalogoBienesServiciosSeeder::class]);
 
         mt_srand(2026);
         $this->hoy = now();
@@ -247,13 +253,14 @@ class DatosDemoSeeder extends Seeder
 
         DB::transaction(function (): void {
             $unidades = $this->sembrarUnidades();
-            $catalogoBienes = $this->sembrarCatalogo(TipoCatalogo::BienesServicios, self::BIENES_SERVICIOS);
+            $catalogoBienes = $this->catalogoBienes();
             $catalogoAcciones = $this->sembrarCatalogo(TipoCatalogo::Acciones, array_map(fn (array $accion): array => [$accion[0], null, 1], self::ACCIONES));
 
             $this->aliadas = $this->sembrarAliadas();
             $this->sembrarUsuarios($unidades);
             $this->sembrarExpedientes($unidades, $catalogoBienes, $catalogoAcciones);
             $this->volcarFilas();
+            $this->sembrarCarreras();
             $this->sembrarBitacora();
         });
 
@@ -307,6 +314,24 @@ class DatosDemoSeeder extends Seeder
     }
 
     /**
+     * Los bienes y servicios del catálogo real (con su línea, política, área, ODS y valor base), todos
+     * con la misma probabilidad de aparecer en los EPS de demostración.
+     *
+     * @return list<array{id: int, nombre: string, categoria: string|null, peso: int}>
+     */
+    private function catalogoBienes(): array
+    {
+        return Catalogo::query()
+            ->delCatalogo(TipoCatalogo::BienesServicios)
+            ->whereNotNull('linea_intervencion_id')
+            ->orderBy('id')
+            ->get(['id', 'nombre', 'categoria'])
+            ->map(fn (Catalogo $elemento): array => ['id' => $elemento->id, 'nombre' => $elemento->nombre, 'categoria' => $elemento->categoria, 'peso' => 1])
+            ->values()
+            ->all();
+    }
+
+    /**
      * @param  list<array{0: string, 1: string|null, 2: int}>  $elementos
      * @return list<array{id: int, nombre: string, categoria: string|null, peso: int}>
      */
@@ -345,11 +370,11 @@ class DatosDemoSeeder extends Seeder
         ];
 
         foreach ($cuentas as [$correo, $nombre, $rol]) {
-            $usuario = User::where('email', $correo)->first() ?? User::factory()->create(['name' => $nombre, 'email' => $correo]);
+            $usuario = User::where('email', $correo)->first() ?? $this->cuenta($nombre, $correo);
             $usuario->forceFill(['rol_id' => Rol::delSistema($rol)->id])->save();
 
-            if ($rol === ClaveRol::UnidadAcademica && UnidadAcademica::where('administrador_id', $usuario->id)->doesntExist()) {
-                $unidades[0]['unidad']->update(['administrador_id' => $usuario->id]);
+            if ($rol === ClaveRol::UnidadAcademica && $usuario->unidad_academica_id === null) {
+                $usuario->forceFill(['unidad_academica_id' => $unidades[0]['unidad']->id])->save();
             }
         }
     }
@@ -382,8 +407,9 @@ class DatosDemoSeeder extends Seeder
             };
             $unidad = $unidades[$this->ponderado($candidatas)];
             $carrera = $unidad['carreras'][array_rand($unidad['carreras'])];
-            $estado = $paraBandeja ? EstadoExpediente::Activo : $this->estado($forzado !== null || isset($unidades[$forzadoUnidad]), $unidad['indice'] === 1);
-            $conSolicitud = $paraBandeja || ($estado === EstadoExpediente::Activo && mt_rand(1, 100) <= 80);
+            $estado = $paraBandeja ? EstadoExpediente::Completo : $this->estado($forzado !== null || isset($unidades[$forzadoUnidad]), $unidad['indice'] === 1);
+            // Los EPS en revisión son los que esperan en la bandeja de supervisión.
+            $conSolicitud = $estado === EstadoExpediente::Completo;
             $orden = $this->fechaDeOrden();
             $fin = $orden->copy()->subDays(mt_rand(15, 60));
             $inicio = $fin->copy()->subDays(mt_rand(150, 240));
@@ -488,6 +514,7 @@ class DatosDemoSeeder extends Seeder
                 'catalogo_id' => $item['id'],
                 'tipo' => $tipo->value,
                 'descripcion' => "{$item['nombre']} en {$lugar['comunidad']}, {$lugar['municipio']->nombre}: actividad realizada durante el EPS para fortalecer las capacidades de la comunidad.",
+                'cantidad' => 1 + $beneficiarios % 20,
                 'beneficiarios' => "Familias y estudiantes de {$lugar['comunidad']}",
                 'cantidad_beneficiarios' => $beneficiarios,
                 'fecha' => $fecha->toDateString(),
@@ -709,7 +736,7 @@ class DatosDemoSeeder extends Seeder
         $estudiantes = Estudiante::where('carnet', 'like', self::PREFIJO_CARNET.'%')->orderBy('id')->limit(8)->get();
 
         foreach ($estudiantes as $indice => $estudiante) {
-            $usuario = User::factory()->create(['name' => $estudiante->nombre_completo, 'email' => 'estudiante'.($indice + 1).'@epsnet.test']);
+            $usuario = $this->cuenta($estudiante->nombre_completo, 'estudiante'.($indice + 1).'@epsnet.test');
             $usuario->forceFill(['rol_id' => Rol::delSistema(ClaveRol::Estudiante)->id])->save();
             $estudiante->forceFill(['usuario_id' => $usuario->id])->save();
 
@@ -779,12 +806,85 @@ class DatosDemoSeeder extends Seeder
             ->orderBy('id')
             ->each(function (Expediente $expediente) use (&$enviadas): void {
                 if ($expediente->nombre_unidad === 'Facultad de Humanidades' || mt_rand(1, 100) <= 80) {
-                    $expediente->forceFill(['aprobacion_solicitada_at' => $this->fechaDeSolicitud()])->save();
+                    $fecha = $this->fechaDeSolicitud();
+                    $expediente->forceFill(['estado_expediente' => EstadoExpediente::Completo, 'completado_at' => $fecha, 'aprobacion_solicitada_at' => $fecha])->save();
                     $enviadas++;
                 }
             });
 
         return $enviadas;
+    }
+
+    /**
+     * Retira los bienes y servicios de demostración anteriores: los registros de los EPS de demostración
+     * que los usaban pasan a un bien o servicio real de la misma categoría, y los que quedan sin uso se
+     * eliminan. Si algún registro que no es de demostración los usa, se conservan.
+     */
+    private function reemplazarCatalogoAnterior(): int
+    {
+        $anteriores = Catalogo::query()->delCatalogo(TipoCatalogo::BienesServicios)->whereIn('nombre', self::CATALOGO_ANTERIOR)->get();
+
+        if ($anteriores->isEmpty()) {
+            return 0;
+        }
+
+        $this->call(CatalogoBienesServiciosSeeder::class);
+
+        mt_srand(2028);
+        $reales = collect($this->catalogoBienes())->groupBy('categoria');
+        $demo = Expediente::query()->whereHas('estudiante', fn ($consulta) => $consulta->where('carnet', 'like', self::PREFIJO_CARNET.'%'))->select('id');
+
+        DB::transaction(function () use ($anteriores, $reales, $demo): void {
+            foreach ($anteriores as $anterior) {
+                $opciones = $reales->get($anterior->categoria) ?? $reales->flatten(1);
+
+                BienServicio::withTrashed()->where('catalogo_id', $anterior->id)->whereIn('expediente_id', $demo)->get()
+                    ->each(function (BienServicio $registro) use ($anterior, $opciones): void {
+                        $real = $opciones[mt_rand(0, $opciones->count() - 1)];
+
+                        $registro->forceFill([
+                            'catalogo_id' => $real['id'],
+                            'descripcion' => preg_replace('/^'.preg_quote($anterior->nombre, '/').'/u', $real['nombre'], $registro->descripcion),
+                        ])->saveQuietly();
+                    });
+
+                if (! $anterior->estaEnUso()) {
+                    $anterior->deleteQuietly();
+                }
+            }
+        });
+
+        return $anteriores->count();
+    }
+
+    /**
+     * Catálogo de carreras con las carreras de los EPS sembrados y un supervisor de demostración
+     * (supervisor@epsnet.test) que solo ve una carrera de Humanidades.
+     */
+    private function sembrarCarreras(): int
+    {
+        Expediente::query()
+            ->whereHas('estudiante', fn ($consulta) => $consulta->where('carnet', 'like', self::PREFIJO_CARNET.'%'))
+            ->select(['unidad_academica_id', 'codigo_unidad', 'codigo_extension', 'codigo_carrera', 'nombre_carrera', 'nombre_extension', 'nivel_academico'])
+            ->distinct()
+            ->orderBy('codigo_unidad')
+            ->orderBy('codigo_carrera')
+            ->get()
+            ->each(fn (Expediente $expediente) => Carrera::firstOrCreate(
+                ['codigo_unidad' => $expediente->codigo_unidad, 'codigo_extension' => $expediente->codigo_extension, 'codigo_carrera' => $expediente->codigo_carrera],
+                ['unidad_academica_id' => $expediente->unidad_academica_id, 'nombre' => $expediente->nombre_carrera, 'nombre_extension' => $expediente->nombre_extension, 'nivel_academico' => $expediente->nivel_academico],
+            ));
+
+        $humanidades = User::where('email', 'unidad@epsnet.test')->value('unidad_academica_id');
+        $carrera = Carrera::where('unidad_academica_id', $humanidades)->orderBy('codigo_carrera')->first();
+
+        if ($carrera !== null && User::where('email', 'supervisor@epsnet.test')->doesntExist()) {
+            $supervisor = $this->cuenta('Supervisor de '.$carrera->nombre, 'supervisor@epsnet.test');
+            $supervisor->forceFill(['rol_id' => Rol::delSistema(ClaveRol::UnidadAcademica)->id, 'unidad_academica_id' => $humanidades])->save();
+            $supervisor->carreras()->attach($carrera);
+        }
+
+        return Carrera::count();
     }
 
     private function completarAliadas(): int
@@ -819,13 +919,17 @@ class DatosDemoSeeder extends Seeder
     }
 
     /**
-     * @param  bool  $paraEstadisticas  El EPS debe contar en las estadísticas (nunca en progreso).
-     * @param  bool  $conMasPendientes  Unidad de la cuenta de demostración: más EPS en progreso para llenar su bandeja.
+     * @param  bool  $paraEstadisticas  El EPS debe contar en las estadísticas: solo cuentan los aprobados.
+     * @param  bool  $conMasPendientes  Unidad de la cuenta de demostración: más EPS en revisión para llenar su bandeja.
      */
     private function estado(bool $paraEstadisticas = false, bool $conMasPendientes = false): EstadoExpediente
     {
-        $azar = mt_rand(1, $paraEstadisticas ? 90 : 100);
-        [$verificado, $completo] = $conMasPendientes && ! $paraEstadisticas ? [50, 70] : [66, 90];
+        if ($paraEstadisticas) {
+            return EstadoExpediente::Verificado;
+        }
+
+        $azar = mt_rand(1, 100);
+        [$verificado, $completo] = $conMasPendientes ? [50, 70] : [66, 90];
 
         return match (true) {
             $azar <= $verificado => EstadoExpediente::Verificado,
@@ -875,6 +979,20 @@ class DatosDemoSeeder extends Seeder
     private function marcas(CarbonInterface $fecha): array
     {
         return ['created_at' => $fecha, 'updated_at' => $fecha];
+    }
+
+    /**
+     * Cuenta de demostración con el correo verificado y la contraseña "password". No usa factories para
+     * que la demo se pueda sembrar sin las dependencias de desarrollo (Faker).
+     */
+    private function cuenta(string $nombre, string $correo): User
+    {
+        return User::forceCreate([
+            'name' => $nombre,
+            'email' => $correo,
+            'email_verified_at' => now(),
+            'password' => 'password',
+        ]);
     }
 
     /**

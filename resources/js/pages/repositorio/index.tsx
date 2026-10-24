@@ -29,6 +29,7 @@ type Tarjeta = {
     acciones: number;
     publicaciones: number;
     aprobado: string | null;
+    foto: string | null;
 };
 
 type Props = {
@@ -130,6 +131,14 @@ export default function Repositorio({
                                     href={show(tarjeta.id)}
                                     className="border-sidebar-border/70 hover:bg-accent flex h-full flex-col rounded-xl border p-5 transition-colors"
                                 >
+                                    {tarjeta.foto && (
+                                        <img
+                                            src={tarjeta.foto}
+                                            alt={`Foto del EPS de ${tarjeta.estudiante}`}
+                                            loading="lazy"
+                                            className="-mx-5 -mt-5 mb-4 aspect-[16/9] w-[calc(100%+2.5rem)] max-w-none rounded-t-xl object-cover"
+                                        />
+                                    )}
                                     <p className="text-muted-foreground font-mono text-[11px] tracking-wider uppercase">
                                         {tarjeta.unidad}
                                     </p>

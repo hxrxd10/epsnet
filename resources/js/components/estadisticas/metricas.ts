@@ -1,3 +1,4 @@
+import { formatearQuetzales } from '@/lib/moneda';
 import type { ClaveMetrica } from '@/types/estadisticas';
 
 export type DefinicionMetrica = {
@@ -17,6 +18,12 @@ export const METRICAS: DefinicionMetrica[] = [
         clave: 'bienes_servicios',
         etiqueta: 'Bienes y servicios',
         descripcion: 'bienes y servicios generados',
+    },
+    {
+        clave: 'aporte',
+        etiqueta: 'Aporte (Q)',
+        descripcion:
+            'quetzales que suman los bienes y servicios (cantidad por su valor base)',
     },
     {
         clave: 'beneficiarios',
@@ -47,8 +54,37 @@ export const METRICAS: DefinicionMetrica[] = [
         etiqueta: 'Estudiantes',
         descripcion: 'estudiantes con EPS',
     },
-    { clave: 'eps', etiqueta: 'EPS', descripcion: 'EPS completos o aprobados' },
+    {
+        clave: 'eps',
+        etiqueta: 'EPS',
+        descripcion: 'EPS aprobados por supervisión',
+    },
 ];
 
 export const formatearNumero = (valor: number): string =>
     valor.toLocaleString('es-GT');
+
+const QUETZALES_COMPACTOS = new Intl.NumberFormat('es-GT', {
+    style: 'currency',
+    currency: 'GTQ',
+    notation: 'compact',
+    maximumFractionDigits: 1,
+});
+
+/**
+ * El valor de una métrica como se muestra: el aporte en quetzales (abreviado si `compacto`, para el
+ * mapa) y lo demás como número entero.
+ */
+export function formatearMetrica(
+    clave: ClaveMetrica,
+    valor: number,
+    compacto = false,
+): string {
+    if (clave !== 'aporte') {
+        return formatearNumero(valor);
+    }
+
+    return compacto
+        ? QUETZALES_COMPACTOS.format(valor)
+        : formatearQuetzales(valor);
+}

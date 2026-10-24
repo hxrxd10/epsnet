@@ -20,6 +20,7 @@ class BienServicioRequest extends EjeRequest
             'catalogo_id' => ['nullable', 'integer', Rule::exists('catalogos', 'id')->where('catalogo', TipoCatalogo::BienesServicios->value)],
             'tipo' => ['required_without:catalogo_id', 'nullable', Rule::enum(TipoBienServicio::class)],
             'descripcion' => ['required', 'string', 'max:'.self::LIMITE_TEXTO_LARGO],
+            'cantidad' => ['nullable', 'integer', 'min:1', 'max:1000000'],
             'beneficiarios' => ['nullable', 'string', 'max:'.self::LIMITE_TEXTO_LARGO],
             'cantidad_beneficiarios' => ['nullable', 'integer', 'min:0', 'max:100000000'],
             'fecha' => ['required', 'date', 'before_or_equal:today'],

@@ -15,7 +15,7 @@ function coordinadorDeBandeja(?UnidadAcademica $unidad = null): User
 {
     $usuario = User::factory()->create();
     $usuario->forceFill(['rol_id' => Rol::delSistema(ClaveRol::UnidadAcademica)->id])->save();
-    $unidad?->forceFill(['administrador_id' => $usuario->id])->save();
+    $unidad !== null && $usuario->forceFill(['unidad_academica_id' => $unidad->id])->save();
 
     return $usuario;
 }
@@ -29,7 +29,7 @@ function solicitudEn(UnidadAcademica $unidad, string $enviada, string $nombre = 
 {
     $expediente = Expediente::factory()
         ->for(Estudiante::factory()->create(['nombre1' => $nombre, 'apellido1' => 'Solicitante']))
-        ->create(['unidad_academica_id' => $unidad->id, 'aprobacion_solicitada_at' => $enviada, ...$atributos]);
+        ->create(['unidad_academica_id' => $unidad->id, 'estado_expediente' => EstadoExpediente::Completo, 'completado_at' => $enviada, 'aprobacion_solicitada_at' => $enviada, ...$atributos]);
     $expediente->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Jornada', 'fecha' => '2026-03-01']);
 
     return $expediente;
@@ -220,10 +220,10 @@ describe('revisar y aprobar', function () {
 
         $this->post(route('panel.estudiantes.verificacion.store', $solicitud), ['desde_bandeja' => true])->assertSessionHasErrors('acepto');
 
-        expect($solicitud->fresh()->estado_expediente)->toBe(EstadoExpediente::Activo);
+        expect($solicitud->fresh()->estado_expediente)->toBe(EstadoExpediente::Completo);
     });
 
-    it('retirar la aprobación no vuelve a poner el EPS en la bandeja', function () {
+    it('retirar la aprobación devuelve el EPS a la bandeja, en revisión', function () {
         $unidad = UnidadAcademica::factory()->create();
         $solicitud = solicitudEn($unidad, '2026-09-08 09:00:00');
         $this->actingAs(coordinadorDeBandeja($unidad));
@@ -231,8 +231,8 @@ describe('revisar y aprobar', function () {
         $this->post(route('panel.estudiantes.verificacion.store', $solicitud), ['acepto' => true]);
         $this->delete(route('panel.estudiantes.verificacion.destroy', $solicitud));
 
-        expect($solicitud->fresh())->estado_expediente->toBe(EstadoExpediente::Completo)->aprobacion_solicitada_at->toBeNull();
-        $this->get(route('panel.bandeja.index'))->assertInertia(fn (Assert $page) => $page->has('solicitudes', 0));
+        expect($solicitud->fresh())->estado_expediente->toBe(EstadoExpediente::Completo)->aprobacion_solicitada_at->not->toBeNull()->verificado_at->toBeNull();
+        $this->get(route('panel.bandeja.index'))->assertInertia(fn (Assert $page) => $page->has('solicitudes', 1)->where('solicitudes.0.id', $solicitud->id));
     });
 
     it('anota en la bitácora quién aprobó la solicitud', function () {

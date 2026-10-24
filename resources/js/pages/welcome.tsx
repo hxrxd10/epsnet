@@ -15,7 +15,7 @@ export default function Welcome() {
             <Head title="Red nacional de EPS">
                 <meta
                     name="description"
-                    content="EPSNET es la red de estudiantes en Ejercicio Profesional Supervisado de la USAC: docencia, investigación y extensión conectadas en todo el territorio de Guatemala."
+                    content="SIRSE USAC, Sistema Unificado de Registro y Seguimiento del EPS de la Universidad de San Carlos de Guatemala, es la red de estudiantes en Ejercicio Profesional Supervisado de la USAC: docencia, investigación y extensión conectadas en todo el territorio de Guatemala."
                 />
             </Head>
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Estudiante;
 use App\Actions\Estudiante\SincronizarEstudiante;
 use App\Enums\Eje;
 use App\Enums\EstadoExpediente;
-use App\Enums\TipoUnidadAcademica;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Estudiante\StoreExpedienteRequest;
 use App\Models\Estudiante;
@@ -82,10 +81,7 @@ class ExpedienteController extends Controller
             throw ValidationException::withMessages(['carrera' => 'La carrera seleccionada no es válida.']);
         }
 
-        $unidad = UnidadAcademica::withTrashed()->firstOrCreate(
-            ['nombre' => $carrera->nombreUnidad],
-            ['tipo' => TipoUnidadAcademica::desdeNombre($carrera->nombreUnidad), 'activa' => true],
-        );
+        $unidad = UnidadAcademica::paraNombre($carrera->nombreUnidad);
 
         $expediente = Expediente::firstOrCreate(
             [
