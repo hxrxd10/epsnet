@@ -24,6 +24,7 @@ class EstadisticaController extends Controller
             ...$estadisticas->resumen($filtros),
             ...$estadisticas->opciones($filtros),
             'filtros' => $this->paraCliente($filtros),
+            'googleMaps' => $this->googleMaps(),
         ]);
     }
 

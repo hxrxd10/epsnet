@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowRight, FileDown, MapPin } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import FiltrosEstadisticosBarra from '@/components/estadisticas/filtros-estadisticos';
-import MapaEstadistico from '@/components/estadisticas/mapa-estadistico';
+import MapaGoogle from '@/components/estadisticas/mapa-google';
 import {
     METRICAS,
     formatearMetrica,
@@ -30,6 +30,7 @@ type Props = OpcionesFiltros & {
     sin_ubicacion: Metricas;
     departamentos: DepartamentoEstadistico[];
     filtros: FiltrosEstadisticos;
+    googleMaps: { key: string | null; mapId: string };
 };
 
 export default function Estadisticas({
@@ -40,6 +41,7 @@ export default function Estadisticas({
     anios,
     unidades,
     carreras,
+    googleMaps,
 }: Props) {
     const [clave, setClave] = useState<ClaveMetrica>('investigaciones');
     const [codigo, setCodigo] = useState<string | null>(null);
@@ -114,7 +116,8 @@ export default function Estadisticas({
                         </div>
 
                         <div className="mt-4">
-                            <MapaEstadistico
+                            <MapaGoogle
+                                apiKey={googleMaps.key}
                                 etiqueta={metrica.etiqueta.toLowerCase()}
                                 formato={(valor, compacto) =>
                                     formatearMetrica(clave, valor, compacto)
