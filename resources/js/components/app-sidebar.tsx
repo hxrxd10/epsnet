@@ -8,6 +8,7 @@ import {
     Inbox,
     LayoutGrid,
     ScrollText,
+    Target,
     UserCog,
     Users,
 } from 'lucide-react';
@@ -31,12 +32,14 @@ import { index as estadisticas } from '@/routes/estadisticas';
 import { index as bandeja } from '@/routes/panel/bandeja';
 import { index as estudiantes } from '@/routes/panel/estudiantes';
 import { index as investigaciones } from '@/routes/investigaciones';
+import { index as ods } from '@/routes/ods';
 import { index as repositorio } from '@/routes/repositorio';
 import type { NavItem } from '@/types';
 
 const plataforma: NavItem[] = [
     { title: 'Panel', href: dashboard(), icon: LayoutGrid },
     { title: 'Estadísticas', href: estadisticas(), icon: BarChart3 },
+    { title: 'ODS', href: ods(), icon: Target },
     { title: 'Repositorio', href: repositorio(), icon: BookMarked },
     { title: 'Investigaciones', href: investigaciones(), icon: FlaskConical },
     { title: 'Documentación', href: documentacion(), icon: BookOpen },

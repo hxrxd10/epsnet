@@ -687,6 +687,7 @@ class ComposerStaticInitd0a5f283f588eb7a0f25e28797e62117
         'App\\Http\\Controllers\\Estudiante\\UbicacionTerritorialController' => __DIR__ . '/../..' . '/app/Http/Controllers/Estudiante/UbicacionTerritorialController.php',
         'App\\Http\\Controllers\\FotoExpedienteController' => __DIR__ . '/../..' . '/app/Http/Controllers/FotoExpedienteController.php',
         'App\\Http\\Controllers\\InvestigacionController' => __DIR__ . '/../..' . '/app/Http/Controllers/InvestigacionController.php',
+        'App\\Http\\Controllers\\OdsController' => __DIR__ . '/../..' . '/app/Http/Controllers/OdsController.php',
         'App\\Http\\Controllers\\Panel\\BandejaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Panel/BandejaController.php',
         'App\\Http\\Controllers\\Panel\\EstudianteController' => __DIR__ . '/../..' . '/app/Http/Controllers/Panel/EstudianteController.php',
         'App\\Http\\Controllers\\Panel\\OrdenImpresionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Panel/OrdenImpresionController.php',

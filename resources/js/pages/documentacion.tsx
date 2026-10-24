@@ -51,6 +51,7 @@ const GUIAS: Record<string, Guia> = {
                     'En "Repositorio" están los EPS aprobados por supervisión, con su mejor foto y una descripción de lo que se hizo en cada uno.',
                     'Busca por estudiante o carrera y filtra por unidad; abre un EPS para ver todo lo registrado.',
                     'En "Investigaciones" están solo las publicaciones de investigación de esos EPS. Busca por título, autores, resumen o carrera y filtra por tipo y unidad.',
+                    'En "ODS" ves lo que aportan los EPS aprobados a cada Objetivo de Desarrollo Sostenible: aporte en quetzales, bienes y servicios, beneficiarios y EPS. Elige un ODS para ver sus bienes y servicios, líneas de intervención, áreas y unidades académicas. Usa los mismos filtros que las estadísticas.',
                 ],
             },
             {

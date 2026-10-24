@@ -14,6 +14,7 @@ use App\Http\Controllers\EstadisticaController;
 use App\Http\Controllers\EstadisticaPdfController;
 use App\Http\Controllers\FotoExpedienteController;
 use App\Http\Controllers\InvestigacionController;
+use App\Http\Controllers\OdsController;
 use App\Http\Controllers\Panel\BandejaController;
 use App\Http\Controllers\Panel\EstudianteController;
 use App\Http\Controllers\Panel\OrdenImpresionController as PanelOrdenImpresionController;
@@ -36,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('estadisticas/pdf', [EstadisticaPdfController::class, 'index'])->name('estadisticas.pdf');
     Route::get('estadisticas/departamentos/{departamento:codigo}', [EstadisticaController::class, 'departamento'])->name('estadisticas.departamento');
     Route::get('estadisticas/departamentos/{departamento:codigo}/pdf', [EstadisticaPdfController::class, 'departamento'])->name('estadisticas.departamento.pdf');
+    Route::get('ods', [OdsController::class, 'index'])->name('ods.index');
 
     Route::get('repositorio', [RepositorioController::class, 'index'])->name('repositorio.index');
     Route::get('repositorio/{expediente}', [RepositorioController::class, 'show'])->name('repositorio.show');

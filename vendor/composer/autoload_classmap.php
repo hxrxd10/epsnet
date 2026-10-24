@@ -62,6 +62,7 @@ return array(
     'App\\Http\\Controllers\\Estudiante\\UbicacionTerritorialController' => $baseDir . '/app/Http/Controllers/Estudiante/UbicacionTerritorialController.php',
     'App\\Http\\Controllers\\FotoExpedienteController' => $baseDir . '/app/Http/Controllers/FotoExpedienteController.php',
     'App\\Http\\Controllers\\InvestigacionController' => $baseDir . '/app/Http/Controllers/InvestigacionController.php',
+    'App\\Http\\Controllers\\OdsController' => $baseDir . '/app/Http/Controllers/OdsController.php',
     'App\\Http\\Controllers\\Panel\\BandejaController' => $baseDir . '/app/Http/Controllers/Panel/BandejaController.php',
     'App\\Http\\Controllers\\Panel\\EstudianteController' => $baseDir . '/app/Http/Controllers/Panel/EstudianteController.php',
     'App\\Http\\Controllers\\Panel\\OrdenImpresionController' => $baseDir . '/app/Http/Controllers/Panel/OrdenImpresionController.php',

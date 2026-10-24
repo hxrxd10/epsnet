@@ -66,3 +66,37 @@ export type OpcionesFiltros = {
     unidades: Opcion[];
     carreras: Opcion[];
 };
+
+export type ResumenOds = {
+    nombre: string;
+    cantidad: number;
+    beneficiarios: number;
+    aporte: number;
+};
+
+export type ItemOds = ResumenOds & { tipo: 'bien' | 'servicio' };
+
+export type Ods = {
+    id: number;
+    numero: number | null;
+    nombre: string;
+    eps: number;
+    estudiantes: number;
+    departamentos: number;
+    bienes_servicios: number;
+    beneficiarios: number;
+    aporte: number;
+    items: ItemOds[];
+    lineas: ResumenOds[];
+    areas: ResumenOds[];
+    unidades: ResumenOds[];
+};
+
+export type TotalesOds = {
+    eps: number;
+    estudiantes: number;
+    bienes_servicios: number;
+    beneficiarios: number;
+    aporte: number;
+    ods_con_actividad: number;
+};

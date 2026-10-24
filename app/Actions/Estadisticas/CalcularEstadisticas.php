@@ -2,6 +2,7 @@
 
 namespace App\Actions\Estadisticas;
 
+use App\Enums\TipoCatalogo;
 use App\Models\Adjunto;
 use App\Models\Alianza;
 use App\Models\BienServicio;
@@ -191,6 +192,132 @@ class CalcularEstadisticas
                 ->map(fn (string $carrera): array => ['value' => $carrera, 'label' => $carrera])
                 ->all(),
         ];
+    }
+
+    /**
+     * Lo que aportan los EPS aprobados a cada Objetivo de Desarrollo Sostenible, a partir de los bienes y
+     * servicios que entregaron (cada elemento del catálogo está anclado a un ODS).
+     *
+     * @param  Filtros  $filtros
+     * @return array{totales: array{eps: int, estudiantes: int, bienes_servicios: int, beneficiarios: int, aporte: float, ods_con_actividad: int}, sin_ods: array{bienes_servicios: int, aporte: float}, ods: list<array<string, mixed>>}
+     */
+    public function porOds(array $filtros): array
+    {
+        $expedientes = $this->expedientes($filtros)->get(['id', 'estudiante_id', 'unidad_academica_id'])->keyBy('id');
+        $ubicaciones = $this->ubicaciones($this->expedientes($filtros));
+
+        $filas = BienServicio::query()
+            ->whereIn('expediente_id', $expedientes->keys()->all())
+            ->selectRaw('expediente_id, catalogo_id, tipo, coalesce(sum(coalesce(cantidad, 1)), 0) as total, coalesce(sum(cantidad_beneficiarios), 0) as beneficiarios')
+            ->groupBy('expediente_id', 'catalogo_id', 'tipo')
+            ->get();
+
+        $catalogo = Catalogo::query()
+            ->whereIn('id', $filas->pluck('catalogo_id')->filter()->unique())
+            ->with(['lineaIntervencion:id,nombre', 'areaIntervencion:id,nombre'])
+            ->get()
+            ->keyBy('id');
+        $unidades = UnidadAcademica::query()->whereIn('id', $expedientes->pluck('unidad_academica_id')->unique())->pluck('nombre', 'id');
+
+        /** @var array<int, array<string, mixed>> $porOds */
+        $porOds = [];
+        $sinOds = ['bienes_servicios' => 0, 'aporte' => 0.0];
+        $total = ['eps' => [], 'estudiantes' => [], 'bienes_servicios' => 0, 'beneficiarios' => 0, 'aporte' => 0.0];
+
+        foreach ($filas as $fila) {
+            $elemento = $catalogo[$fila->catalogo_id] ?? null;
+            $cantidad = (int) $fila->total;
+            $aporte = $cantidad * (float) ($elemento->valor_base ?? 0);
+            $expediente = $expedientes[$fila->expediente_id];
+
+            $total['eps'][$expediente->id] = true;
+            $total['estudiantes'][$expediente->estudiante_id] = true;
+            $total['bienes_servicios'] += $cantidad;
+            $total['beneficiarios'] += (int) $fila->beneficiarios;
+            $total['aporte'] += $aporte;
+
+            if ($elemento?->ods_id === null) {
+                $sinOds['bienes_servicios'] += $cantidad;
+                $sinOds['aporte'] += $aporte;
+
+                continue;
+            }
+
+            $clave = $elemento->ods_id;
+            $porOds[$clave] ??= ['eps' => [], 'estudiantes' => [], 'departamentos' => [], 'bienes_servicios' => 0, 'beneficiarios' => 0, 'aporte' => 0.0, 'items' => [], 'lineas' => [], 'areas' => [], 'unidades' => []];
+            $porOds[$clave]['eps'][$expediente->id] = true;
+            $porOds[$clave]['estudiantes'][$expediente->estudiante_id] = true;
+            $departamento = $ubicaciones[$expediente->id]->departamento_id ?? null;
+            $departamento === null || $porOds[$clave]['departamentos'][$departamento] = true;
+            $porOds[$clave]['bienes_servicios'] += $cantidad;
+            $porOds[$clave]['beneficiarios'] += (int) $fila->beneficiarios;
+            $porOds[$clave]['aporte'] += $aporte;
+
+            $this->sumar($porOds[$clave]['items'], (string) $elemento->id, ['nombre' => $elemento->nombre, 'tipo' => $fila->tipo->value], $cantidad, $aporte, (int) $fila->beneficiarios);
+            $this->sumar($porOds[$clave]['lineas'], (string) $elemento->linea_intervencion_id, ['nombre' => $elemento->lineaIntervencion->nombre ?? self::SIN_CLASIFICAR], $cantidad, $aporte);
+            $this->sumar($porOds[$clave]['areas'], (string) $elemento->area_intervencion_id, ['nombre' => $elemento->areaIntervencion->nombre ?? self::SIN_CLASIFICAR], $cantidad, $aporte);
+            $this->sumar($porOds[$clave]['unidades'], (string) $expediente->unidad_academica_id, ['nombre' => $unidades[$expediente->unidad_academica_id] ?? self::SIN_CLASIFICAR], $cantidad, $aporte);
+        }
+
+        $ordenar = fn (array $grupo, int $limite): array => collect($grupo)
+            ->map(fn (array $item): array => [...$item, 'aporte' => round($item['aporte'], 2)])
+            ->sortBy([['aporte', 'desc'], ['cantidad', 'desc'], ['nombre', 'asc']])
+            ->take($limite)
+            ->values()
+            ->all();
+
+        $ods = Catalogo::query()
+            ->delCatalogo(TipoCatalogo::Ods)
+            ->get(['id', 'nombre'])
+            ->sortBy('nombre', SORT_NATURAL | SORT_FLAG_CASE)
+            ->map(function (Catalogo $elemento) use ($porOds, $ordenar): array {
+                $datos = $porOds[$elemento->id] ?? null;
+
+                return [
+                    'id' => $elemento->id,
+                    'numero' => preg_match('/\d+/', $elemento->nombre, $numero) === 1 ? (int) $numero[0] : null,
+                    'nombre' => trim((string) preg_replace('/^ODS\s*\d+\s*[:.-]?\s*/iu', '', $elemento->nombre)),
+                    'eps' => count($datos['eps'] ?? []),
+                    'estudiantes' => count($datos['estudiantes'] ?? []),
+                    'departamentos' => count($datos['departamentos'] ?? []),
+                    'bienes_servicios' => $datos['bienes_servicios'] ?? 0,
+                    'beneficiarios' => $datos['beneficiarios'] ?? 0,
+                    'aporte' => round($datos['aporte'] ?? 0, 2),
+                    'items' => $ordenar($datos['items'] ?? [], 10),
+                    'lineas' => $ordenar($datos['lineas'] ?? [], 10),
+                    'areas' => $ordenar($datos['areas'] ?? [], 10),
+                    'unidades' => $ordenar($datos['unidades'] ?? [], 10),
+                ];
+            })
+            ->values()
+            ->all();
+
+        return [
+            'totales' => [
+                'eps' => count($total['eps']),
+                'estudiantes' => count($total['estudiantes']),
+                'bienes_servicios' => $total['bienes_servicios'],
+                'beneficiarios' => $total['beneficiarios'],
+                'aporte' => round($total['aporte'], 2),
+                'ods_con_actividad' => count($porOds),
+            ],
+            'sin_ods' => ['bienes_servicios' => $sinOds['bienes_servicios'], 'aporte' => round($sinOds['aporte'], 2)],
+            'ods' => $ods,
+        ];
+    }
+
+    /**
+     * Acumula cantidad, aporte y beneficiarios en el grupo indicado (un bien, una línea, una unidad…).
+     *
+     * @param  array<string, array<string, mixed>>  $grupo
+     * @param  array<string, mixed>  $datos
+     */
+    private function sumar(array &$grupo, string $clave, array $datos, int $cantidad, float $aporte, int $beneficiarios = 0): void
+    {
+        $grupo[$clave] ??= [...$datos, 'cantidad' => 0, 'beneficiarios' => 0, 'aporte' => 0.0];
+        $grupo[$clave]['cantidad'] += $cantidad;
+        $grupo[$clave]['beneficiarios'] += $beneficiarios;
+        $grupo[$clave]['aporte'] += $aporte;
     }
 
     /**
