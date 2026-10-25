@@ -24,6 +24,7 @@ import type {
     MunicipioEstadistico,
     OpcionesFiltros,
 } from '@/types/estadisticas';
+import AvisoAlcance from '@/components/estadisticas/aviso-alcance';
 
 type Props = OpcionesFiltros & {
     departamento: { codigo: string; nombre: string; cabecera: string };
@@ -103,6 +104,7 @@ export default function EstadisticasDepartamento({
         <>
             <Head title={`Estadísticas de ${departamento.nombre}`} />
             <div className="flex flex-1 flex-col gap-6 p-4">
+                <AvisoAlcance />
                 <div>
                     <Link
                         href={index({

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\ClaveRol;
 use App\Models\Rol;
+use App\Models\UnidadAcademica;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -71,7 +72,7 @@ class UserFactory extends Factory
     }
 
     /**
-     * Usuario con el rol de invitado (solo consulta estadísticas).
+     * Usuario con el rol de invitado (por ahora sin acceso a las consultas).
      */
     public function invitado(): static
     {
@@ -87,6 +88,17 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'rol_id' => Rol::delSistema(ClaveRol::Digeu)->id,
+        ]);
+    }
+
+    /**
+     * Usuario de una unidad académica (con su unidad, si se indica).
+     */
+    public function unidadAcademica(?UnidadAcademica $unidad = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'rol_id' => Rol::delSistema(ClaveRol::UnidadAcademica)->id,
+            'unidad_academica_id' => $unidad?->id,
         ]);
     }
 }

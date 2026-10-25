@@ -8,6 +8,7 @@ use App\Concerns\LeeFiltrosEstadisticos;
 use App\Enums\TipoCambioBitacora;
 use App\Models\Bitacora;
 use App\Models\Departamento;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -42,7 +43,7 @@ class EstadisticaExcelController extends Controller
     /**
      * Filtros aplicados, quién y cuándo lo generó, para el encabezado de la primera hoja.
      *
-     * @param  array{anio: int|null, unidad: int|null, carrera: string|null}  $filtros
+     * @param  array{anio: int|null, unidad: int|null, carrera: string|null, alcance?: User|null}  $filtros
      * @return list<array{0: string, 1: string}>
      */
     private function encabezado(Request $request, array $filtros): array

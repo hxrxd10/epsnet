@@ -23,7 +23,7 @@ Laravel + Jetstream, sin Teams (el modelo es de roles jerárquicos fijos, no de 
 RBAC con la tabla `roles` y el middleware propio `rol:` (`EnsureUserHasRole`); no Spatie ni Teams de Jetstream. Roles: `digeu` (administrador), `unidad_academica`, `estudiante` e `invitado` (`App\Enums\ClaveRol`)
 Autenticación:
 Email verification: activado
-Registro público abierto (`/registro`): quien crea una cuenta queda como `invitado` y solo consulta estadísticas. Un invitado (o quien aún no tiene cuenta) pasa a `estudiante` verificando una sola vez su registro académico y su DPI contra el servicio web de Registro y Estadística (`/estudiante/acceso`); el CUI no se almacena. Las cuentas de DIGEU y de unidades académicas las crea DIGEU
+Registro público abierto (`/registro`): quien crea una cuenta queda como `invitado` y, por ahora, no tiene acceso a las consultas (estadísticas, ODS, repositorio, investigaciones). Un invitado (o quien aún no tiene cuenta) pasa a `estudiante` verificando una sola vez su registro académico y su DPI contra el servicio web de Registro y Estadística (`/estudiante/acceso`); el CUI no se almacena. Las cuentas de DIGEU y de unidades académicas las crea DIGEU. Consultas: DIGEU y estudiantes ven todo; una unidad académica solo su unidad y sus carreras asignadas (`Expediente::alcanceDeConsulta`)
 Two-factor authentication: activado (al menos disponible; considerar obligatorio para el rol DIGEU)
 Passkeys: desactivado
 Password confirmation: activado

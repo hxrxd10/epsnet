@@ -31,20 +31,26 @@ type Tarjeta = {
 export default function Dashboard() {
     const { rol, auth } = usePage().props;
 
-    const tarjetas: Tarjeta[] = [
-        {
-            icono: BarChart3,
-            titulo: 'Estadísticas',
-            texto: 'Explora en el mapa lo que la red de EPS ha hecho en cada departamento.',
-            href: estadisticas(),
-        },
-        {
-            icono: BookMarked,
-            titulo: 'Repositorio',
-            texto: 'Consulta los EPS aprobados y lo que se hizo en cada uno.',
-            href: repositorio(),
-        },
-    ];
+    const tarjetas: Tarjeta[] =
+        rol === 'invitado'
+            ? []
+            : [
+                  {
+                      icono: BarChart3,
+                      titulo: 'Estadísticas',
+                      texto:
+                          rol === 'unidad_academica'
+                              ? 'Explora en el mapa lo que han hecho los EPS de tu unidad y tus carreras.'
+                              : 'Explora en el mapa lo que la red de EPS ha hecho en cada departamento.',
+                      href: estadisticas(),
+                  },
+                  {
+                      icono: BookMarked,
+                      titulo: 'Repositorio',
+                      texto: 'Consulta los EPS aprobados y lo que se hizo en cada uno.',
+                      href: repositorio(),
+                  },
+              ];
 
     if (rol === 'digeu') {
         tarjetas.push(
@@ -102,7 +108,7 @@ export default function Dashboard() {
         tarjetas.push({
             icono: GraduationCap,
             titulo: '¿Eres estudiante en EPS?',
-            texto: 'Verifica tu identidad con tu registro académico y tu DPI para registrar tu EPS.',
+            texto: 'Verifica tu identidad con tu registro académico y tu DPI para registrar tu EPS. Por ahora las cuentas de invitado no tienen acceso a las estadísticas ni al repositorio.',
             href: acceso(),
         });
     }

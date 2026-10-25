@@ -132,6 +132,27 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Si el usuario puede entrar a las consultas (estadísticas, ODS, repositorio e investigaciones).
+     * Por ahora los invitados no.
+     */
+    public function puedeConsultar(): bool
+    {
+        return $this->esAdministrador() || $this->esUnidadAcademica() || $this->esEstudiante();
+    }
+
+    /**
+     * Si el expediente entra en lo que el usuario ve en las consultas.
+     */
+    public function consultaExpediente(Expediente $expediente): bool
+    {
+        if ($this->esUnidadAcademica()) {
+            return $this->alcanzaExpediente($expediente);
+        }
+
+        return $this->puedeConsultar();
+    }
+
+    /**
      * Qué EPS consulta el usuario, para mostrarlo en el panel: «Todas las unidades académicas»,
      * el nombre de su unidad o su unidad con las carreras que supervisa.
      */

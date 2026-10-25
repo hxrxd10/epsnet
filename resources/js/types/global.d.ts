@@ -15,6 +15,8 @@ declare module '@inertiajs/core' {
             rol: string | null;
             estudiante: EstudianteSesion | null;
             solicitudesPendientes: number;
+            /** Para una unidad académica: lo que ve en las consultas. */
+            alcanceConsulta: string | null;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

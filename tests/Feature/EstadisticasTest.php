@@ -49,13 +49,29 @@ it('envía a los invitados a iniciar sesión', function () {
     $this->get(route('estadisticas.departamento', $departamento))->assertRedirect(route('login'));
 });
 
-it('muestra las estadísticas a cualquier rol con sesión', function (string $rol) {
+it('muestra las estadísticas a DIGEU, a las unidades académicas y a los estudiantes', function (string $rol) {
     $this->actingAs(User::factory()->{$rol}()->create());
 
     $this->get(route('estadisticas.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('estadisticas/index'));
-})->with(['invitado', 'estudiante', 'administrador']);
+})->with(['estudiante', 'administrador', 'unidadAcademica']);
+
+it('no da acceso a las consultas a los invitados', function (string $ruta, array $parametros) {
+    Departamento::factory()->create(['codigo' => '03']);
+    $this->actingAs(User::factory()->invitado()->create());
+
+    $this->get(route($ruta, $parametros))->assertForbidden();
+})->with([
+    'estadísticas' => ['estadisticas.index', []],
+    'departamento' => ['estadisticas.departamento', ['departamento' => '03']],
+    'PDF' => ['estadisticas.pdf', []],
+    'Excel' => ['estadisticas.excel', []],
+    'ODS' => ['ods.index', []],
+    'Excel de ODS' => ['ods.excel', []],
+    'repositorio' => ['repositorio.index', []],
+    'investigaciones' => ['investigaciones.index', []],
+]);
 
 it('suma por departamento lo registrado en cada eje', function () {
     $sacatepequez = departamentoEstadistico('03', 'Sacatepéquez');
@@ -76,7 +92,7 @@ it('suma por departamento lo registrado en cada eje', function () {
     $dos->actores()->create(['institucion_receptora' => 'Escuela de Jocotenango', 'contraparte' => 'Directora', 'comunidad_beneficiada' => 'Jocotenango']);
     $dos->alianzas()->create(['institucion_aliada_id' => $ministerio->id]);
     epsEstadistico($peten, 'Flores')->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Jornada', 'cantidad_beneficiarios' => 5, 'fecha' => '2026-04-03']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index'))
         ->assertInertia(fn (Assert $page) => $page
@@ -115,7 +131,7 @@ it('calcula el aporte en quetzales: la cantidad de cada bien o servicio por su v
     $eps->bienesServicios()->create(['tipo' => 'bien', 'cantidad' => 3, 'descripcion' => 'Fuera del catálogo', 'fecha' => '2026-04-04']);
     epsEstadistico($sacatepequez, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Completo])
         ->bienesServicios()->create(['tipo' => 'bien', 'catalogo_id' => $pupitres->id, 'cantidad' => 100, 'descripcion' => 'Aún en revisión', 'fecha' => '2026-04-05']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index'))
         ->assertInertia(fn (Assert $page) => $page
@@ -138,7 +154,7 @@ it('atribuye cada EPS solo a su primera ubicación y aparta los que no tienen', 
     $conDos->publicaciones()->create(['titulo' => 'Estudio', 'tipo' => 'tesis', 'autores' => 'B. López']);
     $sinUbicacion = Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Verificado]);
     $sinUbicacion->publicaciones()->create(['titulo' => 'Otro', 'tipo' => 'tesis', 'autores' => 'C. Ruiz']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index'))
         ->assertInertia(fn (Assert $page) => $page
@@ -152,7 +168,7 @@ it('cuenta solo los EPS aprobados por supervisión', function () {
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Verificado]);
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Completo, 'verificado_at' => null, 'aprobacion_solicitada_at' => now()]);
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['estado_expediente' => EstadoExpediente::Activo, 'verificado_at' => null]);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index'))->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1));
 });
@@ -162,7 +178,7 @@ it('filtra por el año de la orden de impresión y ofrece los años con EPS', fu
     epsEstadistico($departamento, 'Antigua Guatemala', '2024-12-31');
     epsEstadistico($departamento, 'Antigua Guatemala', '2025-01-01');
     epsEstadistico($departamento, 'Antigua Guatemala', '2026-06-15');
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index'))
         ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 3)->where('anios', [2026, 2025, 2024]));
@@ -177,7 +193,7 @@ it('filtra por unidad académica y por carrera, limitando las carreras a la unid
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['unidad_academica_id' => $humanidades->id, 'nombre_carrera' => 'Pedagogía']);
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['unidad_academica_id' => $humanidades->id, 'nombre_carrera' => 'Psicología']);
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['unidad_academica_id' => $ingenieria->id, 'nombre_carrera' => 'Ingeniería Civil']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index'))
         ->assertInertia(fn (Assert $page) => $page
@@ -197,14 +213,14 @@ it('descarta la carrera que no pertenece a la unidad elegida', function () {
     $ingenieria = UnidadAcademica::factory()->create();
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['unidad_academica_id' => $humanidades->id, 'nombre_carrera' => 'Pedagogía']);
     epsEstadistico($departamento, 'Antigua Guatemala', atributos: ['unidad_academica_id' => $ingenieria->id, 'nombre_carrera' => 'Ingeniería Civil']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index', ['unidad' => $humanidades->id, 'carrera' => 'Ingeniería Civil']))
         ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1)->where('filtros.carrera', ''));
 });
 
 it('rechaza filtros inválidos', function () {
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index', ['anio' => 'abc', 'unidad' => 9999]))
         ->assertSessionHasErrors(['anio', 'unidad']);
@@ -225,7 +241,7 @@ it('organiza el departamento por municipio con bienes y servicios e investigacio
     $mismo->publicaciones()->create(['titulo' => 'Otra lectura', 'tipo' => 'tesis', 'autores' => 'B. López']);
     epsEstadistico($sacatepequez, 'Jocotenango');
     epsEstadistico($peten, 'Flores')->publicaciones()->create(['titulo' => 'De Petén', 'tipo' => 'informe', 'autores' => 'C. Ruiz']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.departamento', $sacatepequez))
         ->assertOk()
@@ -252,7 +268,7 @@ it('aplica los filtros también en la página del departamento', function () {
     $departamento = departamentoEstadistico('03', 'Sacatepéquez');
     epsEstadistico($departamento, 'Antigua Guatemala', '2025-05-01');
     epsEstadistico($departamento, 'Antigua Guatemala', '2026-05-01');
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.departamento', [$departamento, 'anio' => 2026]))
         ->assertInertia(fn (Assert $page) => $page->where('metricas.eps', 1));
@@ -263,7 +279,7 @@ it('agrupa aparte las ubicaciones anteriores al catálogo, que no tienen municip
     epsEstadistico($departamento, 'Antigua Guatemala');
     $antiguo = epsEstadistico($departamento, 'Jocotenango');
     $antiguo->ubicaciones()->update(['municipio_id' => null]);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.departamento', $departamento))
         ->assertInertia(fn (Assert $page) => $page
@@ -277,7 +293,7 @@ it('toma el año de la aprobación cuando el EPS no tiene orden de impresión', 
     $sinOrden->ordenImpresion()->delete();
     $sinOrdenNiAprobacion = epsEstadistico($departamento, 'Antigua Guatemala', '2023-01-01', ['verificado_at' => null]);
     $sinOrdenNiAprobacion->ordenImpresion()->delete();
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index'))
         ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 3)->where('anios', [2025, 2024]));

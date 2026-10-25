@@ -55,7 +55,7 @@ it('crea las cuentas de prueba de cada rol', function () {
 
 it('alimenta las estadísticas con datos en todos los ejes', function () {
     $this->seed(DatosDemoSeeder::class);
-    $this->actingAs(User::where('email', 'invitado@epsnet.test')->sole());
+    $this->actingAs(User::where('email', 'admin@epsnet.test')->sole());
 
     $this->get(route('estadisticas.index'))
         ->assertInertia(fn (Assert $page) => $page

@@ -27,7 +27,7 @@ function epsArticulado(): Expediente
 it('calcula cuántas de las cuatro funciones articula cada EPS', function (Closure $preparar, int $nivel, string $etiqueta) {
     $eps = Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Verificado]);
     $preparar($eps);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('repositorio.show', $eps))
         ->assertInertia(fn (Assert $page) => $page->where('articulacion.nivel', $nivel)->where('articulacion.total', 4)->where('articulacion.etiqueta', $etiqueta));

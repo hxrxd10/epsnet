@@ -18,6 +18,7 @@ import { index, show } from '@/routes/repositorio';
 import type { Opcion } from '@/types/estudiante';
 import { ArticulacionInsignia } from '@/components/expediente/articulacion';
 import type { ArticulacionEps } from '@/components/expediente/articulacion';
+import AvisoAlcance from '@/components/estadisticas/aviso-alcance';
 
 type Tarjeta = {
     id: number;
@@ -38,9 +39,12 @@ type Tarjeta = {
 type Props = {
     expedientes: Tarjeta[];
     pagina: Pagina;
-    filtros: { q: string; unidad: string };
+    filtros: Filtros;
     unidades: Opcion[];
+    poblaciones: Opcion[];
 };
+
+type Filtros = { q: string; unidad: string; poblacion: string };
 
 const TODOS = '__todos__';
 
@@ -49,10 +53,11 @@ export default function Repositorio({
     pagina,
     filtros,
     unidades,
+    poblaciones,
 }: Props) {
     const [texto, setTexto] = useState(filtros.q);
 
-    function filtrar(nuevos: Partial<{ q: string; unidad: string }>) {
+    function filtrar(nuevos: Partial<Filtros>) {
         const combinados = { ...filtros, q: texto, ...nuevos };
 
         router.get(
@@ -68,6 +73,7 @@ export default function Repositorio({
         <>
             <Head title="Repositorio" />
             <div className="flex flex-1 flex-col gap-6 p-4">
+                <AvisoAlcance />
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight">
                         Repositorio
@@ -117,6 +123,36 @@ export default function Repositorio({
                             ))}
                         </SelectContent>
                     </Select>
+                    {poblaciones.length > 0 && (
+                        <Select
+                            value={filtros.poblacion || TODOS}
+                            onValueChange={(valor) =>
+                                filtrar({
+                                    poblacion: valor === TODOS ? '' : valor,
+                                })
+                            }
+                        >
+                            <SelectTrigger
+                                className="w-64"
+                                aria-label="Población vulnerable"
+                            >
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={TODOS}>
+                                    Todas las poblaciones
+                                </SelectItem>
+                                {poblaciones.map((poblacion) => (
+                                    <SelectItem
+                                        key={poblacion.value}
+                                        value={poblacion.value}
+                                    >
+                                        {poblacion.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                     <Button type="submit" variant="outline">
                         Buscar
                     </Button>

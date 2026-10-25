@@ -53,7 +53,7 @@ export default function Articulacion({
     return (
         <section
             className={cn(
-                'border-sidebar-border/70 rounded-xl border p-5',
+                'border-sidebar-border/70 @container rounded-xl border p-5',
                 className,
             )}
         >
@@ -87,7 +87,7 @@ export default function Articulacion({
                 ))}
             </div>
 
-            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            <ul className="mt-4 grid gap-x-4 gap-y-3 @md:grid-cols-2 @3xl:grid-cols-4">
                 {articulacion.funciones.map((funcion) => (
                     <li key={funcion.clave} className="flex items-start gap-2">
                         <span

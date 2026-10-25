@@ -18,6 +18,7 @@ import { dashboard } from '@/routes';
 import { index } from '@/routes/investigaciones';
 import { show as verEps } from '@/routes/repositorio';
 import type { Opcion } from '@/types/estudiante';
+import AvisoAlcance from '@/components/estadisticas/aviso-alcance';
 
 type Investigacion = {
     id: number;
@@ -75,6 +76,7 @@ export default function Investigaciones({
         <>
             <Head title="Investigaciones" />
             <div className="flex flex-1 flex-col gap-6 p-4">
+                <AvisoAlcance />
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight">
                         Investigaciones

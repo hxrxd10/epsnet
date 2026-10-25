@@ -31,12 +31,12 @@ class ExpedientePolicy
     }
 
     /**
-     * La foto del EPS la ven su estudiante, quien puede consultar el expediente y, una vez aprobado
-     * (aparece en el repositorio), cualquier usuario con sesión.
+     * La foto del EPS la ven su estudiante, quien supervisa el expediente y, una vez aprobado
+     * (aparece en el repositorio), quien puede consultarlo en el repositorio.
      */
     public function verFoto(User $usuario, Expediente $expediente): Response
     {
-        $permitido = $expediente->estado_expediente === EstadoExpediente::Verificado
+        $permitido = ($expediente->estado_expediente === EstadoExpediente::Verificado && $usuario->consultaExpediente($expediente))
             || $usuario->alcanzaExpediente($expediente)
             || ($usuario->estudiante !== null && $usuario->estudiante->id === $expediente->estudiante_id);
 

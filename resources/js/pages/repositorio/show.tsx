@@ -51,10 +51,7 @@ export default function RepositorioEps({
                     />
                 )}
 
-                <Articulacion
-                    articulacion={articulacion}
-                    className="max-w-3xl"
-                />
+                <Articulacion articulacion={articulacion} />
 
                 <DetalleEjes ejes={ejes} />
             </div>

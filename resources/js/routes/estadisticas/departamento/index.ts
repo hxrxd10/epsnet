@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:52
+* @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 export const pdf = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:52
+* @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdf.url = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ pdf.url = (args: { departamento: string | { codigo: string } } | [departamento: 
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:52
+* @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdf.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ pdf.get = (args: { departamento: string | { codigo: string } } | [departamento: 
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:52
+* @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdf.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ pdf.head = (args: { departamento: string | { codigo: string } } | [departamento:
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:52
+* @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 const pdfForm = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const pdfForm = (args: { departamento: string | { codigo: string } } | [departam
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:52
+* @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdfForm.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ pdfForm.get = (args: { departamento: string | { codigo: string } } | [departamen
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:52
+* @see app/Http/Controllers/EstadisticaPdfController.php:53
 * @route '/estadisticas/departamentos/{departamento}/pdf'
 */
 pdfForm.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -106,7 +106,7 @@ pdf.form = pdfForm
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @see app/Http/Controllers/EstadisticaExcelController.php:34
 * @route '/estadisticas/departamentos/{departamento}/excel'
 */
 export const excel = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -121,7 +121,7 @@ excel.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @see app/Http/Controllers/EstadisticaExcelController.php:34
 * @route '/estadisticas/departamentos/{departamento}/excel'
 */
 excel.url = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions) => {
@@ -154,7 +154,7 @@ excel.url = (args: { departamento: string | { codigo: string } } | [departamento
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @see app/Http/Controllers/EstadisticaExcelController.php:34
 * @route '/estadisticas/departamentos/{departamento}/excel'
 */
 excel.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -164,7 +164,7 @@ excel.get = (args: { departamento: string | { codigo: string } } | [departamento
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @see app/Http/Controllers/EstadisticaExcelController.php:34
 * @route '/estadisticas/departamentos/{departamento}/excel'
 */
 excel.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -174,7 +174,7 @@ excel.head = (args: { departamento: string | { codigo: string } } | [departament
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @see app/Http/Controllers/EstadisticaExcelController.php:34
 * @route '/estadisticas/departamentos/{departamento}/excel'
 */
 const excelForm = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -184,7 +184,7 @@ const excelForm = (args: { departamento: string | { codigo: string } } | [depart
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @see app/Http/Controllers/EstadisticaExcelController.php:34
 * @route '/estadisticas/departamentos/{departamento}/excel'
 */
 excelForm.get = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -194,7 +194,7 @@ excelForm.get = (args: { departamento: string | { codigo: string } } | [departam
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:33
+* @see app/Http/Controllers/EstadisticaExcelController.php:34
 * @route '/estadisticas/departamentos/{departamento}/excel'
 */
 excelForm.head = (args: { departamento: string | { codigo: string } } | [departamento: string | { codigo: string } ] | string | { codigo: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

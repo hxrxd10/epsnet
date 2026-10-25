@@ -28,33 +28,37 @@ type Guia = {
     accesos: Acceso[];
 };
 
+/** Cómo usar las consultas: las ven DIGEU, las unidades académicas (solo su unidad) y los estudiantes. */
+const SECCIONES_CONSULTA: Seccion[] = [
+    {
+        titulo: 'Consultar las estadísticas',
+        pasos: [
+            'Entra a "Estadísticas": el mapa de Guatemala muestra lo que ha hecho la red de EPS en cada departamento.',
+            'Elige en la barra de la derecha qué quieres ver: investigaciones, bienes y servicios, aporte en quetzales, beneficiarios, acciones, participantes, instituciones, estudiantes o EPS. Solo cuentan los EPS aprobados por supervisión.',
+            'El aporte es lo que suman en dinero los bienes y servicios: la cantidad entregada de cada uno por su valor base, que fija DIGEU en el catálogo.',
+            'Filtra por año (el de la orden de impresión o, si no la tiene, el de su aprobación), por unidad académica y por carrera. Al elegir una unidad, solo verás las carreras de esa unidad.',
+            'Haz clic en un departamento para ver sus investigaciones y sus principales bienes y servicios; con "Ver más" abres el detalle organizado por municipio.',
+            'Con "Generar PDF" descargas lo que estás viendo, con los filtros aplicados. También puedes generar el PDF de un departamento.',
+            'Con "Exportar Excel" descargas los datos para analizarlos: departamentos, municipios, cada EPS con su indicador de articulación, bienes y servicios, investigaciones y poblaciones vulnerables. La pestaña de ODS también se exporta a Excel.',
+        ],
+    },
+    {
+        titulo: 'Consultar el repositorio y las investigaciones',
+        pasos: [
+            'En "Repositorio" están los EPS aprobados por supervisión, con su mejor foto y una descripción de lo que se hizo en cada uno.',
+            'Busca por estudiante o carrera y filtra por unidad o por población vulnerable atendida; abre un EPS para ver todo lo registrado.',
+            'En "Investigaciones" están solo las publicaciones de investigación de esos EPS. Busca por título, autores, resumen o carrera y filtra por tipo y unidad.',
+            'En "ODS" ves lo que aportan los EPS aprobados a cada Objetivo de Desarrollo Sostenible: aporte en quetzales, bienes y servicios, beneficiarios y EPS. Elige un ODS para ver sus bienes y servicios, líneas de intervención, áreas y unidades académicas. Usa los mismos filtros que las estadísticas.',
+        ],
+    },
+];
+
 const GUIAS: Record<string, Guia> = {
     invitado: {
         titulo: 'Invitado',
         resumen:
-            'Tu cuenta te permite consultar la información consolidada de los EPS de todo el país.',
+            'Por ahora las cuentas de invitado no tienen acceso a las estadísticas, el repositorio ni las investigaciones. Si eres estudiante en EPS, verifica tu identidad para usar el sistema.',
         secciones: [
-            {
-                titulo: 'Consultar las estadísticas',
-                pasos: [
-                    'Entra a "Estadísticas": el mapa de Guatemala muestra lo que ha hecho la red de EPS en cada departamento.',
-                    'Elige en la barra de la derecha qué quieres ver: investigaciones, bienes y servicios, aporte en quetzales, beneficiarios, acciones, participantes, instituciones, estudiantes o EPS. Solo cuentan los EPS aprobados por supervisión.',
-                    'El aporte es lo que suman en dinero los bienes y servicios: la cantidad entregada de cada uno por su valor base, que fija DIGEU en el catálogo.',
-                    'Filtra por año (el de la orden de impresión o, si no la tiene, el de su aprobación), por unidad académica y por carrera. Al elegir una unidad, solo verás las carreras de esa unidad.',
-                    'Haz clic en un departamento para ver sus investigaciones y sus principales bienes y servicios; con "Ver más" abres el detalle organizado por municipio.',
-                    'Con "Generar PDF" descargas lo que estás viendo, con los filtros aplicados. También puedes generar el PDF de un departamento.',
-                    'Con "Exportar Excel" descargas los datos para analizarlos: departamentos, municipios, cada EPS con su indicador de articulación, bienes y servicios, investigaciones y poblaciones vulnerables. La pestaña de ODS también se exporta a Excel.',
-                ],
-            },
-            {
-                titulo: 'Consultar el repositorio y las investigaciones',
-                pasos: [
-                    'En "Repositorio" están los EPS aprobados por supervisión, con su mejor foto y una descripción de lo que se hizo en cada uno.',
-                    'Busca por estudiante o carrera y filtra por unidad; abre un EPS para ver todo lo registrado.',
-                    'En "Investigaciones" están solo las publicaciones de investigación de esos EPS. Busca por título, autores, resumen o carrera y filtra por tipo y unidad.',
-                    'En "ODS" ves lo que aportan los EPS aprobados a cada Objetivo de Desarrollo Sostenible: aporte en quetzales, bienes y servicios, beneficiarios y EPS. Elige un ODS para ver sus bienes y servicios, líneas de intervención, áreas y unidades académicas. Usa los mismos filtros que las estadísticas.',
-                ],
-            },
             {
                 titulo: 'Si eres estudiante en EPS',
                 pasos: [
@@ -63,12 +67,7 @@ const GUIAS: Record<string, Guia> = {
                 ],
             },
         ],
-        accesos: [
-            { titulo: 'Estadísticas', href: estadisticas().url },
-            { titulo: 'Repositorio', href: repositorio().url },
-            { titulo: 'Investigaciones', href: investigaciones().url },
-            { titulo: 'Soy estudiante', href: acceso().url },
-        ],
+        accesos: [{ titulo: 'Soy estudiante', href: acceso().url }],
     },
     estudiante: {
         titulo: 'Estudiante',
@@ -107,6 +106,7 @@ const GUIAS: Record<string, Guia> = {
                     'Cuando la supervisión lo aprueba, tu EPS queda "Aprobado", aparece en el repositorio y cuenta para las estadísticas.',
                 ],
             },
+            ...SECCIONES_CONSULTA,
         ],
         accesos: [
             { titulo: 'Mis carreras y EPS', href: carreras().url },
@@ -150,10 +150,10 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Consultar los resultados',
                 pasos: [
-                    'En "Estadísticas" ves el mapa consolidado de todo el país y puedes filtrar por tu unidad y tus carreras.',
-                    'Con "Generar PDF" descargas el reporte con los filtros aplicados.',
+                    'En "Estadísticas", "ODS", "Repositorio" e "Investigaciones" solo ves los EPS de tu unidad académica y, si DIGEU te asignó carreras, solo los de esas carreras. Lo mismo vale para el PDF y el Excel.',
                 ],
             },
+            ...SECCIONES_CONSULTA,
         ],
         accesos: [
             { titulo: 'Bandeja de solicitudes', href: bandeja().url },
@@ -208,6 +208,7 @@ const GUIAS: Record<string, Guia> = {
                     'Filtra por usuario o correo, módulo, tipo de acción y rango de fechas. Nadie puede editarla ni eliminarla.',
                 ],
             },
+            ...SECCIONES_CONSULTA,
         ],
         accesos: [
             { titulo: 'Bandeja de solicitudes', href: bandeja().url },

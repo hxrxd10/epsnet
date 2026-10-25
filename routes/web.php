@@ -34,6 +34,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::inertia('documentacion', 'documentacion')->name('documentacion');
 
+    Route::get('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'show'])
+        ->middleware('can:verFoto,expediente')
+        ->name('expedientes.foto');
+});
+
+// Consultas: DIGEU y los estudiantes ven todo; una unidad académica, solo su unidad y sus carreras.
+// Los invitados, por ahora, no tienen acceso.
+Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica,estudiante'])->group(function () {
     Route::get('estadisticas', [EstadisticaController::class, 'index'])->name('estadisticas.index');
     Route::get('estadisticas/pdf', [EstadisticaPdfController::class, 'index'])->name('estadisticas.pdf');
     Route::get('estadisticas/departamentos/{departamento:codigo}', [EstadisticaController::class, 'departamento'])->name('estadisticas.departamento');
@@ -46,10 +54,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('repositorio', [RepositorioController::class, 'index'])->name('repositorio.index');
     Route::get('repositorio/{expediente}', [RepositorioController::class, 'show'])->name('repositorio.show');
     Route::get('investigaciones', [InvestigacionController::class, 'index'])->name('investigaciones.index');
-
-    Route::get('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'show'])
-        ->middleware('can:verFoto,expediente')
-        ->name('expedientes.foto');
 });
 
 // Bandeja de solicitudes de aprobación: DIGEU ve todas y cada unidad académica las suyas.

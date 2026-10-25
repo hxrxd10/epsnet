@@ -50,7 +50,7 @@ it('suma por ODS el aporte, los bienes y servicios, los beneficiarios y los EPS 
     epsConBienes([[$agua, 4, 40], [$salud, 1, 100]])->ubicaciones()->create(['departamento_id' => $departamento->id]);
     epsConBienes([[$agua, 2, 10], [$taller, null, 5]]);
     epsConBienes([[$agua, 50, 500]], ['estado_expediente' => EstadoExpediente::Completo]);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('ods.index'))
         ->assertOk()
@@ -80,7 +80,7 @@ it('suma por ODS el aporte, los bienes y servicios, los beneficiarios y los EPS 
 
 it('aparta los bienes y servicios que no están anclados a un ODS', function () {
     epsConBienes([[Catalogo::factory()->create(['valor_base' => 30]), 3, 0]]);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('ods.index'))->assertInertia(fn (Assert $page) => $page
         ->where('sin_ods.bienes_servicios', 3)
@@ -93,7 +93,7 @@ it('aplica los filtros de las estadísticas', function () {
     $unidad = UnidadAcademica::factory()->create();
     epsConBienes([[$agua, 1, 0]], ['unidad_academica_id' => $unidad->id]);
     epsConBienes([[$agua, 5, 0]]);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('ods.index', ['unidad' => $unidad->id]))
         ->assertInertia(fn (Assert $page) => $page->where('totales.bienes_servicios', 1)->where('filtros.unidad', (string) $unidad->id));

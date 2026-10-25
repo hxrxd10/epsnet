@@ -37,7 +37,7 @@ it('envía a los invitados a iniciar sesión', function () {
     $this->get(route('estadisticas.departamento.pdf', $departamento))->assertRedirect(route('login'));
 });
 
-it('genera el PDF del país para cualquier rol con sesión', function (string $rol) {
+it('genera el PDF del país para los roles con acceso a las consultas', function (string $rol) {
     epsParaPdf(Departamento::factory()->create(['codigo' => '03', 'nombre' => 'Sacatepéquez']));
     $this->actingAs(User::factory()->{$rol}()->create());
 
@@ -46,12 +46,12 @@ it('genera el PDF del país para cualquier rol con sesión', function (string $r
     expect($respuesta->headers->get('content-type'))->toBe('application/pdf')
         ->and($respuesta->headers->get('content-disposition'))->toContain('attachment')->toContain('estadisticas-sirse-usac-'.now()->format('d-m-Y').'.pdf')
         ->and(substr($respuesta->getContent(), 0, 5))->toBe('%PDF-');
-})->with(['invitado', 'estudiante', 'administrador']);
+})->with(['estudiante', 'administrador']);
 
 it('genera el PDF de un departamento con el nombre de este en el archivo', function () {
     $sacatepequez = Departamento::factory()->create(['codigo' => '03', 'nombre' => 'Sacatepéquez']);
     epsParaPdf($sacatepequez);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $respuesta = $this->get(route('estadisticas.departamento.pdf', $sacatepequez))->assertOk();
 
@@ -61,7 +61,7 @@ it('genera el PDF de un departamento con el nombre de este en el archivo', funct
 });
 
 it('genera el PDF aunque no haya ningún dato con los filtros', function () {
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
     $departamento = Departamento::factory()->create(['codigo' => '03']);
 
     $this->get(route('estadisticas.pdf'))->assertOk();
@@ -72,7 +72,7 @@ it('deja constancia en la bitácora de quién exportó, con los filtros aplicado
     $humanidades = UnidadAcademica::factory()->create(['nombre' => 'Facultad de Humanidades']);
     $sacatepequez = Departamento::factory()->create(['codigo' => '03', 'nombre' => 'Sacatepéquez']);
     epsParaPdf($sacatepequez, $humanidades);
-    $usuario = User::factory()->invitado()->create(['email' => 'invitado@example.com']);
+    $usuario = User::factory()->estudiante()->create(['email' => 'estudiante@example.com']);
     $this->actingAs($usuario);
 
     $this->get(route('estadisticas.pdf', ['unidad' => $humanidades->id, 'anio' => 2025, 'carrera' => 'Licenciatura en Pedagogía', 'metrica' => 'eps']));
@@ -81,7 +81,7 @@ it('deja constancia en la bitácora de quién exportó, con los filtros aplicado
     $registros = Bitacora::where('tipo_cambio', TipoCambioBitacora::Exportacion)->orderBy('id')->get();
 
     expect($registros)->toHaveCount(2)
-        ->and($registros[0]->usuario_correo)->toBe('invitado@example.com')
+        ->and($registros[0]->usuario_correo)->toBe('estudiante@example.com')
         ->and($registros[0]->modulo)->toBe('Estadísticas')
         ->and($registros[0]->detalle)->toContain('estadísticas del país (EPS)')
         ->toContain('Año: 2025')
@@ -91,7 +91,7 @@ it('deja constancia en la bitácora de quién exportó, con los filtros aplicado
 });
 
 it('rechaza filtros y métricas inválidos', function () {
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.pdf', ['anio' => 'abc']))->assertSessionHasErrors('anio');
     $this->get(route('estadisticas.pdf', ['metrica' => 'inventada']))->assertSessionHasErrors('metrica');

@@ -6,6 +6,8 @@ use App\Actions\Expedientes\ArmarDetalleExpediente;
 use App\Enums\Eje;
 use App\Enums\EstadoExpediente;
 use App\Enums\ProgramaEps;
+use App\Enums\TipoCatalogo;
+use App\Models\Catalogo;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
 use App\Support\Articulacion;
@@ -17,17 +19,20 @@ use Inertia\Response;
 class RepositorioController extends Controller
 {
     /**
-     * Repositorio: los EPS aprobados por su unidad académica, con una descripción de lo realizado.
+     * Repositorio: los EPS aprobados por supervisión, con una descripción de lo realizado. Una unidad
+     * académica solo ve los de su unidad y sus carreras.
      */
     public function index(Request $request): Response
     {
         $filtros = $request->validate([
             'q' => ['nullable', 'string', 'max:100'],
             'unidad' => ['nullable', 'integer'],
+            'poblacion' => ['nullable', 'integer'],
         ]);
 
         $expedientes = Expediente::query()
             ->where('estado_expediente', EstadoExpediente::Verificado)
+            ->alcanceDeConsulta($request->user())
             ->with([
                 'estudiante',
                 'unidadAcademica',
@@ -48,6 +53,10 @@ class RepositorioController extends Controller
                         ->orWhere('apellido2', 'like', "%{$texto}%")),
             ))
             ->when($filtros['unidad'] ?? null, fn ($consulta, int|string $unidad) => $consulta->where('unidad_academica_id', $unidad))
+            ->when($filtros['poblacion'] ?? null, fn ($consulta, int|string $poblacion) => $consulta->whereHas(
+                'bienesServicios.poblaciones',
+                fn ($consulta) => $consulta->whereKey($poblacion),
+            ))
             ->orderByDesc('verificado_at')
             ->orderByDesc('id')
             ->paginate(12)
@@ -76,14 +85,25 @@ class RepositorioController extends Controller
                 'anterior' => $expedientes->previousPageUrl(),
                 'siguiente' => $expedientes->nextPageUrl(),
             ],
-            'filtros' => ['q' => $filtros['q'] ?? '', 'unidad' => (string) ($filtros['unidad'] ?? '')],
-            'unidades' => UnidadAcademica::orderBy('nombre')->get(['id', 'nombre'])->map(fn (UnidadAcademica $unidad): array => ['value' => (string) $unidad->id, 'label' => $unidad->nombre])->all(),
+            'filtros' => ['q' => $filtros['q'] ?? '', 'unidad' => (string) ($filtros['unidad'] ?? ''), 'poblacion' => (string) ($filtros['poblacion'] ?? '')],
+            'poblaciones' => Catalogo::query()
+                ->delCatalogo(TipoCatalogo::PoblacionesVulnerables)
+                ->orderBy('nombre')
+                ->get(['id', 'nombre'])
+                ->map(fn (Catalogo $poblacion): array => ['value' => (string) $poblacion->id, 'label' => $poblacion->nombre])
+                ->all(),
+            'unidades' => UnidadAcademica::query()
+                ->whereIn('id', Expediente::query()->where('estado_expediente', EstadoExpediente::Verificado)->alcanceDeConsulta($request->user())->select('unidad_academica_id'))
+                ->orderBy('nombre')
+                ->get(['id', 'nombre'])
+                ->map(fn (UnidadAcademica $unidad): array => ['value' => (string) $unidad->id, 'label' => $unidad->nombre])
+                ->all(),
         ]);
     }
 
-    public function show(Expediente $expediente, ArmarDetalleExpediente $detalle): Response
+    public function show(Request $request, Expediente $expediente, ArmarDetalleExpediente $detalle): Response
     {
-        abort_unless($expediente->estado_expediente === EstadoExpediente::Verificado, 404);
+        abort_unless($expediente->estado_expediente === EstadoExpediente::Verificado && $request->user()->consultaExpediente($expediente), 404);
 
         $expediente->load(['estudiante', 'unidadAcademica', 'foto']);
 

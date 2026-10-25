@@ -271,6 +271,27 @@ class Expediente extends Model
     }
 
     /**
+     * Lo que el usuario puede ver en las consultas (estadísticas, ODS, repositorio e investigaciones):
+     * una unidad académica solo lo de su unidad y sus carreras; un invitado, nada; DIGEU y los
+     * estudiantes, todo.
+     *
+     * @param  Builder<Expediente>  $query
+     */
+    #[Scope]
+    protected function alcanceDeConsulta(Builder $query, User $usuario): void
+    {
+        if ($usuario->esUnidadAcademica()) {
+            $query->visiblesPara($usuario);
+
+            return;
+        }
+
+        if (! $usuario->puedeConsultar()) {
+            $query->whereKey([]);
+        }
+    }
+
+    /**
      * Lugar de esta solicitud en la bandeja de su unidad (1 = la primera en llegar) y cuántas hay en espera;
      * null si no hay una solicitud pendiente.
      *

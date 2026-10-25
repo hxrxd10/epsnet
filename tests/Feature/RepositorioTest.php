@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\EstadoExpediente;
+use App\Enums\TipoCatalogo;
+use App\Models\Catalogo;
 use App\Models\Departamento;
 use App\Models\Estudiante;
 use App\Models\Expediente;
@@ -26,7 +28,7 @@ it('envía a los invitados a iniciar sesión', function () {
     $this->get(route('repositorio.show', expedienteAprobado()))->assertRedirect(route('login'));
 });
 
-it('lista solo los EPS aprobados, para cualquier usuario con sesión', function (string $estado) {
+it('lista solo los EPS aprobados, para DIGEU y los estudiantes', function (string $estado) {
     expedienteAprobado();
     expedienteAprobado();
     Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Completo]);
@@ -39,7 +41,7 @@ it('lista solo los EPS aprobados, para cualquier usuario con sesión', function 
             ->component('repositorio/index')
             ->has('expedientes', 2)
             ->where('pagina.total', 2));
-})->with(['invitado', 'estudiante', 'administrador']);
+})->with(['estudiante', 'administrador']);
 
 it('describe lo realizado con la evaluación de impacto o, si no hay, con lo primero registrado', function () {
     $conImpacto = expedienteAprobado();
@@ -48,7 +50,7 @@ it('describe lo realizado con la evaluación de impacto o, si no hay, con lo pri
     $sinImpacto = expedienteAprobado();
     $sinImpacto->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Jornada médica', 'fecha' => '2026-03-01']);
     $vacio = expedienteAprobado();
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('repositorio.index'))
         ->assertInertia(fn (Assert $page) => $page
@@ -63,7 +65,7 @@ it('muestra el estudiante, la carrera, la unidad y la ubicación', function () {
     $expediente = expedienteAprobado(['nombre_carrera' => 'Licenciatura en Pedagogía']);
     $antigua = Municipio::factory()->for(Departamento::factory()->create(['nombre' => 'Sacatepéquez']))->create(['nombre' => 'Antigua Guatemala']);
     $expediente->ubicaciones()->create(['departamento_id' => $antigua->departamento_id, 'municipio_id' => $antigua->id]);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('repositorio.index'))
         ->assertInertia(fn (Assert $page) => $page
@@ -78,16 +80,34 @@ it('filtra por texto y por unidad académica', function () {
     $ingenieria = UnidadAcademica::factory()->create();
     expedienteAprobado(['unidad_academica_id' => $humanidades->id, 'nombre_carrera' => 'Pedagogía']);
     expedienteAprobado(['unidad_academica_id' => $ingenieria->id, 'nombre_carrera' => 'Ingeniería Civil']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('repositorio.index', ['q' => 'Civil']))->assertInertia(fn (Assert $page) => $page->has('expedientes', 1)->where('expedientes.0.carrera', 'Ingeniería Civil'));
     $this->get(route('repositorio.index', ['unidad' => $humanidades->id]))->assertInertia(fn (Assert $page) => $page->has('expedientes', 1)->where('expedientes.0.carrera', 'Pedagogía'));
 });
 
+it('filtra por población vulnerable atendida en sus bienes y servicios', function () {
+    $mujeres = Catalogo::factory()->del(TipoCatalogo::PoblacionesVulnerables)->create(['nombre' => 'Mujeres']);
+    $rural = Catalogo::factory()->del(TipoCatalogo::PoblacionesVulnerables)->create(['nombre' => 'Población rural']);
+    $conMujeres = expedienteAprobado(['nombre_carrera' => 'Trabajo Social']);
+    $conMujeres->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Taller', 'fecha' => '2026-03-01'])->poblaciones()->attach($mujeres);
+    expedienteAprobado(['nombre_carrera' => 'Agronomía'])->bienesServicios()->create(['tipo' => 'bien', 'descripcion' => 'Huerto', 'fecha' => '2026-03-01'])->poblaciones()->attach($rural);
+    $enRevision = Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Completo]);
+    $enRevision->bienesServicios()->create(['tipo' => 'servicio', 'descripcion' => 'Charla', 'fecha' => '2026-03-01'])->poblaciones()->attach($mujeres);
+    $this->actingAs(User::factory()->administrador()->create());
+
+    $this->get(route('repositorio.index', ['poblacion' => $mujeres->id]))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('expedientes', 1)
+            ->where('expedientes.0.id', $conMujeres->id)
+            ->where('filtros.poblacion', (string) $mujeres->id)
+            ->has('poblaciones', 2));
+});
+
 it('muestra el detalle de un EPS aprobado', function () {
     $expediente = expedienteAprobado();
     $expediente->transferencias()->create(['tipo_actividad' => 'taller', 'actividad' => 'Taller para docentes', 'comunidad' => 'Aldea El Progreso', 'fecha' => '2026-03-05']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('repositorio.show', $expediente))
         ->assertOk()
@@ -110,7 +130,7 @@ it('no expone datos privados del estudiante ni de las instituciones', function (
     $institucion = InstitucionAliada::factory()->create(['correo_contacto' => 'privado@escuela.example', 'telefono_contacto' => '22334455']);
     $expediente->alianzas()->create(['institucion_aliada_id' => $institucion->id]);
     $expediente->actores()->create(['institucion_receptora' => 'Escuela Norte', 'contraparte' => 'Directora', 'comunidad_beneficiada' => 'Barrio Norte']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $contenido = $this->get(route('repositorio.show', $expediente))->getContent().$this->get(route('repositorio.index'))->getContent();
 

@@ -36,14 +36,23 @@ import { index as ods } from '@/routes/ods';
 import { index as repositorio } from '@/routes/repositorio';
 import type { NavItem } from '@/types';
 
-const plataforma: NavItem[] = [
-    { title: 'Panel', href: dashboard(), icon: LayoutGrid },
+const consultas: NavItem[] = [
     { title: 'Estadísticas', href: estadisticas(), icon: BarChart3 },
     { title: 'ODS', href: ods(), icon: Target },
     { title: 'Repositorio', href: repositorio(), icon: BookMarked },
     { title: 'Investigaciones', href: investigaciones(), icon: FlaskConical },
-    { title: 'Documentación', href: documentacion(), icon: BookOpen },
 ];
+
+/** Las consultas son para DIGEU, las unidades académicas y los estudiantes; por ahora no para invitados. */
+const ROLES_CON_CONSULTAS = ['digeu', 'unidad_academica', 'estudiante'];
+
+function opcionesDePlataforma(rol: string | null): NavItem[] {
+    return [
+        { title: 'Panel', href: dashboard(), icon: LayoutGrid },
+        ...(rol !== null && ROLES_CON_CONSULTAS.includes(rol) ? consultas : []),
+        { title: 'Documentación', href: documentacion(), icon: BookOpen },
+    ];
+}
 
 const estudiantesYEps: NavItem = {
     title: 'Estudiantes y EPS',
@@ -97,7 +106,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={plataforma} />
+                <NavMain items={opcionesDePlataforma(rol)} />
                 {administracion.length > 0 && (
                     <NavMain items={administracion} label="Administración" />
                 )}

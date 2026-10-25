@@ -25,6 +25,7 @@ import type {
     Metricas,
     OpcionesFiltros,
 } from '@/types/estadisticas';
+import AvisoAlcance from '@/components/estadisticas/aviso-alcance';
 
 type Props = OpcionesFiltros & {
     totales: Metricas;
@@ -66,6 +67,7 @@ export default function Estadisticas({
         <>
             <Head title="Estadísticas" />
             <div className="flex flex-1 flex-col gap-6 p-4">
+                <AvisoAlcance />
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight">
                         Estadísticas

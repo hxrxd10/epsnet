@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\EstadoExpediente;
 use App\Enums\TipoPublicacion;
+use App\Models\Expediente;
 use App\Models\PublicacionInvestigacion;
 use App\Models\UnidadAcademica;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +18,7 @@ class InvestigacionController extends Controller
 {
     /**
      * Investigaciones: como el repositorio, pero solo las publicaciones de investigación de los EPS
-     * aprobados por supervisión.
+     * aprobados por supervisión (de su unidad y sus carreras, para una unidad académica).
      */
     public function index(Request $request): Response
     {
@@ -30,6 +31,7 @@ class InvestigacionController extends Controller
         $investigaciones = PublicacionInvestigacion::query()
             ->whereHas('expediente', fn (Builder $consulta) => $consulta
                 ->where('estado_expediente', EstadoExpediente::Verificado)
+                ->alcanceDeConsulta($request->user())
                 ->when($filtros['unidad'] ?? null, fn (Builder $consulta, int|string $unidad) => $consulta->where('unidad_academica_id', $unidad)))
             ->with(['expediente.estudiante', 'expediente.unidadAcademica'])
             ->when($filtros['q'] ?? null, fn (Builder $consulta, string $texto) => $consulta->where(
@@ -68,7 +70,12 @@ class InvestigacionController extends Controller
                 'siguiente' => $investigaciones->nextPageUrl(),
             ],
             'filtros' => ['q' => $filtros['q'] ?? '', 'unidad' => (string) ($filtros['unidad'] ?? ''), 'tipo' => $filtros['tipo'] ?? ''],
-            'unidades' => UnidadAcademica::orderBy('nombre')->get(['id', 'nombre'])->map(fn (UnidadAcademica $unidad): array => ['value' => (string) $unidad->id, 'label' => $unidad->nombre])->all(),
+            'unidades' => UnidadAcademica::query()
+                ->whereIn('id', Expediente::query()->where('estado_expediente', EstadoExpediente::Verificado)->alcanceDeConsulta($request->user())->select('unidad_academica_id'))
+                ->orderBy('nombre')
+                ->get(['id', 'nombre'])
+                ->map(fn (UnidadAcademica $unidad): array => ['value' => (string) $unidad->id, 'label' => $unidad->nombre])
+                ->all(),
             'tipos' => TipoPublicacion::opciones(),
         ]);
     }

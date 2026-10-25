@@ -8,6 +8,7 @@ use App\Enums\MetricaEstadistica;
 use App\Enums\TipoCambioBitacora;
 use App\Models\Bitacora;
 use App\Models\Departamento;
+use App\Models\User;
 use App\Support\MapaEstadisticoSvg;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -75,7 +76,7 @@ class EstadisticaPdfController extends Controller
     /**
      * Lo que comparten los dos PDF: logo, filtros aplicados, quién y cuándo lo generó.
      *
-     * @param  array{anio: int|null, unidad: int|null, carrera: string|null}  $filtros
+     * @param  array{anio: int|null, unidad: int|null, carrera: string|null, alcance?: User|null}  $filtros
      * @return array<string, mixed>
      */
     private function datosComunes(Request $request, array $filtros): array

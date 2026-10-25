@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
 trait LeeFiltrosEstadisticos
 {
     /**
-     * Filtros validados; una carrera que no pertenece a la unidad elegida se descarta.
+     * Filtros validados; una carrera que no pertenece a la unidad elegida se descarta. Incluyen a quien
+     * consulta, para que una unidad académica solo vea lo de su unidad y sus carreras.
      *
      * @return Filtros
      */
@@ -29,10 +30,13 @@ trait LeeFiltrosEstadisticos
         $unidad = isset($datos['unidad']) ? (int) $datos['unidad'] : null;
         $carrera = $datos['carrera'] ?? null;
 
+        $alcance = $request->user();
+
         return [
             'anio' => isset($datos['anio']) ? (int) $datos['anio'] : null,
             'unidad' => $unidad,
-            'carrera' => $carrera !== null && $estadisticas->carreras($unidad)->contains($carrera) ? $carrera : null,
+            'carrera' => $carrera !== null && $estadisticas->carreras($unidad, $alcance)->contains($carrera) ? $carrera : null,
+            'alcance' => $alcance,
         ];
     }
 
@@ -61,6 +65,7 @@ trait LeeFiltrosEstadisticos
             'Año' => $filtros['anio'] === null ? 'Todos los años' : (string) $filtros['anio'],
             'Unidad académica' => $filtros['unidad'] === null ? 'Todas las unidades' : (UnidadAcademica::find($filtros['unidad'])?->nombre ?? '—'),
             'Carrera' => $filtros['carrera'] ?? 'Todas las carreras',
+            ...(($filtros['alcance'] ?? null)?->esUnidadAcademica() ? ['Alcance' => $filtros['alcance']->ambitoDeConsulta()] : []),
         ];
     }
 

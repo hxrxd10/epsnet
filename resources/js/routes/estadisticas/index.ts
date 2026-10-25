@@ -83,7 +83,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:25
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
 * @route '/estadisticas/pdf'
 */
 export const pdf = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -98,7 +98,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:25
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
 * @route '/estadisticas/pdf'
 */
 pdf.url = (options?: RouteQueryOptions) => {
@@ -107,7 +107,7 @@ pdf.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:25
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
 * @route '/estadisticas/pdf'
 */
 pdf.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -117,7 +117,7 @@ pdf.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:25
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
 * @route '/estadisticas/pdf'
 */
 pdf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -127,7 +127,7 @@ pdf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:25
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
 * @route '/estadisticas/pdf'
 */
 const pdfForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -137,7 +137,7 @@ const pdfForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:25
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
 * @route '/estadisticas/pdf'
 */
 pdfForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -147,7 +147,7 @@ pdfForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaPdfController::pdf
-* @see app/Http/Controllers/EstadisticaPdfController.php:25
+* @see app/Http/Controllers/EstadisticaPdfController.php:26
 * @route '/estadisticas/pdf'
 */
 pdfForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -269,7 +269,7 @@ departamento.form = departamentoForm
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:21
+* @see app/Http/Controllers/EstadisticaExcelController.php:22
 * @route '/estadisticas/excel'
 */
 export const excel = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -284,7 +284,7 @@ excel.definition = {
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:21
+* @see app/Http/Controllers/EstadisticaExcelController.php:22
 * @route '/estadisticas/excel'
 */
 excel.url = (options?: RouteQueryOptions) => {
@@ -293,7 +293,7 @@ excel.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:21
+* @see app/Http/Controllers/EstadisticaExcelController.php:22
 * @route '/estadisticas/excel'
 */
 excel.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -303,7 +303,7 @@ excel.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:21
+* @see app/Http/Controllers/EstadisticaExcelController.php:22
 * @route '/estadisticas/excel'
 */
 excel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -313,7 +313,7 @@ excel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:21
+* @see app/Http/Controllers/EstadisticaExcelController.php:22
 * @route '/estadisticas/excel'
 */
 const excelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -323,7 +323,7 @@ const excelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:21
+* @see app/Http/Controllers/EstadisticaExcelController.php:22
 * @route '/estadisticas/excel'
 */
 excelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -333,7 +333,7 @@ excelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EstadisticaExcelController::excel
-* @see app/Http/Controllers/EstadisticaExcelController.php:21
+* @see app/Http/Controllers/EstadisticaExcelController.php:22
 * @route '/estadisticas/excel'
 */
 excelForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

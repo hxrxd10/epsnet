@@ -34,7 +34,7 @@ it('muestra a cualquier usuario con sesión las investigaciones de los EPS aprob
     ], ['nombre_carrera' => 'Ingeniería Civil']);
     investigacionDeEps(EstadoExpediente::Completo, ['titulo' => 'En revisión']);
     investigacionDeEps(EstadoExpediente::Activo, ['titulo' => 'En progreso']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('investigaciones.index'))
         ->assertOk()
@@ -53,7 +53,7 @@ it('busca por texto y filtra por tipo y por unidad', function (Closure $filtros,
     $humanidades = UnidadAcademica::factory()->create();
     investigacionDeEps(EstadoExpediente::Verificado, ['titulo' => 'Lectura en el aula', 'tipo' => 'articulo', 'autores' => 'Ana Pérez'], ['unidad_academica_id' => $humanidades->id]);
     investigacionDeEps(EstadoExpediente::Verificado, ['titulo' => 'Suelos del altiplano', 'tipo' => 'tesis', 'resumen' => 'Fertilidad y riego']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('investigaciones.index', $filtros($humanidades)))
         ->assertInertia(fn (Assert $page) => $page->has('investigaciones', 1)->where('investigaciones.0.titulo', $esperado));
@@ -65,7 +65,7 @@ it('busca por texto y filtra por tipo y por unidad', function (Closure $filtros,
 ]);
 
 it('rechaza un tipo de publicación inexistente', function () {
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('investigaciones.index', ['tipo' => 'novela']))->assertSessionHasErrors('tipo');
 });

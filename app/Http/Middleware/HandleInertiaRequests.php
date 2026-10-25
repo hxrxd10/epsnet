@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
             'rol' => fn () => $request->user()?->rol?->clave,
             'estudiante' => fn () => $this->estudiante($request),
             'solicitudesPendientes' => fn () => $this->solicitudesPendientes($request),
+            'alcanceConsulta' => fn () => $request->user()?->esUnidadAcademica() ? $request->user()->ambitoDeConsulta() : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

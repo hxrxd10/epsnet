@@ -112,9 +112,10 @@ describe('quién ve la foto', function () {
         return $expediente;
     }
 
-    it('la muestra a cualquier usuario con sesión cuando el EPS está aprobado', function () {
+    it('la muestra a quien puede consultar el repositorio cuando el EPS está aprobado, pero no a un invitado', function () {
         $expediente = epsConFotoGuardada(EstadoExpediente::Verificado);
-        $this->actingAs(User::factory()->invitado()->create());
+        $this->actingAs(User::factory()->invitado()->create())->get(route('expedientes.foto', $expediente))->assertNotFound();
+        $this->actingAs(User::factory()->estudiante()->create());
 
         $respuesta = $this->get(route('expedientes.foto', $expediente))
             ->assertOk()
@@ -141,7 +142,7 @@ describe('quién ve la foto', function () {
 
     it('aparece en el repositorio con su dirección', function () {
         $expediente = epsConFotoGuardada(EstadoExpediente::Verificado);
-        $this->actingAs(User::factory()->invitado()->create());
+        $this->actingAs(User::factory()->administrador()->create());
 
         $this->get(route('repositorio.index'))
             ->assertInertia(fn (Assert $page) => $page->where('expedientes.0.foto', $expediente->urlFoto()));

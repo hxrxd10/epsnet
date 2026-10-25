@@ -50,7 +50,7 @@ it('exige iniciar sesión para exportar', function (string $ruta, array $paramet
 it('exporta las estadísticas del país con los EPS, su articulación y las poblaciones vulnerables', function () {
     $eps = epsParaExportar();
     Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Completo]);
-    $usuario = User::factory()->invitado()->create();
+    $usuario = User::factory()->administrador()->create();
     $this->actingAs($usuario);
 
     $respuesta = $this->get(route('estadisticas.excel'))->assertOk()->assertDownload('estadisticas-sirse-usac-'.now()->format('d-m-Y').'.xlsx');
@@ -71,7 +71,7 @@ it('exporta las estadísticas del país con los EPS, su articulación y las pobl
 
 it('exporta un departamento por municipio', function () {
     epsParaExportar();
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $hojas = LectorExcel::hojas($this->get(route('estadisticas.departamento.excel', '17'))->assertOk());
 
@@ -83,7 +83,7 @@ it('exporta un departamento por municipio', function () {
 
 it('exporta el aporte por ODS con todos sus bienes y servicios', function () {
     epsParaExportar();
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $hojas = LectorExcel::hojas($this->get(route('ods.excel'))->assertOk()->assertDownload('ods-sirse-usac-'.now()->format('d-m-Y').'.xlsx'));
 
@@ -96,7 +96,7 @@ it('aplica los filtros a la exportación', function () {
     $unidad = UnidadAcademica::factory()->create();
     epsParaExportar(['unidad_academica_id' => $unidad->id]);
     epsParaExportar();
-    $this->actingAs(User::factory()->invitado()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $hojas = LectorExcel::hojas($this->get(route('estadisticas.excel', ['unidad' => $unidad->id])));
 

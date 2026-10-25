@@ -14,6 +14,7 @@ use App\Models\PublicacionInvestigacion;
 use App\Models\TransferenciaConocimiento;
 use App\Models\UbicacionTerritorial;
 use App\Models\UnidadAcademica;
+use App\Models\User;
 use App\Support\Articulacion;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -28,7 +29,9 @@ use Illuminate\Support\Str;
  * El año de un EPS es el de su orden de impresión y todo lo que registró se atribuye a su primera
  * ubicación territorial.
  *
- * @phpstan-type Filtros array{anio: int|null, unidad: int|null, carrera: string|null}
+ * Con `alcance` (quien consulta), una unidad académica solo cuenta lo de su unidad y sus carreras.
+ *
+ * @phpstan-type Filtros array{anio: int|null, unidad: int|null, carrera: string|null, alcance?: User|null}
  *
  * @phpstan-import-type Registro from Acumulador
  */
@@ -174,8 +177,8 @@ class CalcularEstadisticas
         $ordenes = Adjunto::query()
             ->where('categoria', Adjunto::ORDEN_IMPRESION)
             ->where('entidad_tipo', 'expediente')
-            ->whereIn('entidad_id', Expediente::query()->validos()->select('id'));
-        $sinOrden = Expediente::query()->validos()->whereDoesntHave('ordenImpresion')->whereNotNull('verificado_at');
+            ->whereIn('entidad_id', $this->validosVisibles($filtros)->select('id'));
+        $sinOrden = $this->validosVisibles($filtros)->whereDoesntHave('ordenImpresion')->whereNotNull('verificado_at');
         $fechas = array_filter([
             $ordenes->min('fecha_subida'), $ordenes->max('fecha_subida'),
             $sinOrden->min('verificado_at'), $sinOrden->max('verificado_at'),
@@ -185,12 +188,12 @@ class CalcularEstadisticas
         return [
             'anios' => $anios === [] ? [] : range(max($anios), min($anios)),
             'unidades' => UnidadAcademica::query()
-                ->whereIn('id', Expediente::query()->validos()->select('unidad_academica_id'))
+                ->whereIn('id', $this->validosVisibles($filtros)->select('unidad_academica_id'))
                 ->orderBy('nombre')
                 ->get(['id', 'nombre'])
                 ->map(fn (UnidadAcademica $unidad): array => ['value' => (string) $unidad->id, 'label' => $unidad->nombre])
                 ->all(),
-            'carreras' => $this->carreras($filtros['unidad'])
+            'carreras' => $this->carreras($filtros['unidad'], $filtros['alcance'] ?? null)
                 ->map(fn (string $carrera): array => ['value' => $carrera, 'label' => $carrera])
                 ->all(),
         ];
@@ -408,10 +411,9 @@ class CalcularEstadisticas
      *
      * @return Collection<int, string>
      */
-    public function carreras(?int $unidad): Collection
+    public function carreras(?int $unidad, ?User $alcance = null): Collection
     {
-        return Expediente::query()
-            ->validos()
+        return $this->validosVisibles(['alcance' => $alcance])
             ->when($unidad, fn (Builder $consulta, int $unidad) => $consulta->where('unidad_academica_id', $unidad))
             ->distinct()
             ->orderBy('nombre_carrera')
@@ -424,8 +426,7 @@ class CalcularEstadisticas
      */
     private function expedientes(array $filtros): Builder
     {
-        return Expediente::query()
-            ->validos()
+        return $this->validosVisibles($filtros)
             ->when($filtros['unidad'], fn (Builder $consulta, int $unidad) => $consulta->where('unidad_academica_id', $unidad))
             ->when($filtros['carrera'], fn (Builder $consulta, string $carrera) => $consulta->where('nombre_carrera', $carrera))
             ->when($filtros['anio'], fn (Builder $consulta, int $anio) => $consulta->where(function (Builder $consulta) use ($anio): void {
@@ -437,6 +438,19 @@ class CalcularEstadisticas
                     ->whereHas('ordenImpresion', fn (Builder $orden) => $orden->where('fecha_subida', '>=', $desde)->where('fecha_subida', '<', $hasta))
                     ->orWhere(fn (Builder $sinOrden) => $sinOrden->whereDoesntHave('ordenImpresion')->where('verificado_at', '>=', $desde)->where('verificado_at', '<', $hasta));
             }));
+    }
+
+    /**
+     * EPS válidos para las estadísticas que entran en lo que ve quien consulta.
+     *
+     * @param  array{alcance?: User|null}  $filtros
+     * @return Builder<Expediente>
+     */
+    private function validosVisibles(array $filtros): Builder
+    {
+        return Expediente::query()
+            ->validos()
+            ->when($filtros['alcance'] ?? null, fn (Builder $consulta, User $usuario) => $consulta->alcanceDeConsulta($usuario));
     }
 
     /**
