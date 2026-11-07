@@ -63,7 +63,7 @@ class ManejoDatosController extends Controller
                 [
                     'clave' => 'carreras',
                     'etiqueta' => 'Carreras',
-                    'descripcion' => 'Carreras de cada unidad académica, agregadas consultando un carné en el registro académico. Se asignan a los supervisores de EPS.',
+                    'descripcion' => 'Carreras de cada unidad académica: se agregan solas cuando un estudiante elige su carrera, o consultando un carné en el registro académico. Se asignan a los supervisores de EPS.',
                     'total' => Carrera::count(),
                     'activos' => null,
                     'href' => route('admin.carreras.index', absolute: false),

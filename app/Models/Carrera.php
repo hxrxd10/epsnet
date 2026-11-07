@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * Carrera registrada por DIGEU desde el servicio web de Registro y Estadística. Los expedientes se
+ * Carrera del servicio web de Registro y Estadística: se registra sola cuando un estudiante la elige
+ * para su EPS, y DIGEU también puede agregarla consultando un carné. Los expedientes se
  * relacionan con ella por sus códigos (unidad, extensión y carrera).
  *
  * @property int $id

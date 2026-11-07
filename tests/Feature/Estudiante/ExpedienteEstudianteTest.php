@@ -2,6 +2,7 @@
 
 use App\Enums\EstadoExpediente;
 use App\Enums\TipoUnidadAcademica;
+use App\Models\Carrera;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
@@ -82,6 +83,37 @@ it('crea el expediente de la carrera elegida y su unidad académica', function (
         ->nombre->toBe('Facultad de Humanidades')
         ->tipo->toBe(TipoUnidadAcademica::Facultad)
         ->activa->toBeTrue();
+});
+
+it('registra la carrera elegida en el catálogo para poder asignarla a un supervisor', function () {
+    RegistroAcademicoFalso::iniciarSesion(Estudiante::factory()->create());
+
+    $this->post(route('estudiante.expedientes.store'), ['carrera' => '77-00-66']);
+    $this->post(route('estudiante.expedientes.store'), ['carrera' => '77-00-66']);
+
+    expect(Carrera::sole())
+        ->clave()->toBe('77-00-66')
+        ->nombre->toBe('Licenciatura en Pedagogía y Administración Educativa')
+        ->nombre_extension->toBe('Sede  Guatemala. -Plan diario-')
+        ->nivel_academico->toBe('Licenciatura')
+        ->unidad_academica_id->toBe(Expediente::sole()->unidad_academica_id);
+});
+
+it('agrega al catálogo las carreras de los expedientes que ya existían', function () {
+    $sinCarrera = Expediente::factory()->create(['codigo_unidad' => '07', 'codigo_extension' => '00', 'codigo_carrera' => '28', 'nombre_carrera' => 'Licenciatura en Pedagogía']);
+    Expediente::factory()->create(['codigo_unidad' => '07', 'codigo_extension' => '00', 'codigo_carrera' => '28', 'nombre_carrera' => 'Licenciatura en Pedagogía']);
+    $existente = Carrera::factory()->create(['codigo_unidad' => '08', 'codigo_extension' => '00', 'codigo_carrera' => '01', 'nombre' => 'Ingeniería Civil']);
+    Expediente::factory()->create(['codigo_unidad' => '08', 'codigo_extension' => '00', 'codigo_carrera' => '01']);
+    $migracion = require database_path('migrations/2026_11_07_131738_registrar_carreras_de_expedientes_existentes.php');
+
+    $migracion->up();
+    $migracion->up();
+
+    expect(Carrera::count())->toBe(2)
+        ->and($existente->fresh()->nombre)->toBe('Ingeniería Civil')
+        ->and(Carrera::where('codigo_unidad', '07')->sole())
+        ->nombre->toBe('Licenciatura en Pedagogía')
+        ->unidad_academica_id->toBe($sinCarrera->unidad_academica_id);
 });
 
 it('reutiliza la unidad académica existente aunque la carrera tenga otro código de unidad', function () {

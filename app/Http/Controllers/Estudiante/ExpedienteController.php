@@ -7,6 +7,7 @@ use App\Enums\Eje;
 use App\Enums\EstadoExpediente;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Estudiante\StoreExpedienteRequest;
+use App\Models\Carrera;
 use App\Models\Estudiante;
 use App\Models\Expediente;
 use App\Models\UnidadAcademica;
@@ -15,6 +16,7 @@ use App\Services\RegistroAcademico\RegistroAcademicoClient;
 use App\Services\RegistroAcademico\RegistroAcademicoNoDisponible;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -69,6 +71,7 @@ class ExpedienteController extends Controller
 
     /**
      * Crea (o retoma) el expediente de la carrera elegida; la unidad académica se obtiene de la carrera.
+     * La carrera queda en el catálogo para que DIGEU pueda asignarla a un supervisor.
      */
     public function store(StoreExpedienteRequest $request): RedirectResponse
     {
@@ -81,23 +84,26 @@ class ExpedienteController extends Controller
             throw ValidationException::withMessages(['carrera' => 'La carrera seleccionada no es válida.']);
         }
 
-        $unidad = UnidadAcademica::paraNombre($carrera->nombreUnidad);
+        $expediente = DB::transaction(function () use ($estudiante, $carrera): Expediente {
+            $unidad = UnidadAcademica::paraNombre($carrera->nombreUnidad);
+            Carrera::registrar($carrera);
 
-        $expediente = Expediente::firstOrCreate(
-            [
-                'estudiante_id' => $estudiante->id,
-                'codigo_unidad' => $carrera->unidad,
-                'codigo_extension' => $carrera->extension,
-                'codigo_carrera' => $carrera->carrera,
-            ],
-            [
-                'unidad_academica_id' => $unidad->id,
-                'nombre_unidad' => $carrera->nombreUnidad,
-                'nombre_extension' => $carrera->nombreExtension,
-                'nombre_carrera' => $carrera->nombreCarrera,
-                'nivel_academico' => $carrera->grado,
-            ],
-        );
+            return Expediente::firstOrCreate(
+                [
+                    'estudiante_id' => $estudiante->id,
+                    'codigo_unidad' => $carrera->unidad,
+                    'codigo_extension' => $carrera->extension,
+                    'codigo_carrera' => $carrera->carrera,
+                ],
+                [
+                    'unidad_academica_id' => $unidad->id,
+                    'nombre_unidad' => $carrera->nombreUnidad,
+                    'nombre_extension' => $carrera->nombreExtension,
+                    'nombre_carrera' => $carrera->nombreCarrera,
+                    'nivel_academico' => $carrera->grado,
+                ],
+            );
+        });
 
         return $this->retomar($expediente);
     }
