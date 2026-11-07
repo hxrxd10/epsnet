@@ -272,8 +272,8 @@ class Expediente extends Model
 
     /**
      * Lo que el usuario puede ver en las consultas (estadísticas, ODS, repositorio e investigaciones):
-     * una unidad académica solo lo de su unidad y sus carreras; un invitado, nada; DIGEU y los
-     * estudiantes, todo.
+     * una unidad académica solo lo de su unidad y sus carreras; DIGEU, todo; estudiantes e invitados,
+     * nada (un estudiante solo ve su propio EPS en el asistente).
      *
      * @param  Builder<Expediente>  $query
      */

@@ -99,6 +99,7 @@ export default function EstadisticasDepartamento({
     anios,
     unidades,
     carreras,
+    ejes,
 }: Props) {
     return (
         <>
@@ -135,6 +136,7 @@ export default function EstadisticasDepartamento({
                         anios={anios}
                         unidades={unidades}
                         carreras={carreras}
+                        ejes={ejes}
                     />
                     <div className="flex flex-wrap gap-2">
                         <Button asChild variant="outline">

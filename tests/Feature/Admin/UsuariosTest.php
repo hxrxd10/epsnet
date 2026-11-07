@@ -7,6 +7,8 @@ use App\Models\Rol;
 use App\Models\UnidadAcademica;
 use App\Models\User;
 use App\Notifications\CuentaCreada;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -248,4 +250,82 @@ describe('creación de cuentas', function () {
         'rol de estudiante' => [['rol' => 'estudiante'], ['rol']],
         'unidad académica sin unidad' => [['rol' => 'unidad_academica'], ['unidad_academica_id']],
     ]);
+});
+
+describe('cambiar el correo', function () {
+    it('corrige el correo de un estudiante y envía la verificación a la nueva dirección', function () {
+        Notification::fake();
+        iniciarComoAdministrador();
+        $usuario = User::factory()->estudiante()->create(['email' => 'equivocado@example.com']);
+
+        $this->put(route('admin.usuarios.correo', $usuario), ['email' => 'correcto@example.com'])->assertRedirect();
+
+        expect($usuario->fresh())
+            ->email->toBe('correcto@example.com')
+            ->email_verified_at->toBeNull()
+            ->tieneRol(ClaveRol::Estudiante)->toBeTrue();
+        Notification::assertSentTo($usuario, VerifyEmail::class);
+    });
+
+    it('deja restablecer la contraseña con el correo nuevo y no con el anterior', function () {
+        Notification::fake();
+        iniciarComoAdministrador();
+        $usuario = User::factory()->estudiante()->create(['email' => 'equivocado@example.com']);
+        $this->put(route('admin.usuarios.correo', $usuario), ['email' => 'correcto@example.com']);
+        auth()->logout();
+
+        $this->post(route('password.email'), ['email' => 'equivocado@example.com']);
+        Notification::assertNotSentTo($usuario, ResetPassword::class);
+
+        $this->post(route('password.email'), ['email' => 'correcto@example.com']);
+        Notification::assertSentTo($usuario, ResetPassword::class);
+    });
+
+    it('vuelve a enviar la verificación si el correo no cambia y sigue sin verificar', function () {
+        Notification::fake();
+        iniciarComoAdministrador();
+        $usuario = User::factory()->unverified()->create(['email' => 'pendiente@example.com']);
+
+        $this->put(route('admin.usuarios.correo', $usuario), ['email' => 'pendiente@example.com'])->assertRedirect();
+
+        Notification::assertSentTo($usuario, VerifyEmail::class);
+    });
+
+    it('no toca una cuenta ya verificada si el correo es el mismo', function () {
+        Notification::fake();
+        iniciarComoAdministrador();
+        $usuario = User::factory()->create(['email' => 'igual@example.com']);
+
+        $this->put(route('admin.usuarios.correo', $usuario), ['email' => 'igual@example.com'])->assertRedirect();
+
+        expect($usuario->fresh()->email_verified_at)->not->toBeNull();
+        Notification::assertNothingSent();
+    });
+
+    it('rechaza un correo inválido o que ya usa otra cuenta', function (string $correo) {
+        iniciarComoAdministrador();
+        User::factory()->create(['email' => 'ocupado@example.com']);
+        $usuario = User::factory()->create(['email' => 'original@example.com']);
+
+        $this->put(route('admin.usuarios.correo', $usuario), ['email' => $correo])->assertSessionHasErrors('email');
+
+        expect($usuario->fresh()->email)->toBe('original@example.com');
+    })->with(['ocupado@example.com', 'no-es-correo', '']);
+
+    it('no deja cambiar el correo propio desde aquí', function () {
+        $administrador = iniciarComoAdministrador();
+
+        $this->put(route('admin.usuarios.correo', $administrador), ['email' => 'otro@example.com'])->assertForbidden();
+
+        expect($administrador->fresh()->email)->toBe('zoe@digeu.example');
+    });
+
+    it('solo lo puede hacer DIGEU', function (string $estado) {
+        $this->actingAs(User::factory()->{$estado}()->create());
+        $usuario = User::factory()->create(['email' => 'original@example.com']);
+
+        $this->put(route('admin.usuarios.correo', $usuario), ['email' => 'otro@example.com'])->assertForbidden();
+
+        expect($usuario->fresh()->email)->toBe('original@example.com');
+    })->with(['invitado', 'estudiante', 'unidadAcademica']);
 });

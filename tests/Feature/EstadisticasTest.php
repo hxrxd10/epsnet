@@ -49,19 +49,22 @@ it('envía a los invitados a iniciar sesión', function () {
     $this->get(route('estadisticas.departamento', $departamento))->assertRedirect(route('login'));
 });
 
-it('muestra las estadísticas a DIGEU, a las unidades académicas y a los estudiantes', function (string $rol) {
+it('muestra las estadísticas a DIGEU y a las unidades académicas', function (string $rol) {
     $this->actingAs(User::factory()->{$rol}()->create());
 
     $this->get(route('estadisticas.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('estadisticas/index'));
-})->with(['estudiante', 'administrador', 'unidadAcademica']);
+})->with(['administrador', 'unidadAcademica']);
 
-it('no da acceso a las consultas a los invitados', function (string $ruta, array $parametros) {
+it('no da acceso a las consultas a los invitados ni a los estudiantes', function (string $ruta, array $parametros) {
     Departamento::factory()->create(['codigo' => '03']);
-    $this->actingAs(User::factory()->invitado()->create());
+    $aprobado = Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Verificado]);
+    $parametros = array_map(fn (mixed $valor): mixed => $valor === 'eps-aprobado' ? $aprobado : $valor, $parametros);
 
-    $this->get(route($ruta, $parametros))->assertForbidden();
+    foreach (['invitado', 'estudiante'] as $rol) {
+        $this->actingAs(User::factory()->{$rol}()->create())->get(route($ruta, $parametros))->assertForbidden();
+    }
 })->with([
     'estadísticas' => ['estadisticas.index', []],
     'departamento' => ['estadisticas.departamento', ['departamento' => '03']],
@@ -70,6 +73,7 @@ it('no da acceso a las consultas a los invitados', function (string $ruta, array
     'ODS' => ['ods.index', []],
     'Excel de ODS' => ['ods.excel', []],
     'repositorio' => ['repositorio.index', []],
+    'detalle del repositorio' => ['repositorio.show', ['expediente' => 'eps-aprobado']],
     'investigaciones' => ['investigaciones.index', []],
 ]);
 
@@ -184,6 +188,63 @@ it('filtra por el año de la orden de impresión y ofrece los años con EPS', fu
         ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 3)->where('anios', [2026, 2025, 2024]));
     $this->get(route('estadisticas.index', ['anio' => 2025]))
         ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1)->where('filtros.anio', '2025'));
+});
+
+it('filtra por rango de fechas, incluyendo los dos extremos', function () {
+    $departamento = departamentoEstadistico('03', 'Sacatepéquez');
+    epsEstadistico($departamento, 'Antigua Guatemala', '2025-01-31');
+    epsEstadistico($departamento, 'Antigua Guatemala', '2025-02-01');
+    epsEstadistico($departamento, 'Antigua Guatemala', '2025-02-28');
+    epsEstadistico($departamento, 'Antigua Guatemala', '2025-03-01');
+    $this->actingAs(User::factory()->administrador()->create());
+
+    $this->get(route('estadisticas.index', ['desde' => '2025-02-01', 'hasta' => '2025-02-28']))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 2)->where('filtros.desde', '2025-02-01')->where('filtros.hasta', '2025-02-28'));
+    $this->get(route('estadisticas.index', ['desde' => '2025-02-28']))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 2));
+    $this->get(route('estadisticas.index', ['hasta' => '2025-02-01']))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 2));
+});
+
+it('usa la fecha de aprobación en el rango cuando el EPS no tiene orden de impresión', function () {
+    $departamento = departamentoEstadistico('03', 'Sacatepéquez');
+    $expediente = epsEstadistico($departamento, 'Antigua Guatemala', '2025-02-10');
+    $expediente->adjuntos()->delete();
+    $this->actingAs(User::factory()->administrador()->create());
+
+    $this->get(route('estadisticas.index', ['desde' => '2025-02-01', 'hasta' => '2025-02-28']))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1));
+    $this->get(route('estadisticas.index', ['desde' => '2025-03-01']))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 0));
+});
+
+it('rechaza fechas inválidas o un rango invertido', function (array $filtros, string $campo) {
+    $this->actingAs(User::factory()->administrador()->create());
+
+    $this->get(route('estadisticas.index', $filtros))->assertSessionHasErrors($campo);
+})->with([
+    'fecha inválida' => [['desde' => '31-12-2025'], 'desde'],
+    'rango invertido' => [['desde' => '2025-03-01', 'hasta' => '2025-02-01'], 'hasta'],
+]);
+
+it('filtra por eje: solo cuentan los EPS con registros en él', function () {
+    $departamento = departamentoEstadistico('03', 'Sacatepéquez');
+    $conPublicacion = epsEstadistico($departamento, 'Antigua Guatemala');
+    $conPublicacion->publicaciones()->create(['titulo' => 'Estudio', 'tipo' => 'articulo', 'autores' => 'Ana']);
+    $conAliada = epsEstadistico($departamento, 'Antigua Guatemala');
+    $conAliada->alianzas()->create(['institucion_aliada_id' => InstitucionAliada::factory()->create()->id]);
+    epsEstadistico($departamento, 'Antigua Guatemala');
+    $this->actingAs(User::factory()->administrador()->create());
+
+    $this->get(route('estadisticas.index'))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 3)->has('ejes', 6));
+    $this->get(route('estadisticas.index', ['eje' => 2]))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1)->where('filtros.eje', '2'));
+    $this->get(route('estadisticas.index', ['eje' => 5]))
+        ->assertInertia(fn (Assert $page) => $page->where('totales.eps', 1));
+    $this->get(route('estadisticas.departamento', [$departamento, 'eje' => 2]))
+        ->assertInertia(fn (Assert $page) => $page->where('metricas.eps', 1));
+    $this->get(route('estadisticas.index', ['eje' => 7]))->assertSessionHasErrors('eje');
 });
 
 it('filtra por unidad académica y por carrera, limitando las carreras a la unidad', function () {

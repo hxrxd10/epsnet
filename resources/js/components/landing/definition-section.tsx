@@ -22,15 +22,15 @@ const PILLARS = [
 const FLOW = [
     {
         actor: 'DIGEU',
-        action: 'Crea las unidades académicas y consolida la información de toda la red.',
+        action: 'Crea las cuentas de las unidades académicas, mantiene los catálogos y consolida la información de toda la red.',
     },
     {
         actor: 'Unidad Académica',
-        action: 'Registra a sus estudiantes y los asigna a EPS facultativo o EPSUM.',
+        action: 'Revisa en su bandeja los EPS de sus estudiantes y los aprueba.',
     },
     {
         actor: 'Estudiante',
-        action: 'Completa sus formularios y registra su ejercicio en los seis ejes.',
+        action: 'Activa su cuenta con su registro académico y su DPI, y registra su ejercicio en los seis ejes.',
     },
 ];
 

@@ -132,12 +132,12 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Si el usuario puede entrar a las consultas (estadísticas, ODS, repositorio e investigaciones).
-     * Por ahora los invitados no.
+     * Si el usuario puede entrar a las consultas (estadísticas, ODS, repositorio e investigaciones):
+     * DIGEU y las unidades académicas. Los estudiantes solo ven su propio EPS y los invitados nada.
      */
     public function puedeConsultar(): bool
     {
-        return $this->esAdministrador() || $this->esUnidadAcademica() || $this->esEstudiante();
+        return $this->esAdministrador() || $this->esUnidadAcademica();
     }
 
     /**

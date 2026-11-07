@@ -6,10 +6,15 @@ import { cn } from '@/lib/utils';
 type Props = {
     expedienteId: number;
     esEpsum: boolean;
+    soloLectura?: boolean;
 };
 
 /** Interruptor: ¿el EPS se realiza dentro del EPSUM (Programa de EPS Multiprofesional)? */
-export default function ProgramaEps({ expedienteId, esEpsum }: Props) {
+export default function ProgramaEps({
+    expedienteId,
+    esEpsum,
+    soloLectura = false,
+}: Props) {
     const [guardando, setGuardando] = useState(false);
 
     function cambiar() {
@@ -31,9 +36,9 @@ export default function ProgramaEps({ expedienteId, esEpsum }: Props) {
                     Programa de tu EPS
                 </h2>
                 <p className="text-brand/60 mt-1 max-w-xl text-sm">
-                    Activa esta opción si tu EPS se realiza dentro del EPSUM
-                    (Programa de Ejercicio Profesional Supervisado
-                    Multiprofesional). Si no, se registra como EPS normal.
+                    {soloLectura
+                        ? 'El programa con el que se aprobó tu EPS. EPSUM es el Programa de Ejercicio Profesional Supervisado Multiprofesional.'
+                        : 'Activa esta opción si tu EPS se realiza dentro del EPSUM (Programa de Ejercicio Profesional Supervisado Multiprofesional). Si no, se registra como EPS normal.'}
                 </p>
             </div>
             <div className="flex shrink-0 items-center gap-3">
@@ -45,7 +50,7 @@ export default function ProgramaEps({ expedienteId, esEpsum }: Props) {
                     role="switch"
                     aria-checked={esEpsum}
                     aria-label="Mi EPS pertenece al EPSUM"
-                    disabled={guardando}
+                    disabled={guardando || soloLectura}
                     onClick={cambiar}
                     className={cn(
                         'focus-visible:ring-brand relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60',

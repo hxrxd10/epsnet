@@ -1,10 +1,11 @@
 import { Link, usePage } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, LogOut } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Lock, LogOut } from 'lucide-react';
 import type { ReactNode } from 'react';
 import PasosStepper from '@/components/estudiante/pasos-stepper';
 import { home, logout } from '@/routes';
 import { carreras } from '@/routes/estudiante';
 import type { ExpedienteResumen, PasoEje } from '@/types/estudiante';
+import AppLogoIcon from '@/components/app-logo-icon';
 
 type EstudianteLayoutProps = {
     /** Paso actual, de 1 (acceso) a 9 (resumen y orden de impresión). */
@@ -38,11 +39,22 @@ export default function EstudianteLayout({
                 />
                 <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-5">
                     <Link href={home()} aria-label="Ir al inicio">
-                        <img
-                            src="/images/logo.png"
-                            alt="USAC · DIGEU"
-                            className="h-9 w-auto"
-                        />
+                        <span className="flex items-center gap-3">
+                            <AppLogoIcon
+                                claro
+                                alt="SIRSE USAC"
+                                className="size-9"
+                            />
+                            <span
+                                aria-hidden
+                                className="h-7 w-px bg-white/20"
+                            />
+                            <img
+                                src="/images/logo.png"
+                                alt="USAC · DIGEU"
+                                className="h-9 w-auto"
+                            />
+                        </span>
                     </Link>
 
                     {estudiante && (
@@ -100,6 +112,18 @@ export default function EstudianteLayout({
             </header>
 
             <main className="relative z-10 mx-auto -mt-16 max-w-5xl px-6 pb-20">
+                {expediente?.estado === 'verificado' && (
+                    <p className="border-brand/15 mb-6 flex items-start gap-3 rounded-2xl border bg-white p-4 text-sm shadow-[0_30px_80px_-40px_rgba(15,16,49,0.35)]">
+                        <Lock className="mt-0.5 size-4 shrink-0" />
+                        <span>
+                            Tu EPS está aprobado: puedes ver lo que registraste,
+                            pero ya no se puede modificar. Si hay que corregir
+                            algo, pide a tu supervisión que retire la
+                            aprobación.
+                        </span>
+                    </p>
+                )}
+
                 {children}
 
                 {ejes && (

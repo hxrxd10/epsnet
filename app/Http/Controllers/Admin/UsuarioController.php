@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ClaveRol;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CorreoUsuarioRequest;
 use App\Http\Requests\Admin\CrearUsuarioRequest;
 use App\Http\Requests\Admin\UsuarioRequest;
 use App\Models\Carrera;
@@ -121,6 +122,31 @@ class UsuarioController extends Controller
         DB::transaction(fn () => $this->asignarAcceso($usuario, $request->acceso()));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "Acceso de {$usuario->name} actualizado."]);
+
+        return back();
+    }
+
+    /**
+     * Corrige el correo de una cuenta (también la de un estudiante que se equivocó al escribirlo) y envía
+     * la verificación a la nueva dirección. Si olvidó su contraseña, la restablece con ese correo.
+     */
+    public function correo(CorreoUsuarioRequest $request, User $usuario): RedirectResponse
+    {
+        abort_if($usuario->id === $request->user()->id, 403, 'Cambia tu propio correo desde tu perfil.');
+
+        $correo = $request->validated('email');
+
+        if ($correo !== $usuario->email) {
+            $usuario->forceFill(['email' => $correo, 'email_verified_at' => null])->save();
+        }
+
+        if ($usuario->email_verified_at === null) {
+            $usuario->sendEmailVerificationNotification();
+        }
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => $usuario->email_verified_at === null
+            ? "Correo de {$usuario->name} actualizado. Le enviamos el enlace de verificación a {$correo}."
+            : "El correo de {$usuario->name} ya estaba verificado: no hubo cambios."]);
 
         return back();
     }

@@ -43,6 +43,7 @@ export default function Estadisticas({
     anios,
     unidades,
     carreras,
+    ejes,
     googleMaps,
 }: Props) {
     const [clave, setClave] = useState<ClaveMetrica>('investigaciones');
@@ -74,8 +75,9 @@ export default function Estadisticas({
                     </h1>
                     <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
                         Lo que la red de EPS ha hecho en cada departamento. El
-                        año es el de la orden de impresión de cada EPS o, si no
-                        la tiene, el de su aprobación.
+                        año y las fechas son los de la orden de impresión de
+                        cada EPS o, si no la tiene, los de su aprobación. Al
+                        elegir un eje solo cuentan los EPS con registros en él.
                     </p>
                 </div>
 
@@ -86,6 +88,7 @@ export default function Estadisticas({
                         anios={anios}
                         unidades={unidades}
                         carreras={carreras}
+                        ejes={ejes}
                     />
                     <div className="flex flex-wrap gap-2">
                         <Button asChild variant="outline">

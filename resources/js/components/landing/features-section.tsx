@@ -2,10 +2,13 @@ import {
     FileCheck2,
     Fingerprint,
     History,
+    Inbox,
     Layers,
     MapPin,
     ShieldCheck,
     Sheet,
+    Target,
+    Waypoints,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -25,7 +28,7 @@ const ROLE_TIERS = [
     { role: 'DIGEU', detail: 'Administración central' },
     {
         role: 'Unidad Académica',
-        detail: 'Coordinación por facultad, escuela o centro',
+        detail: 'Supervisión y aprobación de sus EPS',
     },
     { role: 'Estudiante', detail: 'Registro de su EPS' },
 ];
@@ -39,15 +42,32 @@ const SECURITY_CHIPS = [
 
 const LOG_LINES = [
     { action: 'crear', target: 'eje 1 · bien o servicio', time: '09:41' },
-    { action: 'editar', target: 'formulario de ingreso 03', time: '09:47' },
+    {
+        action: 'aprobar',
+        target: 'EPS · Facultad de Humanidades',
+        time: '09:47',
+    },
     { action: 'crear', target: 'eje 3 · transferencia', time: '10:02' },
+];
+
+const BANDEJA = [
+    { turno: 1, espera: '3 días' },
+    { turno: 2, espera: '1 día' },
+    { turno: 3, espera: 'hoy' },
+];
+
+const FUNCIONES = [
+    'Extensión',
+    'Investigación',
+    'Transferencia',
+    'Vinculación',
 ];
 
 const FEATURES: Feature[] = [
     {
         icon: Fingerprint,
         title: 'Cada quien ve lo que le corresponde',
-        text: 'Tres niveles de acceso con permisos por rol. Las cuentas las crea DIGEU para las unidades académicas y cada unidad para sus estudiantes: nunca el usuario final.',
+        text: 'Tres niveles de acceso con permisos por rol. DIGEU crea las cuentas de las unidades académicas, cada una ve solo sus EPS y el estudiante activa la suya con su registro académico y su DPI.',
         className: 'lg:col-span-4',
         inverted: true,
         visual: (
@@ -90,8 +110,8 @@ const FEATURES: Feature[] = [
     },
     {
         icon: FileCheck2,
-        title: 'Seis formularios de ingreso',
-        text: 'Guardado parcial, validación por campo y documentos de respaldo adjuntos.',
+        title: 'Un formulario por eje',
+        text: 'Validación por campo y avance guardado al instante: el estudiante retoma donde se quedó.',
         className: 'lg:col-span-2',
         visual: (
             <div className="mt-6">
@@ -107,7 +127,7 @@ const FEATURES: Feature[] = [
                     ))}
                 </div>
                 <p className="text-brand/50 mt-2 font-mono text-[11px] tracking-wider uppercase">
-                    4 de 6 · avance guardado
+                    4 de 6 ejes · avance guardado
                 </p>
             </div>
         ),
@@ -131,8 +151,8 @@ const FEATURES: Feature[] = [
     },
     {
         icon: Sheet,
-        title: 'Consolidación y reportes',
-        text: 'DIGEU filtra por unidad, eje y fechas, y exporta a Excel o PDF.',
+        title: 'Estadísticas y reportes',
+        text: 'Mapa por departamento, filtros por unidad, carrera, eje y fechas, y exportación a Excel o PDF.',
         className: 'lg:col-span-2',
         visual: (
             <div className="mt-6 flex h-16 items-end gap-1.5">
@@ -150,6 +170,57 @@ const FEATURES: Feature[] = [
         ),
     },
     {
+        icon: Inbox,
+        title: 'Aprobación de supervisión',
+        text: 'Cada EPS llega a la bandeja de su unidad en orden de llegada. Solo lo aprobado cuenta en las estadísticas y el repositorio.',
+        className: 'lg:col-span-2',
+        visual: (
+            <ul className="mt-6 space-y-1.5 font-mono text-xs">
+                {BANDEJA.map((solicitud) => (
+                    <li
+                        key={solicitud.turno}
+                        className="bg-brand/[0.04] text-brand/70 flex items-center justify-between gap-3 rounded-lg px-3 py-2"
+                    >
+                        <span className="text-brand font-semibold">
+                            Turno {solicitud.turno}
+                        </span>
+                        <span>{solicitud.espera}</span>
+                    </li>
+                ))}
+            </ul>
+        ),
+    },
+    {
+        icon: Target,
+        title: 'Aporte y ODS',
+        text: 'Cada bien o servicio se ancla a una línea de intervención, una política pública y un ODS. El aporte se estima en quetzales y se registra qué poblaciones vulnerables se atendieron.',
+        className: 'lg:col-span-2',
+        inverted: true,
+    },
+    {
+        icon: Waypoints,
+        title: 'Indicador de articulación',
+        text: 'Mide, de 0 a 4, cuántas funciones universitarias combina cada EPS además de la docencia.',
+        className: 'lg:col-span-2',
+        visual: (
+            <ul className="mt-6 flex flex-wrap gap-2">
+                {FUNCIONES.map((funcion, indice) => (
+                    <li
+                        key={funcion}
+                        className={cn(
+                            'rounded-full border px-3 py-1.5 text-xs',
+                            indice < 3
+                                ? 'border-brand bg-brand text-white'
+                                : 'border-brand/15 text-brand/60 bg-white',
+                        )}
+                    >
+                        {funcion}
+                    </li>
+                ))}
+            </ul>
+        ),
+    },
+    {
         icon: Layers,
         title: 'Un formato, muchas unidades',
         text: 'Unificamos el formato y consolidamos los datos a nivel central sin interferir con los procesos internos de cada unidad académica.',
@@ -158,7 +229,7 @@ const FEATURES: Feature[] = [
     {
         icon: History,
         title: 'Bitácora que no se puede editar',
-        text: 'Toda creación, edición o eliminación queda registrada con usuario, fecha y módulo.',
+        text: 'Toda creación, edición, eliminación, aprobación y exportación queda registrada con usuario, fecha y módulo.',
         className: 'lg:col-span-3',
         visual: (
             <ul className="mt-6 space-y-1.5 font-mono text-xs">

@@ -32,7 +32,7 @@ export default function Dashboard() {
     const { rol, auth } = usePage().props;
 
     const tarjetas: Tarjeta[] =
-        rol === 'invitado'
+        rol !== 'digeu' && rol !== 'unidad_academica'
             ? []
             : [
                   {

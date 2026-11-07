@@ -89,13 +89,13 @@ it('exporta a Excel solo lo de su alcance e indica cuál es', function () {
         ->and(collect($hojas['Resumen'])->firstWhere(0, 'Alcance')[1])->toBe('Facultad de Humanidades');
 });
 
-it('muestra todo el país a DIGEU y a los estudiantes', function (string $rol) {
+it('muestra todo el país a DIGEU', function () {
     escenarioDeUnidades();
-    $this->actingAs(User::factory()->{$rol}()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('estadisticas.index'))->assertInertia(fn (Assert $page) => $page->where('totales.eps', 3)->where('alcanceConsulta', null));
     $this->get(route('repositorio.index'))->assertInertia(fn (Assert $page) => $page->has('expedientes', 3));
-})->with(['administrador', 'estudiante']);
+});
 
 it('no muestra nada a una unidad académica sin unidad asignada', function () {
     escenarioDeUnidades();

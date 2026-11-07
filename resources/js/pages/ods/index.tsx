@@ -144,6 +144,7 @@ export default function OdsIndex({
     anios,
     unidades,
     carreras,
+    ejes,
 }: Props) {
     const conActividad = ods.filter((objetivo) => objetivo.eps > 0);
     const masAporte = [...conActividad].sort((a, b) => b.aporte - a.aporte)[0];
@@ -178,6 +179,7 @@ export default function OdsIndex({
                         anios={anios}
                         unidades={unidades}
                         carreras={carreras}
+                        ejes={ejes}
                     />
                     <Button asChild variant="outline">
                         <a

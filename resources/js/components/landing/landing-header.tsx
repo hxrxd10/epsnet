@@ -3,6 +3,7 @@ import { ArrowUpRight, Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { dashboard, login } from '@/routes';
+import AppLogoIcon from '@/components/app-logo-icon';
 
 export const NAV_ITEMS = [
     { label: 'Características', href: '#caracteristicas' },
@@ -44,11 +45,22 @@ export default function LandingHeader({
                         className="shrink-0"
                         aria-label="SIRSE USAC"
                     >
-                        <img
-                            src="/images/logo.png"
-                            alt="USAC · DIGEU"
-                            className="h-9 w-auto"
-                        />
+                        <span className="flex items-center gap-3">
+                            <AppLogoIcon
+                                claro
+                                alt="SIRSE USAC"
+                                className="size-9"
+                            />
+                            <span
+                                aria-hidden
+                                className="h-7 w-px bg-white/20"
+                            />
+                            <img
+                                src="/images/logo.png"
+                                alt="USAC · DIGEU"
+                                className="h-9 w-auto"
+                            />
+                        </span>
                     </a>
 
                     <nav

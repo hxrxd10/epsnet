@@ -1,8 +1,9 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Search, ShieldCheck, UserPlus } from 'lucide-react';
+import { Mail, Search, ShieldCheck, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import {
+    correo,
     store,
     update,
 } from '@/actions/App/Http/Controllers/Admin/UsuarioController';
@@ -82,6 +83,8 @@ export default function Usuarios({
     const [texto, setTexto] = useState(filtros.q);
     const [editando, setEditando] = useState<Usuario | null>(null);
     const [creando, setCreando] = useState(false);
+    const [corrigiendo, setCorrigiendo] = useState<Usuario | null>(null);
+    const cambioDeCorreo = useForm({ email: '' });
     const formulario = useForm<Acceso>({
         rol: '',
         unidad_academica_id: '',
@@ -115,6 +118,25 @@ export default function Usuarios({
             carreras: usuario.carreras.map((carrera) => carrera.id.toString()),
         });
         setEditando(usuario);
+    }
+
+    function abrirCorreo(usuario: Usuario) {
+        cambioDeCorreo.clearErrors();
+        cambioDeCorreo.setData('email', usuario.email);
+        setCorrigiendo(usuario);
+    }
+
+    function guardarCorreo(evento: FormEvent) {
+        evento.preventDefault();
+
+        if (corrigiendo === null) {
+            return;
+        }
+
+        cambioDeCorreo.put(correo.url(corrigiendo.id), {
+            preserveScroll: true,
+            onSuccess: () => setCorrigiendo(null),
+        });
     }
 
     function crear(evento: FormEvent) {
@@ -255,16 +277,28 @@ export default function Usuarios({
                                         </p>
                                     )}
                                 </div>
-                                {usuario.editable && (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => abrir(usuario)}
-                                    >
-                                        <ShieldCheck />
-                                        Editar acceso
-                                    </Button>
-                                )}
+                                <div className="flex shrink-0 flex-wrap gap-2">
+                                    {!usuario.propio && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => abrirCorreo(usuario)}
+                                        >
+                                            <Mail />
+                                            Cambiar correo
+                                        </Button>
+                                    )}
+                                    {usuario.editable && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => abrir(usuario)}
+                                        >
+                                            <ShieldCheck />
+                                            Editar acceso
+                                        </Button>
+                                    )}
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -305,6 +339,59 @@ export default function Usuarios({
                                 disabled={formulario.processing}
                             >
                                 {formulario.processing && <Spinner />}
+                                Guardar
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={corrigiendo !== null}
+                onOpenChange={(abierto) => !abierto && setCorrigiendo(null)}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Cambiar correo</DialogTitle>
+                        <DialogDescription>
+                            {corrigiendo?.name}. Enviaremos el enlace de
+                            verificación al correo que escribas. Si la persona
+                            olvidó su contraseña, puede restablecerla con ese
+                            correo en "¿Olvidaste tu contraseña?".
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form onSubmit={guardarCorreo} className="grid gap-5">
+                        <div className="grid gap-2">
+                            <Label htmlFor="correo-corregido">Correo</Label>
+                            <Input
+                                id="correo-corregido"
+                                type="email"
+                                value={cambioDeCorreo.data.email}
+                                maxLength={255}
+                                onChange={(evento) =>
+                                    cambioDeCorreo.setData(
+                                        'email',
+                                        evento.target.value.toLowerCase(),
+                                    )
+                                }
+                            />
+                            <InputError message={cambioDeCorreo.errors.email} />
+                        </div>
+
+                        <DialogFooter>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setCorrigiendo(null)}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={cambioDeCorreo.processing}
+                            >
+                                {cambioDeCorreo.processing && <Spinner />}
                                 Guardar
                             </Button>
                         </DialogFooter>

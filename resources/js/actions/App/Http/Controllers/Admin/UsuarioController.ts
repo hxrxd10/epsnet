@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::index
-* @see app/Http/Controllers/Admin/UsuarioController.php:29
+* @see app/Http/Controllers/Admin/UsuarioController.php:30
 * @route '/admin/usuarios'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::index
-* @see app/Http/Controllers/Admin/UsuarioController.php:29
+* @see app/Http/Controllers/Admin/UsuarioController.php:30
 * @route '/admin/usuarios'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::index
-* @see app/Http/Controllers/Admin/UsuarioController.php:29
+* @see app/Http/Controllers/Admin/UsuarioController.php:30
 * @route '/admin/usuarios'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::index
-* @see app/Http/Controllers/Admin/UsuarioController.php:29
+* @see app/Http/Controllers/Admin/UsuarioController.php:30
 * @route '/admin/usuarios'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::index
-* @see app/Http/Controllers/Admin/UsuarioController.php:29
+* @see app/Http/Controllers/Admin/UsuarioController.php:30
 * @route '/admin/usuarios'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::index
-* @see app/Http/Controllers/Admin/UsuarioController.php:29
+* @see app/Http/Controllers/Admin/UsuarioController.php:30
 * @route '/admin/usuarios'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::index
-* @see app/Http/Controllers/Admin/UsuarioController.php:29
+* @see app/Http/Controllers/Admin/UsuarioController.php:30
 * @route '/admin/usuarios'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::store
-* @see app/Http/Controllers/Admin/UsuarioController.php:90
+* @see app/Http/Controllers/Admin/UsuarioController.php:91
 * @route '/admin/usuarios'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -97,7 +97,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::store
-* @see app/Http/Controllers/Admin/UsuarioController.php:90
+* @see app/Http/Controllers/Admin/UsuarioController.php:91
 * @route '/admin/usuarios'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::store
-* @see app/Http/Controllers/Admin/UsuarioController.php:90
+* @see app/Http/Controllers/Admin/UsuarioController.php:91
 * @route '/admin/usuarios'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -116,7 +116,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::store
-* @see app/Http/Controllers/Admin/UsuarioController.php:90
+* @see app/Http/Controllers/Admin/UsuarioController.php:91
 * @route '/admin/usuarios'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -126,7 +126,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::store
-* @see app/Http/Controllers/Admin/UsuarioController.php:90
+* @see app/Http/Controllers/Admin/UsuarioController.php:91
 * @route '/admin/usuarios'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -138,7 +138,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::update
-* @see app/Http/Controllers/Admin/UsuarioController.php:116
+* @see app/Http/Controllers/Admin/UsuarioController.php:117
 * @route '/admin/usuarios/{usuario}'
 */
 export const update = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -153,7 +153,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::update
-* @see app/Http/Controllers/Admin/UsuarioController.php:116
+* @see app/Http/Controllers/Admin/UsuarioController.php:117
 * @route '/admin/usuarios/{usuario}'
 */
 update.url = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -186,7 +186,7 @@ update.url = (args: { usuario: number | { id: number } } | [usuario: number | { 
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::update
-* @see app/Http/Controllers/Admin/UsuarioController.php:116
+* @see app/Http/Controllers/Admin/UsuarioController.php:117
 * @route '/admin/usuarios/{usuario}'
 */
 update.put = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -196,7 +196,7 @@ update.put = (args: { usuario: number | { id: number } } | [usuario: number | { 
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::update
-* @see app/Http/Controllers/Admin/UsuarioController.php:116
+* @see app/Http/Controllers/Admin/UsuarioController.php:117
 * @route '/admin/usuarios/{usuario}'
 */
 const updateForm = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -211,7 +211,7 @@ const updateForm = (args: { usuario: number | { id: number } } | [usuario: numbe
 
 /**
 * @see \App\Http\Controllers\Admin\UsuarioController::update
-* @see app/Http/Controllers/Admin/UsuarioController.php:116
+* @see app/Http/Controllers/Admin/UsuarioController.php:117
 * @route '/admin/usuarios/{usuario}'
 */
 updateForm.put = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -226,6 +226,96 @@ updateForm.put = (args: { usuario: number | { id: number } } | [usuario: number 
 
 update.form = updateForm
 
-const UsuarioController = { index, store, update }
+/**
+* @see \App\Http\Controllers\Admin\UsuarioController::correo
+* @see app/Http/Controllers/Admin/UsuarioController.php:133
+* @route '/admin/usuarios/{usuario}/correo'
+*/
+export const correo = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: correo.url(args, options),
+    method: 'put',
+})
+
+correo.definition = {
+    methods: ["put"],
+    url: '/admin/usuarios/{usuario}/correo',
+} satisfies RouteDefinition<["put"]>
+
+/**
+* @see \App\Http\Controllers\Admin\UsuarioController::correo
+* @see app/Http/Controllers/Admin/UsuarioController.php:133
+* @route '/admin/usuarios/{usuario}/correo'
+*/
+correo.url = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { usuario: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { usuario: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            usuario: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        usuario: typeof args.usuario === 'object'
+        ? args.usuario.id
+        : args.usuario,
+    }
+
+    return correo.definition.url
+            .replace('{usuario}', parsedArgs.usuario.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Admin\UsuarioController::correo
+* @see app/Http/Controllers/Admin/UsuarioController.php:133
+* @route '/admin/usuarios/{usuario}/correo'
+*/
+correo.put = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: correo.url(args, options),
+    method: 'put',
+})
+
+/**
+* @see \App\Http\Controllers\Admin\UsuarioController::correo
+* @see app/Http/Controllers/Admin/UsuarioController.php:133
+* @route '/admin/usuarios/{usuario}/correo'
+*/
+const correoForm = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: correo.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Admin\UsuarioController::correo
+* @see app/Http/Controllers/Admin/UsuarioController.php:133
+* @route '/admin/usuarios/{usuario}/correo'
+*/
+correoForm.put = (args: { usuario: number | { id: number } } | [usuario: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: correo.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+correo.form = correoForm
+
+const UsuarioController = { index, store, update, correo }
 
 export default UsuarioController

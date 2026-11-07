@@ -43,8 +43,8 @@ const consultas: NavItem[] = [
     { title: 'Investigaciones', href: investigaciones(), icon: FlaskConical },
 ];
 
-/** Las consultas son para DIGEU, las unidades académicas y los estudiantes; por ahora no para invitados. */
-const ROLES_CON_CONSULTAS = ['digeu', 'unidad_academica', 'estudiante'];
+/** Las consultas son para DIGEU y las unidades académicas; los estudiantes solo ven su propio EPS. */
+const ROLES_CON_CONSULTAS = ['digeu', 'unidad_academica'];
 
 function opcionesDePlataforma(rol: string | null): NavItem[] {
     return [

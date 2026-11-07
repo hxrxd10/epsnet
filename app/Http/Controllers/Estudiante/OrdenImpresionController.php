@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Estudiante;
 
-use App\Enums\EstadoExpediente;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Estudiante\OrdenImpresionRequest;
 use App\Models\Adjunto;
@@ -23,8 +22,7 @@ class OrdenImpresionController extends Controller
     }
 
     /**
-     * Guarda o reemplaza la orden de impresión (contenido en base64 en la base de datos). Si el
-     * EPS ya estaba aprobado, vuelve a la bandeja de supervisión para aprobarse de nuevo.
+     * Guarda o reemplaza la orden de impresión (contenido en base64 en la base de datos).
      */
     public function store(OrdenImpresionRequest $request, Expediente $expediente): RedirectResponse
     {
@@ -45,10 +43,6 @@ class OrdenImpresionController extends Controller
             ]);
 
             $adjunto->contenido()->create(['contenido' => base64_encode($bytes)]);
-
-            if ($expediente->estado_expediente === EstadoExpediente::Verificado) {
-                $expediente->enviarAAprobacion();
-            }
         });
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Orden de impresión guardada.']);
@@ -57,18 +51,11 @@ class OrdenImpresionController extends Controller
     }
 
     /**
-     * Elimina la orden de impresión (es opcional). Si el EPS ya estaba aprobado, vuelve a la bandeja
-     * de supervisión para aprobarse de nuevo.
+     * Elimina la orden de impresión (es opcional).
      */
     public function destroy(Expediente $expediente): RedirectResponse
     {
-        DB::transaction(function () use ($expediente): void {
-            $expediente->ordenImpresion()->get()->each->delete();
-
-            if ($expediente->estado_expediente === EstadoExpediente::Verificado) {
-                $expediente->enviarAAprobacion();
-            }
-        });
+        DB::transaction(fn () => $expediente->ordenImpresion()->get()->each->delete());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Orden de impresión eliminada.']);
 

@@ -4,7 +4,9 @@ use App\Enums\ClaveRol;
 use App\Models\Estudiante;
 use App\Models\Rol;
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Testing\TestResponse;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Support\RegistroAcademicoFalso;
@@ -337,4 +339,16 @@ describe('inicio de sesión y rol de estudiante', function () {
 
         $this->assertGuest();
     });
+});
+
+it('envía el correo de verificación al crear la cuenta de estudiante', function () {
+    Notification::fake();
+    verificarIdentidad();
+
+    crearCuenta();
+
+    $usuario = User::where('email', 'madeley@example.com')->sole();
+
+    expect($usuario->email_verified_at)->toBeNull();
+    Notification::assertSentTo($usuario, VerifyEmail::class);
 });

@@ -2,6 +2,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import {
     BadgeCheck,
     Download,
+    Eye,
     Inbox,
     Send,
     FileText,
@@ -99,6 +100,7 @@ export default function Cierre({
     const [enviando, setEnviando] = useState(false);
 
     const completo = expediente.estado !== 'activo';
+    const aprobado = expediente.estado === 'verificado';
 
     function subir(evento: FormEvent) {
         evento.preventDefault();
@@ -145,7 +147,11 @@ export default function Cierre({
             ejes={pasos}
             expediente={expediente}
             titulo="Resumen y envío a aprobación"
-            descripcion="Revisa lo que registraste y corrige lo que necesites. Todo EPS necesita la aprobación de supervisión de tu unidad académica: cuando lo aprueben, sus datos cuentan en las estadísticas."
+            descripcion={
+                aprobado
+                    ? 'Esto es lo que consignaste en tu EPS, aprobado por la supervisión de tu unidad académica.'
+                    : 'Revisa lo que registraste y corrige lo que necesites. Todo EPS necesita la aprobación de supervisión de tu unidad académica: cuando lo aprueben, sus datos cuentan en las estadísticas.'
+            }
         >
             <Head title="Resumen y envío a aprobación" />
 
@@ -155,18 +161,16 @@ export default function Cierre({
                         <BadgeCheck className="mt-0.5 size-7 shrink-0" />
                         <div>
                             <p className="text-lg font-semibold">
-                                {expediente.estado === 'verificado'
+                                {aprobado
                                     ? 'Tu EPS está aprobado por la supervisión de tu unidad académica'
                                     : 'Tu EPS está en revisión'}
                             </p>
                             <p className="text-brand/65 mt-1 text-sm">
                                 {completado_at &&
                                     `Enviado el ${formatearFecha(completado_at)}. `}
-                                {expediente.estado === 'verificado'
+                                {aprobado
                                     ? 'Sus datos cuentan para las estadísticas y aparece en el repositorio.'
-                                    : 'Cuenta para las estadísticas cuando la supervisión lo apruebe.'}{' '}
-                                Puedes seguir corrigiendo tu información cuando
-                                quieras.
+                                    : 'Cuenta para las estadísticas cuando la supervisión lo apruebe. Puedes seguir corrigiendo tu información hasta entonces.'}
                             </p>
                         </div>
                     </div>
@@ -229,8 +233,14 @@ export default function Cierre({
                                     href={seccion.href}
                                     className="mt-4 inline-flex items-center gap-1.5 self-start pt-1 text-sm font-medium underline-offset-4 hover:underline"
                                 >
-                                    <Pencil className="size-3.5" />
-                                    Revisar y editar
+                                    {aprobado ? (
+                                        <Eye className="size-3.5" />
+                                    ) : (
+                                        <Pencil className="size-3.5" />
+                                    )}
+                                    {aprobado
+                                        ? 'Ver registros'
+                                        : 'Revisar y editar'}
                                 </Link>
                             </li>
                         ))}
@@ -239,11 +249,19 @@ export default function Cierre({
 
                 <Articulacion
                     articulacion={articulacion}
-                    descripcion="Cuántas funciones universitarias combina tu EPS además de la docencia. Registra publicaciones, acciones de transferencia o instituciones aliadas para articular más."
+                    descripcion={
+                        aprobado
+                            ? 'Cuántas funciones universitarias combina tu EPS además de la docencia.'
+                            : 'Cuántas funciones universitarias combina tu EPS además de la docencia. Registra publicaciones, acciones de transferencia o instituciones aliadas para articular más.'
+                    }
                     className="rounded-3xl bg-white p-6 sm:p-8"
                 />
 
-                <FotoEps expedienteId={expediente.id} foto={foto} />
+                <FotoEps
+                    expedienteId={expediente.id}
+                    foto={foto}
+                    soloLectura={aprobado}
+                />
 
                 <section className="border-brand/10 rounded-3xl border bg-white p-6 shadow-[0_30px_80px_-40px_rgba(15,16,49,0.35)] sm:p-8">
                     <h2 className="text-xl font-semibold tracking-tight">
@@ -253,11 +271,11 @@ export default function Cierre({
                         </span>
                     </h2>
                     <p className="text-brand/60 mt-1 text-sm leading-relaxed">
-                        Si tienes tu orden de impresión, súbela para que la
-                        supervisión la revise junto con tu EPS. Sube el archivo
-                        en PDF o imagen (JPG o PNG) de hasta 10 MB. Por sí sola
-                        no aprueba tu EPS: siempre necesitas la aprobación de
-                        supervisión.
+                        {aprobado
+                            ? orden_impresion
+                                ? 'La orden de impresión que entregaste con tu EPS.'
+                                : 'Tu EPS se aprobó sin orden de impresión.'
+                            : 'Si tienes tu orden de impresión, súbela para que la supervisión la revise junto con tu EPS. Sube el archivo en PDF o imagen (JPG o PNG) de hasta 10 MB. Por sí sola no aprueba tu EPS: siempre necesitas la aprobación de supervisión.'}
                     </p>
 
                     {orden_impresion && (
@@ -285,64 +303,70 @@ export default function Cierre({
                                     <Download className="size-3.5" />
                                     Descargar
                                 </a>
-                                <button
-                                    type="button"
-                                    onClick={() => setConfirmandoBorrado(true)}
-                                    className="border-brand/15 text-destructive hover:bg-destructive/5 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors"
-                                >
-                                    <Trash2 className="size-3.5" />
-                                    Eliminar
-                                </button>
+                                {!aprobado && (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setConfirmandoBorrado(true)
+                                        }
+                                        className="border-brand/15 text-destructive hover:bg-destructive/5 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors"
+                                    >
+                                        <Trash2 className="size-3.5" />
+                                        Eliminar
+                                    </button>
+                                )}
                             </div>
                         </div>
                     )}
 
-                    <form onSubmit={subir} className="mt-6">
-                        <label
-                            htmlFor="orden_impresion"
-                            className="text-sm font-medium"
-                        >
-                            {orden_impresion
-                                ? 'Reemplazar el archivo'
-                                : 'Archivo de la orden de impresión'}
-                        </label>
-                        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
-                            <input
-                                ref={entrada}
-                                id="orden_impresion"
-                                type="file"
-                                accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                                onChange={(evento) =>
-                                    formulario.setData(
-                                        'orden_impresion',
-                                        evento.target.files?.[0] ?? null,
-                                    )
-                                }
-                                className="border-input file:bg-brand block w-full flex-1 rounded-md border text-sm file:mr-4 file:h-9 file:border-0 file:px-4 file:text-sm file:font-medium file:text-white"
-                            />
-                            <button
-                                type="submit"
-                                disabled={
-                                    formulario.processing ||
-                                    formulario.data.orden_impresion === null
-                                }
-                                className="bg-brand inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white transition-transform hover:scale-[1.03] disabled:opacity-50"
+                    {!aprobado && (
+                        <form onSubmit={subir} className="mt-6">
+                            <label
+                                htmlFor="orden_impresion"
+                                className="text-sm font-medium"
                             >
-                                {formulario.processing ? (
-                                    <Spinner />
-                                ) : (
-                                    <Upload className="size-4" />
-                                )}
                                 {orden_impresion
-                                    ? 'Reemplazar'
-                                    : 'Subir archivo'}
-                            </button>
-                        </div>
-                        <InputError
-                            message={formulario.errors.orden_impresion}
-                            className="mt-2"
-                        />
-                    </form>
+                                    ? 'Reemplazar el archivo'
+                                    : 'Archivo de la orden de impresión'}
+                            </label>
+                            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+                                <input
+                                    ref={entrada}
+                                    id="orden_impresion"
+                                    type="file"
+                                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                                    onChange={(evento) =>
+                                        formulario.setData(
+                                            'orden_impresion',
+                                            evento.target.files?.[0] ?? null,
+                                        )
+                                    }
+                                    className="border-input file:bg-brand block w-full flex-1 rounded-md border text-sm file:mr-4 file:h-9 file:border-0 file:px-4 file:text-sm file:font-medium file:text-white"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={
+                                        formulario.processing ||
+                                        formulario.data.orden_impresion === null
+                                    }
+                                    className="bg-brand inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white transition-transform hover:scale-[1.03] disabled:opacity-50"
+                                >
+                                    {formulario.processing ? (
+                                        <Spinner />
+                                    ) : (
+                                        <Upload className="size-4" />
+                                    )}
+                                    {orden_impresion
+                                        ? 'Reemplazar'
+                                        : 'Subir archivo'}
+                                </button>
+                            </div>
+                            <InputError
+                                message={formulario.errors.orden_impresion}
+                                className="mt-2"
+                            />
+                        </form>
+                    )}
                 </section>
 
                 {(solicitud || puede_solicitar) && (
@@ -410,9 +434,7 @@ export default function Cierre({
                             Eliminar la orden de impresión
                         </DialogTitle>
                         <DialogDescription>
-                            Se eliminará el archivo de tu orden de impresión. Si
-                            tu EPS ya estaba aprobado, volverá a la bandeja de
-                            supervisión para aprobarse de nuevo.
+                            Se eliminará el archivo de tu orden de impresión.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>

@@ -192,6 +192,7 @@ export default function BienesServicios({
             <Head title="Bienes y servicios generados" />
 
             <ProgramaEps
+                soloLectura={expediente.estado === 'verificado'}
                 expedienteId={expediente.id}
                 esEpsum={expediente.es_epsum}
             />

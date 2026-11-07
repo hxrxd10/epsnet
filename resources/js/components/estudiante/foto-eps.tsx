@@ -16,9 +16,11 @@ import { reducirImagen } from '@/lib/imagenes';
 export default function FotoEps({
     expedienteId,
     foto,
+    soloLectura = false,
 }: {
     expedienteId: number;
     foto: string | null;
+    soloLectura?: boolean;
 }) {
     const entrada = useRef<HTMLInputElement>(null);
     const formulario = useForm<{ foto: File | null }>({ foto: null });
@@ -62,9 +64,11 @@ export default function FotoEps({
                 La mejor foto de tu EPS
             </h2>
             <p className="text-brand/60 mt-1 text-sm leading-relaxed">
-                Elige la foto que mejor muestre tu trabajo. Aparecerá en el
-                repositorio cuando tu EPS esté aprobado. JPG, PNG o WebP; la
-                reducimos antes de subirla.
+                {soloLectura
+                    ? foto
+                        ? 'Es la foto que aparece en el repositorio.'
+                        : 'No elegiste una foto para tu EPS.'
+                    : 'Elige la foto que mejor muestre tu trabajo. Aparecerá en el repositorio cuando tu EPS esté aprobado. JPG, PNG o WebP; la reducimos antes de subirla.'}
             </p>
 
             <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-start">
@@ -80,44 +84,48 @@ export default function FotoEps({
                     )}
                 </div>
 
-                <div className="flex flex-col gap-3">
-                    <input
-                        ref={entrada}
-                        id="foto_eps"
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        className="sr-only"
-                        onChange={(evento) => elegir(evento.target.files?.[0])}
-                    />
-                    <label
-                        htmlFor="foto_eps"
-                        aria-disabled={ocupado}
-                        className="bg-brand inline-flex cursor-pointer items-center justify-center gap-2 self-start rounded-full px-5 py-2.5 text-sm font-medium text-white transition-transform hover:scale-[1.03] aria-disabled:pointer-events-none aria-disabled:opacity-60"
-                    >
-                        {ocupado ? (
-                            <Spinner />
-                        ) : (
-                            <ImagePlus className="size-4" />
-                        )}
-                        {foto ? 'Cambiar foto' : 'Elegir foto'}
-                    </label>
-                    {foto && (
-                        <button
-                            type="button"
-                            onClick={borrar}
-                            disabled={borrando}
-                            className="border-brand/15 text-destructive hover:bg-destructive/5 inline-flex items-center gap-1.5 self-start rounded-full border px-3.5 py-2 text-sm transition-colors disabled:opacity-60"
+                {!soloLectura && (
+                    <div className="flex flex-col gap-3">
+                        <input
+                            ref={entrada}
+                            id="foto_eps"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            className="sr-only"
+                            onChange={(evento) =>
+                                elegir(evento.target.files?.[0])
+                            }
+                        />
+                        <label
+                            htmlFor="foto_eps"
+                            aria-disabled={ocupado}
+                            className="bg-brand inline-flex cursor-pointer items-center justify-center gap-2 self-start rounded-full px-5 py-2.5 text-sm font-medium text-white transition-transform hover:scale-[1.03] aria-disabled:pointer-events-none aria-disabled:opacity-60"
                         >
-                            {borrando ? (
+                            {ocupado ? (
                                 <Spinner />
                             ) : (
-                                <Trash2 className="size-3.5" />
+                                <ImagePlus className="size-4" />
                             )}
-                            Quitar foto
-                        </button>
-                    )}
-                    <InputError message={formulario.errors.foto} />
-                </div>
+                            {foto ? 'Cambiar foto' : 'Elegir foto'}
+                        </label>
+                        {foto && (
+                            <button
+                                type="button"
+                                onClick={borrar}
+                                disabled={borrando}
+                                className="border-brand/15 text-destructive hover:bg-destructive/5 inline-flex items-center gap-1.5 self-start rounded-full border px-3.5 py-2 text-sm transition-colors disabled:opacity-60"
+                            >
+                                {borrando ? (
+                                    <Spinner />
+                                ) : (
+                                    <Trash2 className="size-3.5" />
+                                )}
+                                Quitar foto
+                            </button>
+                        )}
+                        <InputError message={formulario.errors.foto} />
+                    </div>
+                )}
             </div>
         </section>
     );

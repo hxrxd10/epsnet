@@ -59,12 +59,16 @@ export type FiltrosEstadisticos = {
     anio: string;
     unidad: string;
     carrera: string;
+    eje: string;
+    desde: string;
+    hasta: string;
 };
 
 export type OpcionesFiltros = {
     anios: number[];
     unidades: Opcion[];
     carreras: Opcion[];
+    ejes: Opcion[];
 };
 
 export type ResumenOds = {

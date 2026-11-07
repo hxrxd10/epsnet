@@ -5,11 +5,11 @@ import transferencias from './transferencias'
 import territorio from './territorio'
 import actores from './actores'
 import seguimiento from './seguimiento'
-import alianzas from './alianzas'
 import solicitud from './solicitud'
-import programa from './programa'
 import cierre from './cierre'
 import ordenImpresion from './orden-impresion'
+import alianzas from './alianzas'
+import programa from './programa'
 import foto from './foto'
 /**
 * @see \App\Http\Controllers\Estudiante\ExpedienteController::store
@@ -181,11 +181,11 @@ const expedientes = {
     territorio: Object.assign(territorio, territorio),
     actores: Object.assign(actores, actores),
     seguimiento: Object.assign(seguimiento, seguimiento),
-    alianzas: Object.assign(alianzas, alianzas),
     solicitud: Object.assign(solicitud, solicitud),
-    programa: Object.assign(programa, programa),
     cierre: Object.assign(cierre, cierre),
     ordenImpresion: Object.assign(ordenImpresion, ordenImpresion),
+    alianzas: Object.assign(alianzas, alianzas),
+    programa: Object.assign(programa, programa),
     foto: Object.assign(foto, foto),
 }
 

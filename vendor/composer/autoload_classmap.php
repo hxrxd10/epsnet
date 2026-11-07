@@ -78,6 +78,7 @@ return array(
     'App\\Http\\Middleware\\HandleInertiaRequests' => $baseDir . '/app/Http/Middleware/HandleInertiaRequests.php',
     'App\\Http\\Requests\\Admin\\CarreraRequest' => $baseDir . '/app/Http/Requests/Admin/CarreraRequest.php',
     'App\\Http\\Requests\\Admin\\CatalogoRequest' => $baseDir . '/app/Http/Requests/Admin/CatalogoRequest.php',
+    'App\\Http\\Requests\\Admin\\CorreoUsuarioRequest' => $baseDir . '/app/Http/Requests/Admin/CorreoUsuarioRequest.php',
     'App\\Http\\Requests\\Admin\\CrearUsuarioRequest' => $baseDir . '/app/Http/Requests/Admin/CrearUsuarioRequest.php',
     'App\\Http\\Requests\\Admin\\DepartamentoRequest' => $baseDir . '/app/Http/Requests/Admin/DepartamentoRequest.php',
     'App\\Http\\Requests\\Admin\\InstitucionAliadaRequest' => $baseDir . '/app/Http/Requests/Admin/InstitucionAliadaRequest.php',

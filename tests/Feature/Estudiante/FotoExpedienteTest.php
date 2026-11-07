@@ -49,6 +49,21 @@ it('guarda la foto del EPS en base64 en la base de datos y la muestra en el cier
         ->assertInertia(fn (Assert $page) => $page->where('foto', $expediente->urlFoto()));
 });
 
+it('muestra su foto al estudiante aunque aún no haya verificado su correo', function () {
+    $expediente = expedienteConFoto();
+    auth()->user()->forceFill(['email_verified_at' => null])->save();
+    $this->post(route('estudiante.expedientes.foto.store', $expediente), ['foto' => fotoDePrueba()]);
+
+    $this->get($expediente->fresh()->urlFoto())->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+});
+
+it('no muestra la foto de un EPS aprobado a quien no es su estudiante y no ha verificado su correo', function () {
+    $expediente = Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Verificado]);
+    Adjunto::factory()->for($expediente, 'entidad')->conContenido('bytes')->create(['categoria' => Adjunto::FOTO_EPS, 'mime_type' => 'image/jpeg']);
+
+    $this->actingAs(User::factory()->administrador()->unverified()->create())->get(route('expedientes.foto', $expediente))->assertNotFound();
+});
+
 it('reemplaza la foto anterior y permite quitarla', function () {
     $expediente = expedienteConFoto();
     $this->post(route('estudiante.expedientes.foto.store', $expediente), ['foto' => fotoDePrueba('primera.jpg')]);
@@ -112,10 +127,11 @@ describe('quién ve la foto', function () {
         return $expediente;
     }
 
-    it('la muestra a quien puede consultar el repositorio cuando el EPS está aprobado, pero no a un invitado', function () {
+    it('la muestra a quien puede consultar el repositorio cuando el EPS está aprobado, pero no a un invitado ni a otro estudiante', function () {
         $expediente = epsConFotoGuardada(EstadoExpediente::Verificado);
         $this->actingAs(User::factory()->invitado()->create())->get(route('expedientes.foto', $expediente))->assertNotFound();
-        $this->actingAs(User::factory()->estudiante()->create());
+        $this->actingAs(User::factory()->estudiante()->create())->get(route('expedientes.foto', $expediente))->assertNotFound();
+        $this->actingAs(User::factory()->administrador()->create());
 
         $respuesta = $this->get(route('expedientes.foto', $expediente))
             ->assertOk()

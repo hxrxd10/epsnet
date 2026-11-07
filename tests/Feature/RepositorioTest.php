@@ -28,12 +28,12 @@ it('envía a los invitados a iniciar sesión', function () {
     $this->get(route('repositorio.show', expedienteAprobado()))->assertRedirect(route('login'));
 });
 
-it('lista solo los EPS aprobados, para DIGEU y los estudiantes', function (string $estado) {
+it('lista solo los EPS aprobados', function () {
     expedienteAprobado();
     expedienteAprobado();
     Expediente::factory()->create(['estado_expediente' => EstadoExpediente::Completo]);
     Expediente::factory()->create();
-    $this->actingAs(User::factory()->{$estado}()->create());
+    $this->actingAs(User::factory()->administrador()->create());
 
     $this->get(route('repositorio.index'))
         ->assertOk()
@@ -41,7 +41,7 @@ it('lista solo los EPS aprobados, para DIGEU y los estudiantes', function (strin
             ->component('repositorio/index')
             ->has('expedientes', 2)
             ->where('pagina.total', 2));
-})->with(['estudiante', 'administrador']);
+});
 
 it('describe lo realizado con la evaluación de impacto o, si no hay, con lo primero registrado', function () {
     $conImpacto = expedienteAprobado();

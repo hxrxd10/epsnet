@@ -1,4 +1,4 @@
-import { router, useForm } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
@@ -24,7 +24,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import type { Opcion } from '@/types/estudiante';
+import type { Opcion, PasoProps } from '@/types/estudiante';
 
 export type Valores = Record<string, string>;
 
@@ -225,6 +225,8 @@ export default function PasoCrud<T extends { id: number }>({
     antesDeEnviar,
     vacio,
 }: PasoCrudProps<T>) {
+    const soloLectura =
+        usePage<PasoProps>().props.expediente.estado === 'verificado';
     const formulario = useForm<Valores>(valoresIniciales);
     const [editando, setEditando] = useState<number | null>(null);
     const [eliminando, setEliminando] = useState<T | null>(null);
@@ -287,105 +289,116 @@ export default function PasoCrud<T extends { id: number }>({
 
     return (
         <div className="space-y-6">
-            <section
-                ref={seccionFormulario}
-                className="border-brand/10 scroll-mt-6 rounded-3xl border bg-white p-6 shadow-[0_30px_80px_-40px_rgba(15,16,49,0.35)] sm:p-8"
-            >
-                <div className="flex items-center justify-between gap-4">
-                    <h2 className="text-xl font-semibold tracking-tight">
-                        {editando === null
-                            ? `Agregar ${etiquetaRegistro}`
-                            : `Editar ${etiquetaRegistro}`}
-                    </h2>
-                    {editando !== null && (
-                        <button
-                            type="button"
-                            onClick={limpiar}
-                            className="text-brand/60 text-sm underline-offset-4 hover:underline"
-                        >
-                            Cancelar edición
-                        </button>
-                    )}
-                </div>
-
-                <form
-                    onSubmit={enviar}
-                    className="mt-6 grid gap-5 sm:grid-cols-2"
+            {!soloLectura && (
+                <section
+                    ref={seccionFormulario}
+                    className="border-brand/10 scroll-mt-6 rounded-3xl border bg-white p-6 shadow-[0_30px_80px_-40px_rgba(15,16,49,0.35)] sm:p-8"
                 >
-                    {campos
-                        .filter(
-                            (campo) =>
-                                !campo.visibleSi ||
-                                campo.visibleSi(formulario.data),
-                        )
-                        .map((campo) =>
-                            campo.render ? (
-                                <div key={campo.name} className="sm:col-span-2">
-                                    {campo.render({
-                                        valores: formulario.data,
-                                        errores: formulario.errors,
-                                        establecer: (parcial) =>
+                    <div className="flex items-center justify-between gap-4">
+                        <h2 className="text-xl font-semibold tracking-tight">
+                            {editando === null
+                                ? `Agregar ${etiquetaRegistro}`
+                                : `Editar ${etiquetaRegistro}`}
+                        </h2>
+                        {editando !== null && (
+                            <button
+                                type="button"
+                                onClick={limpiar}
+                                className="text-brand/60 text-sm underline-offset-4 hover:underline"
+                            >
+                                Cancelar edición
+                            </button>
+                        )}
+                    </div>
+
+                    <form
+                        onSubmit={enviar}
+                        className="mt-6 grid gap-5 sm:grid-cols-2"
+                    >
+                        {campos
+                            .filter(
+                                (campo) =>
+                                    !campo.visibleSi ||
+                                    campo.visibleSi(formulario.data),
+                            )
+                            .map((campo) =>
+                                campo.render ? (
+                                    <div
+                                        key={campo.name}
+                                        className="sm:col-span-2"
+                                    >
+                                        {campo.render({
+                                            valores: formulario.data,
+                                            errores: formulario.errors,
+                                            establecer: (parcial) =>
+                                                formulario.setData(
+                                                    (previos) => ({
+                                                        ...previos,
+                                                        ...parcial,
+                                                    }),
+                                                ),
+                                        })}
+                                    </div>
+                                ) : (
+                                    <CampoFormulario
+                                        key={campo.name}
+                                        campo={campo}
+                                        opciones={
+                                            typeof campo.opciones === 'function'
+                                                ? campo.opciones(
+                                                      formulario.data,
+                                                  )
+                                                : campo.opciones
+                                        }
+                                        valor={
+                                            formulario.data[campo.name] ?? ''
+                                        }
+                                        error={formulario.errors[campo.name]}
+                                        onChange={(valor) =>
                                             formulario.setData((previos) => ({
                                                 ...previos,
-                                                ...parcial,
-                                            })),
-                                    })}
-                                </div>
-                            ) : (
-                                <CampoFormulario
-                                    key={campo.name}
-                                    campo={campo}
-                                    opciones={
-                                        typeof campo.opciones === 'function'
-                                            ? campo.opciones(formulario.data)
-                                            : campo.opciones
-                                    }
-                                    valor={formulario.data[campo.name] ?? ''}
-                                    error={formulario.errors[campo.name]}
-                                    onChange={(valor) =>
-                                        formulario.setData((previos) => ({
-                                            ...previos,
-                                            [campo.name]: valor,
-                                            ...Object.fromEntries(
-                                                campos
-                                                    .filter(
-                                                        (otro) =>
-                                                            otro.dependeDe ===
-                                                            campo.name,
-                                                    )
-                                                    .map((otro) => [
-                                                        otro.name,
-                                                        '',
-                                                    ]),
-                                            ),
-                                        }))
-                                    }
-                                />
-                            ),
-                        )}
-
-                    <div className="flex items-center gap-3 sm:col-span-2">
-                        <button
-                            type="submit"
-                            disabled={formulario.processing}
-                            className="bg-brand inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.03] active:scale-95 disabled:opacity-60"
-                        >
-                            {formulario.processing ? (
-                                <Spinner />
-                            ) : (
-                                <Plus className="size-4" />
+                                                [campo.name]: valor,
+                                                ...Object.fromEntries(
+                                                    campos
+                                                        .filter(
+                                                            (otro) =>
+                                                                otro.dependeDe ===
+                                                                campo.name,
+                                                        )
+                                                        .map((otro) => [
+                                                            otro.name,
+                                                            '',
+                                                        ]),
+                                                ),
+                                            }))
+                                        }
+                                    />
+                                ),
                             )}
-                            {editando === null
-                                ? 'Guardar registro'
-                                : 'Guardar cambios'}
-                        </button>
-                        <p className="text-brand/50 text-xs">
-                            Tu avance se guarda al instante; puedes volver y
-                            modificarlo cuando quieras.
-                        </p>
-                    </div>
-                </form>
-            </section>
+
+                        <div className="flex items-center gap-3 sm:col-span-2">
+                            <button
+                                type="submit"
+                                disabled={formulario.processing}
+                                className="bg-brand inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.03] active:scale-95 disabled:opacity-60"
+                            >
+                                {formulario.processing ? (
+                                    <Spinner />
+                                ) : (
+                                    <Plus className="size-4" />
+                                )}
+                                {editando === null
+                                    ? 'Guardar registro'
+                                    : 'Guardar cambios'}
+                            </button>
+                            <p className="text-brand/50 text-xs">
+                                Tu avance se guarda al instante; puedes volver y
+                                modificarlo cuando quieras.
+                            </p>
+                        </div>
+                    </form>
+                </section>
+            )}
 
             <section>
                 <h2 className="text-brand/50 mb-4 font-mono text-xs tracking-[0.2em] uppercase">
@@ -411,24 +424,28 @@ export default function PasoCrud<T extends { id: number }>({
                                 <div className="min-w-0 flex-1">
                                     {resumen(registro)}
                                 </div>
-                                <div className="flex shrink-0 gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => editar(registro)}
-                                        className="border-brand/15 hover:bg-brand/5 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors"
-                                    >
-                                        <Pencil className="size-3.5" />
-                                        Editar
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setEliminando(registro)}
-                                        className="border-brand/15 text-destructive hover:bg-destructive/5 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors"
-                                    >
-                                        <Trash2 className="size-3.5" />
-                                        Eliminar
-                                    </button>
-                                </div>
+                                {!soloLectura && (
+                                    <div className="flex shrink-0 gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => editar(registro)}
+                                            className="border-brand/15 hover:bg-brand/5 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors"
+                                        >
+                                            <Pencil className="size-3.5" />
+                                            Editar
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setEliminando(registro)
+                                            }
+                                            className="border-brand/15 text-destructive hover:bg-destructive/5 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors"
+                                        >
+                                            <Trash2 className="size-3.5" />
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                )}
                             </li>
                         ))}
                     </ul>

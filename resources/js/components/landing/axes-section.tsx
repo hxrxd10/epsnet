@@ -25,11 +25,11 @@ const AXES: Axis[] = [
         summary:
             'Todo lo que cada EPS produce para las comunidades durante su ejercicio.',
         records: [
-            'Tipo de bien o servicio',
-            'Descripción',
-            'Beneficiarios',
+            'Bien o servicio del catálogo',
+            'Cantidad y beneficiarios',
+            'Poblaciones vulnerables',
+            'Línea de intervención y ODS',
             'Fecha',
-            'Evidencia adjunta',
         ],
     },
     {
@@ -42,7 +42,7 @@ const AXES: Axis[] = [
             'Tipo de publicación',
             'Autores',
             'Medio de publicación',
-            'Documento o enlace',
+            'Enlace al documento',
         ],
     },
     {
@@ -54,7 +54,7 @@ const AXES: Axis[] = [
             'Actividad realizada',
             'Comunidad o grupo beneficiado',
             'Fecha',
-            'Participación por estudiante',
+            'Número de participantes',
         ],
     },
     {

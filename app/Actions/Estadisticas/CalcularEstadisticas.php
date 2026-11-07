@@ -2,6 +2,7 @@
 
 namespace App\Actions\Estadisticas;
 
+use App\Enums\Eje;
 use App\Enums\TipoCatalogo;
 use App\Models\Adjunto;
 use App\Models\Alianza;
@@ -31,7 +32,7 @@ use Illuminate\Support\Str;
  *
  * Con `alcance` (quien consulta), una unidad académica solo cuenta lo de su unidad y sus carreras.
  *
- * @phpstan-type Filtros array{anio: int|null, unidad: int|null, carrera: string|null, alcance?: User|null}
+ * @phpstan-type Filtros array{anio: int|null, unidad: int|null, carrera: string|null, eje?: int|null, desde?: string|null, hasta?: string|null, alcance?: User|null}
  *
  * @phpstan-import-type Registro from Acumulador
  */
@@ -170,7 +171,7 @@ class CalcularEstadisticas
      * Valores que ofrecen los filtros. Las carreras se limitan a la unidad elegida.
      *
      * @param  Filtros  $filtros
-     * @return array{anios: list<int>, unidades: list<array{value: string, label: string}>, carreras: list<array{value: string, label: string}>}
+     * @return array{anios: list<int>, unidades: list<array{value: string, label: string}>, carreras: list<array{value: string, label: string}>, ejes: list<array{value: string, label: string}>}
      */
     public function opciones(array $filtros): array
     {
@@ -196,6 +197,7 @@ class CalcularEstadisticas
             'carreras' => $this->carreras($filtros['unidad'], $filtros['alcance'] ?? null)
                 ->map(fn (string $carrera): array => ['value' => $carrera, 'label' => $carrera])
                 ->all(),
+            'ejes' => array_map(fn (Eje $eje): array => ['value' => (string) $eje->value, 'label' => "{$eje->value}. {$eje->titulo()}"], Eje::cases()),
         ];
     }
 
@@ -429,15 +431,43 @@ class CalcularEstadisticas
         return $this->validosVisibles($filtros)
             ->when($filtros['unidad'], fn (Builder $consulta, int $unidad) => $consulta->where('unidad_academica_id', $unidad))
             ->when($filtros['carrera'], fn (Builder $consulta, string $carrera) => $consulta->where('nombre_carrera', $carrera))
-            ->when($filtros['anio'], fn (Builder $consulta, int $anio) => $consulta->where(function (Builder $consulta) use ($anio): void {
-                $desde = "{$anio}-01-01";
-                $hasta = ($anio + 1).'-01-01';
+            ->when($filtros['eje'] ?? null, fn (Builder $consulta, int $eje) => $this->conRegistrosEnEje($consulta, Eje::from($eje)))
+            ->when($filtros['anio'], fn (Builder $consulta, int $anio) => $this->enPeriodo($consulta, "{$anio}-01-01", ($anio + 1).'-01-01'))
+            ->when(($filtros['desde'] ?? null) !== null || ($filtros['hasta'] ?? null) !== null, fn (Builder $consulta) => $this->enPeriodo(
+                $consulta,
+                $filtros['desde'] ?? null,
+                isset($filtros['hasta']) ? Carbon::parse($filtros['hasta'])->addDay()->toDateString() : null,
+            ));
+    }
 
-                // El año es el de la orden de impresión; si el EPS no la tiene, el de su aprobación.
-                $consulta
-                    ->whereHas('ordenImpresion', fn (Builder $orden) => $orden->where('fecha_subida', '>=', $desde)->where('fecha_subida', '<', $hasta))
-                    ->orWhere(fn (Builder $sinOrden) => $sinOrden->whereDoesntHave('ordenImpresion')->where('verificado_at', '>=', $desde)->where('verificado_at', '<', $hasta));
-            }));
+    /**
+     * Solo los EPS que registraron algo en el eje. El eje de actores incluye las instituciones aliadas.
+     *
+     * @param  Builder<Expediente>  $consulta
+     */
+    private function conRegistrosEnEje(Builder $consulta, Eje $eje): void
+    {
+        $consulta->where(fn (Builder $enEje) => $enEje
+            ->whereHas($eje->relacion())
+            ->when($eje === Eje::Actores, fn (Builder $actores) => $actores->orWhereHas('alianzas')));
+    }
+
+    /**
+     * La fecha de un EPS es la de su orden de impresión; si no la tiene, la de su aprobación.
+     *
+     * @param  Builder<Expediente>  $consulta
+     * @param  string|null  $desde  Inclusive.
+     * @param  string|null  $hasta  Exclusive.
+     */
+    private function enPeriodo(Builder $consulta, ?string $desde, ?string $hasta): void
+    {
+        $enRango = fn (Builder $fechas, string $columna) => $fechas
+            ->when($desde, fn (Builder $inicio) => $inicio->where($columna, '>=', $desde))
+            ->when($hasta, fn (Builder $fin) => $fin->where($columna, '<', $hasta));
+
+        $consulta->where(fn (Builder $periodo) => $periodo
+            ->whereHas('ordenImpresion', fn (Builder $orden) => $enRango($orden, 'fecha_subida'))
+            ->orWhere(fn (Builder $sinOrden) => $enRango($sinOrden->whereDoesntHave('ordenImpresion'), 'verificado_at')));
     }
 
     /**

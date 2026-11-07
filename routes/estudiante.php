@@ -50,26 +50,37 @@ Route::prefix('estudiante')->name('estudiante.')->group(function () {
 
             foreach ($ejes as $segmento => $controlador) {
                 Route::resource("expedientes.{$segmento}", $controlador)
-                    ->only(['index', 'store', 'update', 'destroy'])
+                    ->only(['index'])
                     ->parameters([$segmento => 'registro']);
             }
 
-            // Instituciones aliadas del EPS: se muestran en el paso de actores.
-            Route::resource('expedientes.alianzas', AlianzaController::class)
-                ->only(['store', 'update', 'destroy'])
-                ->parameters(['alianzas' => 'registro']);
-
             Route::post('expedientes/{expediente}/solicitud-aprobacion', [SolicitudAprobacionController::class, 'store'])->name('expedientes.solicitud.store');
-            Route::put('expedientes/{expediente}/programa', [ProgramaExpedienteController::class, 'update'])->name('expedientes.programa.update');
 
             Route::get('expedientes/{expediente}/cierre', [CierreExpedienteController::class, 'index'])->name('expedientes.cierre.index');
 
             Route::get('expedientes/{expediente}/orden-impresion', [OrdenImpresionController::class, 'show'])->name('expedientes.orden-impresion.show');
-            Route::post('expedientes/{expediente}/orden-impresion', [OrdenImpresionController::class, 'store'])->name('expedientes.orden-impresion.store');
-            Route::delete('expedientes/{expediente}/orden-impresion', [OrdenImpresionController::class, 'destroy'])->name('expedientes.orden-impresion.destroy');
 
-            Route::post('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'store'])->name('expedientes.foto.store');
-            Route::delete('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'destroy'])->name('expedientes.foto.destroy');
+            // Cambios al EPS: una vez aprobado, el estudiante solo puede ver lo que consignó.
+            Route::middleware('can:editar,expediente')->group(function () use ($ejes) {
+                foreach ($ejes as $segmento => $controlador) {
+                    Route::resource("expedientes.{$segmento}", $controlador)
+                        ->only(['store', 'update', 'destroy'])
+                        ->parameters([$segmento => 'registro']);
+                }
+
+                // Instituciones aliadas del EPS: se muestran en el paso de actores.
+                Route::resource('expedientes.alianzas', AlianzaController::class)
+                    ->only(['store', 'update', 'destroy'])
+                    ->parameters(['alianzas' => 'registro']);
+
+                Route::put('expedientes/{expediente}/programa', [ProgramaExpedienteController::class, 'update'])->name('expedientes.programa.update');
+
+                Route::post('expedientes/{expediente}/orden-impresion', [OrdenImpresionController::class, 'store'])->name('expedientes.orden-impresion.store');
+                Route::delete('expedientes/{expediente}/orden-impresion', [OrdenImpresionController::class, 'destroy'])->name('expedientes.orden-impresion.destroy');
+
+                Route::post('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'store'])->name('expedientes.foto.store');
+                Route::delete('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'destroy'])->name('expedientes.foto.destroy');
+            });
         });
     });
 });

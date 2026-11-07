@@ -8,6 +8,7 @@ use App\Http\Requests\Estudiante\CrearCuentaRequest;
 use App\Models\Estudiante;
 use App\Models\Rol;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -73,6 +74,8 @@ class CuentaController extends Controller
         });
 
         $request->session()->forget('estudiante.verificado');
+
+        event(new Registered($usuario));
 
         Auth::login($usuario);
         $request->session()->regenerate();

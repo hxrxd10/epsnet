@@ -46,7 +46,7 @@ it('genera el PDF del país para los roles con acceso a las consultas', function
     expect($respuesta->headers->get('content-type'))->toBe('application/pdf')
         ->and($respuesta->headers->get('content-disposition'))->toContain('attachment')->toContain('estadisticas-sirse-usac-'.now()->format('d-m-Y').'.pdf')
         ->and(substr($respuesta->getContent(), 0, 5))->toBe('%PDF-');
-})->with(['estudiante', 'administrador']);
+})->with(['unidadAcademica', 'administrador']);
 
 it('genera el PDF de un departamento con el nombre de este en el archivo', function () {
     $sacatepequez = Departamento::factory()->create(['codigo' => '03', 'nombre' => 'Sacatepéquez']);
@@ -72,7 +72,7 @@ it('deja constancia en la bitácora de quién exportó, con los filtros aplicado
     $humanidades = UnidadAcademica::factory()->create(['nombre' => 'Facultad de Humanidades']);
     $sacatepequez = Departamento::factory()->create(['codigo' => '03', 'nombre' => 'Sacatepéquez']);
     epsParaPdf($sacatepequez, $humanidades);
-    $usuario = User::factory()->estudiante()->create(['email' => 'estudiante@example.com']);
+    $usuario = User::factory()->administrador()->create(['email' => 'digeu@example.com']);
     $this->actingAs($usuario);
 
     $this->get(route('estadisticas.pdf', ['unidad' => $humanidades->id, 'anio' => 2025, 'carrera' => 'Licenciatura en Pedagogía', 'metrica' => 'eps']));
@@ -81,13 +81,25 @@ it('deja constancia en la bitácora de quién exportó, con los filtros aplicado
     $registros = Bitacora::where('tipo_cambio', TipoCambioBitacora::Exportacion)->orderBy('id')->get();
 
     expect($registros)->toHaveCount(2)
-        ->and($registros[0]->usuario_correo)->toBe('estudiante@example.com')
+        ->and($registros[0]->usuario_correo)->toBe('digeu@example.com')
         ->and($registros[0]->modulo)->toBe('Estadísticas')
         ->and($registros[0]->detalle)->toContain('estadísticas del país (EPS)')
         ->toContain('Año: 2025')
         ->toContain('Unidad académica: Facultad de Humanidades')
         ->toContain('Carrera: Licenciatura en Pedagogía')
         ->and($registros[1]->detalle)->toContain('departamento Sacatepéquez')->toContain('Todos los años');
+});
+
+it('anota el eje y las fechas en la bitácora solo cuando se usan', function () {
+    $this->actingAs(User::factory()->administrador()->create());
+
+    $this->get(route('estadisticas.pdf', ['eje' => 2, 'desde' => '2025-02-01', 'hasta' => '2025-02-28']));
+    $this->get(route('estadisticas.pdf'));
+
+    $registros = Bitacora::where('tipo_cambio', TipoCambioBitacora::Exportacion)->orderBy('id')->get();
+
+    expect($registros[0]->detalle)->toContain('Eje: Publicaciones de investigación')->toContain('Fechas: Desde 01-02-2025 Hasta 28-02-2025')
+        ->and($registros[1]->detalle)->not->toContain('Eje:')->not->toContain('Fechas:');
 });
 
 it('rechaza filtros y métricas inválidos', function () {

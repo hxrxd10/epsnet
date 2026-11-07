@@ -711,6 +711,7 @@ class ComposerStaticInitd0a5f283f588eb7a0f25e28797e62117
         'App\\Http\\Middleware\\HandleInertiaRequests' => __DIR__ . '/../..' . '/app/Http/Middleware/HandleInertiaRequests.php',
         'App\\Http\\Requests\\Admin\\CarreraRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/CarreraRequest.php',
         'App\\Http\\Requests\\Admin\\CatalogoRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/CatalogoRequest.php',
+        'App\\Http\\Requests\\Admin\\CorreoUsuarioRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/CorreoUsuarioRequest.php',
         'App\\Http\\Requests\\Admin\\CrearUsuarioRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/CrearUsuarioRequest.php',
         'App\\Http\\Requests\\Admin\\DepartamentoRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/DepartamentoRequest.php',
         'App\\Http\\Requests\\Admin\\InstitucionAliadaRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/InstitucionAliadaRequest.php',

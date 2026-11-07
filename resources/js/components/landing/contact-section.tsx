@@ -4,6 +4,7 @@ import { dashboard, login } from '@/routes';
 import GuatemalaMap from './guatemala-map';
 import { NAV_ITEMS } from './landing-header';
 import Reveal from './reveal';
+import AppLogoIcon from '@/components/app-logo-icon';
 
 /**
  * Canales de contacto institucional. Los que estén vacíos no se muestran;
@@ -66,8 +67,8 @@ export default function ContactSection({
                     <p className="mt-8 max-w-xl text-lg leading-relaxed text-white/65">
                         ¿Tu facultad, escuela o centro universitario aún no
                         forma parte de SIRSE USAC? DIGEU crea las cuentas de las
-                        unidades académicas, y cada unidad registra a sus
-                        estudiantes.
+                        unidades académicas y cada estudiante activa la suya con
+                        su registro académico.
                     </p>
                 </Reveal>
 
@@ -112,11 +113,19 @@ export default function ContactSection({
 
             <footer className="mx-auto mt-28 max-w-7xl border-t border-white/10 px-6 py-8">
                 <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-                    <img
-                        src="/images/logo.png"
-                        alt="USAC · DIGEU"
-                        className="h-9 w-auto"
-                    />
+                    <span className="flex items-center gap-3">
+                        <AppLogoIcon
+                            claro
+                            alt="SIRSE USAC"
+                            className="size-9"
+                        />
+                        <span aria-hidden className="h-7 w-px bg-white/20" />
+                        <img
+                            src="/images/logo.png"
+                            alt="USAC · DIGEU"
+                            className="h-9 w-auto"
+                        />
+                    </span>
                     <nav
                         aria-label="Pie de página"
                         className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/55"

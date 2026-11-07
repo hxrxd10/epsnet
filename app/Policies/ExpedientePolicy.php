@@ -22,6 +22,23 @@ class ExpedientePolicy
     }
 
     /**
+     * Cambiar lo registrado: solo su estudiante y mientras el EPS no esté aprobado. Si hay que corregir
+     * un EPS aprobado, la supervisión retira la aprobación.
+     */
+    public function editar(User $usuario, Expediente $expediente): Response
+    {
+        $vista = $this->view($usuario, $expediente);
+
+        if ($vista->denied()) {
+            return $vista;
+        }
+
+        return $expediente->estado_expediente === EstadoExpediente::Verificado
+            ? Response::deny('Tu EPS ya está aprobado: solo puedes ver lo que registraste.')
+            : Response::allow();
+    }
+
+    /**
      * Consulta de solo lectura: DIGEU ve todos los expedientes y cada unidad académica los suyos (o
      * solo los de sus carreras, si tiene carreras asignadas).
      */
@@ -31,14 +48,18 @@ class ExpedientePolicy
     }
 
     /**
-     * La foto del EPS la ven su estudiante, quien supervisa el expediente y, una vez aprobado
-     * (aparece en el repositorio), quien puede consultarlo en el repositorio.
+     * La foto del EPS la ven su estudiante (aunque no haya verificado su correo), quien supervisa el
+     * expediente y, una vez aprobado (aparece en el repositorio), quien puede consultarlo en el
+     * repositorio. Fuera del estudiante, se exige el correo verificado.
      */
     public function verFoto(User $usuario, Expediente $expediente): Response
     {
-        $permitido = ($expediente->estado_expediente === EstadoExpediente::Verificado && $usuario->consultaExpediente($expediente))
+        $esSuEstudiante = $usuario->estudiante !== null && $usuario->estudiante->id === $expediente->estudiante_id;
+
+        $permitido = $esSuEstudiante || ($usuario->hasVerifiedEmail() && (
+            ($expediente->estado_expediente === EstadoExpediente::Verificado && $usuario->consultaExpediente($expediente))
             || $usuario->alcanzaExpediente($expediente)
-            || ($usuario->estudiante !== null && $usuario->estudiante->id === $expediente->estudiante_id);
+        ));
 
         return $permitido ? Response::allow() : Response::denyAsNotFound();
     }

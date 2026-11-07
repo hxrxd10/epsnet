@@ -149,7 +149,7 @@ it('mantiene en revisión el EPS al eliminar su orden de impresión', function (
         ->and(AdjuntoContenido::count())->toBe(0);
 });
 
-it('devuelve a la bandeja un EPS aprobado al cambiar su orden de impresión', function (Closure $cambio) {
+it('no deja cambiar la orden de impresión de un EPS aprobado', function (Closure $cambio) {
     $expediente = expedienteConRegistros();
     subirOrden($expediente);
     $expediente->update([
@@ -157,14 +157,14 @@ it('devuelve a la bandeja un EPS aprobado al cambiar su orden de impresión', fu
         'completado_at' => now()->subWeek(),
         'verificado_at' => now()->subDay(),
     ]);
+    $original = $expediente->ordenImpresion()->sole();
 
-    $cambio->call($this, $expediente);
+    $cambio->call($this, $expediente)->assertForbidden();
 
     expect($expediente->fresh())
-        ->estado_expediente->toBe(EstadoExpediente::Completo)
-        ->verificado_at->toBeNull()
-        ->aprobacion_solicitada_at->not->toBeNull()
-        ->and(Expediente::validos()->count())->toBe(0);
+        ->estado_expediente->toBe(EstadoExpediente::Verificado)
+        ->verificado_at->not->toBeNull()
+        ->and($expediente->ordenImpresion()->sole()->id)->toBe($original->id);
 })->with([
     'al reemplazarla' => [fn (Expediente $expediente) => subirOrden($expediente, ordenPdf('nueva.pdf'))],
     'al eliminarla' => [fn (Expediente $expediente) => $this->delete(route('estudiante.expedientes.orden-impresion.destroy', $expediente))],

@@ -33,15 +33,17 @@ Route::middleware(['guest', 'throttle:6,1'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::inertia('documentacion', 'documentacion')->name('documentacion');
-
-    Route::get('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'show'])
-        ->middleware('can:verFoto,expediente')
-        ->name('expedientes.foto');
 });
 
-// Consultas: DIGEU y los estudiantes ven todo; una unidad académica, solo su unidad y sus carreras.
-// Los invitados, por ahora, no tienen acceso.
-Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica,estudiante'])->group(function () {
+// La foto del EPS: su estudiante la ve aunque no haya verificado su correo (como el resto de su EPS);
+// a los demás la política les exige el correo verificado.
+Route::middleware('auth')->get('expedientes/{expediente}/foto', [FotoExpedienteController::class, 'show'])
+    ->middleware('can:verFoto,expediente')
+    ->name('expedientes.foto');
+
+// Consultas: DIGEU ve todo y una unidad académica, solo su unidad y sus carreras. Los estudiantes solo
+// ven su propio EPS y los invitados, por ahora, no tienen acceso.
+Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica'])->group(function () {
     Route::get('estadisticas', [EstadisticaController::class, 'index'])->name('estadisticas.index');
     Route::get('estadisticas/pdf', [EstadisticaPdfController::class, 'index'])->name('estadisticas.pdf');
     Route::get('estadisticas/departamentos/{departamento:codigo}', [EstadisticaController::class, 'departamento'])->name('estadisticas.departamento');
@@ -88,6 +90,7 @@ Route::middleware(['auth', 'verified', 'rol:digeu'])->prefix('admin')->name('adm
     Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::post('usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
     Route::put('usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
+    Route::put('usuarios/{usuario}/correo', [UsuarioController::class, 'correo'])->name('usuarios.correo');
 
     Route::get('catalogos/{catalogo}', [CatalogoController::class, 'index'])->name('catalogos.index');
     Route::post('catalogos/{catalogo}', [CatalogoController::class, 'store'])->name('catalogos.store');

@@ -1,4 +1,7 @@
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
+import InputError from '@/components/input-error';
+import { InputFecha } from '@/components/ui/input-fecha';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -24,8 +27,11 @@ export default function FiltrosEstadisticosBarra({
     anios,
     unidades,
     carreras,
+    ejes,
     url,
 }: Props) {
+    const { errors } = usePage().props;
+
     function aplicar(nuevos: Partial<FiltrosEstadisticos>) {
         const combinados = { ...filtros, ...nuevos };
 
@@ -101,6 +107,50 @@ export default function FiltrosEstadisticosBarra({
                     ))}
                 </SelectContent>
             </Select>
+
+            <Select
+                value={filtros.eje || TODOS}
+                onValueChange={(valor) =>
+                    aplicar({ eje: valor === TODOS ? '' : valor })
+                }
+            >
+                <SelectTrigger className="w-72" aria-label="Eje">
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value={TODOS}>Todos los ejes</SelectItem>
+                    {ejes.map((eje) => (
+                        <SelectItem key={eje.value} value={eje.value}>
+                            {eje.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            <div className="flex items-center gap-2">
+                <Label htmlFor="filtro-desde">Desde</Label>
+                <InputFecha
+                    id="filtro-desde"
+                    className="w-32"
+                    value={filtros.desde}
+                    onChange={(desde) => aplicar({ desde })}
+                />
+            </div>
+
+            <div className="flex items-center gap-2">
+                <Label htmlFor="filtro-hasta">Hasta</Label>
+                <InputFecha
+                    id="filtro-hasta"
+                    className="w-32"
+                    value={filtros.hasta}
+                    onChange={(hasta) => aplicar({ hasta })}
+                />
+            </div>
+
+            <InputError
+                message={errors.hasta ?? errors.desde}
+                className="w-full"
+            />
         </div>
     );
 }
