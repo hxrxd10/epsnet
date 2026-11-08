@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Enums\TipoCambioBitacora;
 use App\Models\Bitacora;
 use App\Models\Expediente;
+use App\Models\User;
 use App\Services\RegistroAcademico\TransporteRegistroAcademico;
 use App\Services\RegistroAcademico\TransporteSoap;
 use Carbon\CarbonImmutable;
@@ -16,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -39,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
         $this->configureMorphMap();
         $this->configureBitacora();
+
+        Gate::define('gestionar-supervisores', fn (User $usuario): bool => $usuario->gestionaSupervisores());
     }
 
     /**

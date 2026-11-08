@@ -5,6 +5,7 @@ import {
     BookOpen,
     Database,
     FlaskConical,
+    GraduationCap,
     Inbox,
     LayoutGrid,
     ScrollText,
@@ -27,6 +28,7 @@ import {
 import { dashboard, documentacion } from '@/routes';
 import { datos } from '@/routes/admin';
 import { index as bitacora } from '@/routes/admin/bitacora';
+import { index as carreras } from '@/routes/admin/carreras';
 import { index as usuarios } from '@/routes/admin/usuarios';
 import { index as estadisticas } from '@/routes/estadisticas';
 import { index as bandeja } from '@/routes/panel/bandeja';
@@ -60,10 +62,14 @@ const estudiantesYEps: NavItem = {
     icon: Users,
 };
 
-/** Opciones de administración según el rol: DIGEU ve todas; una unidad académica, a sus estudiantes. */
+/**
+ * Opciones de administración según el rol: DIGEU ve todas; una unidad académica, a sus estudiantes y,
+ * si es la cuenta principal de la unidad, también a sus supervisores y carreras.
+ */
 function opcionesDeAdministracion(
     rol: string | null,
     solicitudes: number,
+    gestionaSupervisores: boolean,
 ): NavItem[] {
     const bandejaDeSolicitudes: NavItem = {
         title: 'Bandeja de solicitudes',
@@ -82,14 +88,28 @@ function opcionesDeAdministracion(
         ];
     }
 
-    return rol === 'unidad_academica'
-        ? [bandejaDeSolicitudes, estudiantesYEps]
-        : [];
+    if (rol !== 'unidad_academica') {
+        return [];
+    }
+
+    return gestionaSupervisores
+        ? [
+              bandejaDeSolicitudes,
+              estudiantesYEps,
+              { title: 'Supervisores', href: usuarios(), icon: UserCog },
+              { title: 'Carreras', href: carreras(), icon: GraduationCap },
+          ]
+        : [bandejaDeSolicitudes, estudiantesYEps];
 }
 
 export function AppSidebar() {
-    const { rol, solicitudesPendientes } = usePage().props;
-    const administracion = opcionesDeAdministracion(rol, solicitudesPendientes);
+    const { rol, solicitudesPendientes, gestionaSupervisores } =
+        usePage().props;
+    const administracion = opcionesDeAdministracion(
+        rol,
+        solicitudesPendientes,
+        gestionaSupervisores,
+    );
 
     return (
         <Sidebar collapsible="icon" variant="inset">

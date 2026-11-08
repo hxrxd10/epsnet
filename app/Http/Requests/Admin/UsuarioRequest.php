@@ -25,8 +25,21 @@ class UsuarioRequest extends FormRequest
     }
 
     /**
+     * La cuenta principal de una unidad académica solo crea supervisores de su propia unidad.
+     */
+    protected function prepareForValidation(): void
+    {
+        $usuario = $this->user();
+
+        if ($usuario?->esPrincipalDeUnidad()) {
+            $this->merge(['rol' => ClaveRol::UnidadAcademica->value, 'unidad_academica_id' => $usuario->unidad_academica_id]);
+        }
+    }
+
+    /**
      * Una unidad académica puede tener varios usuarios; cada uno ve toda su unidad o solo las carreras
-     * que se le asignen (que deben ser de esa unidad).
+     * que se le asignen (que deben ser de esa unidad). Los supervisores que crea la cuenta principal
+     * llevan al menos una carrera: sin carreras serían otra cuenta principal.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -42,7 +55,7 @@ class UsuarioRequest extends FormRequest
                 'integer',
                 Rule::exists('unidades_academicas', 'id')->whereNull('deleted_at'),
             ],
-            'carreras' => ['nullable', 'array'],
+            'carreras' => [Rule::requiredIf(fn (): bool => (bool) $this->user()?->esPrincipalDeUnidad()), 'nullable', 'array'],
             'carreras.*' => [
                 'integer',
                 'distinct',
@@ -77,6 +90,7 @@ class UsuarioRequest extends FormRequest
             'rol.required' => 'Selecciona el rol.',
             'rol.enum' => 'El rol elegido no se puede asignar.',
             'unidad_academica_id.required' => 'Selecciona la unidad académica del usuario.',
+            'carreras.required' => 'Marca al menos una carrera: el supervisor solo verá y aprobará los EPS de las carreras que le asignes.',
             'carreras.*.exists' => 'Las carreras deben ser de la unidad académica elegida.',
         ];
     }

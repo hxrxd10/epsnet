@@ -83,19 +83,24 @@ Route::middleware(['auth', 'verified', 'rol:digeu'])->prefix('admin')->name('adm
     Route::resource('instituciones', InstitucionAliadaController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['instituciones' => 'institucion']);
     Route::resource('unidades', UnidadAcademicaController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['unidades' => 'unidad']);
 
-    Route::get('carreras', [CarreraController::class, 'index'])->name('carreras.index');
-    Route::post('carreras', [CarreraController::class, 'store'])->name('carreras.store');
     Route::delete('carreras/{carrera}', [CarreraController::class, 'destroy'])->name('carreras.destroy');
-
-    Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
-    Route::post('usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
-    Route::put('usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
-    Route::put('usuarios/{usuario}/correo', [UsuarioController::class, 'correo'])->name('usuarios.correo');
 
     Route::get('catalogos/{catalogo}', [CatalogoController::class, 'index'])->name('catalogos.index');
     Route::post('catalogos/{catalogo}', [CatalogoController::class, 'store'])->name('catalogos.store');
     Route::put('catalogos/{catalogo}/{item}', [CatalogoController::class, 'update'])->whereNumber('item')->name('catalogos.update');
     Route::delete('catalogos/{catalogo}/{item}', [CatalogoController::class, 'destroy'])->whereNumber('item')->name('catalogos.destroy');
+});
+
+// Supervisores y carreras: DIGEU en todas las unidades y la cuenta principal de cada unidad académica
+// (la que no tiene carreras asignadas) solo en la suya.
+Route::middleware(['auth', 'verified', 'rol:digeu,unidad_academica', 'can:gestionar-supervisores'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('carreras', [CarreraController::class, 'index'])->name('carreras.index');
+    Route::post('carreras', [CarreraController::class, 'store'])->name('carreras.store');
+
+    Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+    Route::post('usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
+    Route::put('usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
+    Route::put('usuarios/{usuario}/correo', [UsuarioController::class, 'correo'])->name('usuarios.correo');
 });
 
 require __DIR__.'/settings.php';

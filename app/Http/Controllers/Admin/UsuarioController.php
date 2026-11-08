@@ -25,10 +25,14 @@ class UsuarioController extends Controller
 {
     /**
      * Gestión de usuarios: DIGEU crea las cuentas de las unidades académicas y asigna el rol, la unidad
-     * y las carreras que cada supervisor puede ver y aprobar.
+     * y las carreras que cada supervisor puede ver y aprobar. La cuenta principal de una unidad solo ve
+     * y crea a los supervisores de la suya.
      */
     public function index(Request $request): Response
     {
+        $actor = $request->user();
+        $unidadPropia = $actor->esPrincipalDeUnidad() ? $actor->unidadAcademica : null;
+
         $filtros = $request->validate([
             'q' => ['nullable', 'string', 'max:100'],
             'rol' => ['nullable', Rule::enum(ClaveRol::class)],
@@ -36,6 +40,9 @@ class UsuarioController extends Controller
 
         $usuarios = User::query()
             ->with(['rol', 'unidadAcademica', 'carreras:id,nombre,nombre_extension'])
+            ->when($unidadPropia, fn ($consulta, UnidadAcademica $unidad) => $consulta
+                ->where('unidad_academica_id', $unidad->id)
+                ->whereHas('rol', fn ($consulta) => $consulta->where('clave', ClaveRol::UnidadAcademica->value)))
             ->when($filtros['q'] ?? null, fn ($consulta, string $texto) => $consulta->where(
                 fn ($consulta) => $consulta->where('name', 'like', "%{$texto}%")->orWhere('email', 'like', "%{$texto}%"),
             ))
@@ -56,8 +63,9 @@ class UsuarioController extends Controller
                 'unidad_id' => $usuario->unidad_academica_id,
                 'carreras' => $usuario->carreras->map(fn (Carrera $carrera): array => ['id' => $carrera->id, 'nombre' => $carrera->nombre])->values()->all(),
                 'correo_verificado' => $usuario->email_verified_at !== null,
-                'editable' => ! $usuario->esEstudiante() && $usuario->id !== $request->user()->id,
-                'propio' => $usuario->id === $request->user()->id,
+                'editable' => ! $usuario->esEstudiante() && $actor->gestionaCuentaDe($usuario),
+                'correo_editable' => $actor->gestionaCuentaDe($usuario),
+                'propio' => $usuario->id === $actor->id,
             ])->values(),
             'pagina' => [
                 'actual' => $usuarios->currentPage(),
@@ -68,8 +76,13 @@ class UsuarioController extends Controller
             ],
             'filtros' => ['q' => $filtros['q'] ?? '', 'rol' => $filtros['rol'] ?? ''],
             'roles' => collect(ClaveRol::cases())->map(fn (ClaveRol $rol): array => ['value' => $rol->value, 'label' => $rol->etiqueta()])->all(),
-            'rolesAsignables' => array_map(fn (ClaveRol $rol): array => ['value' => $rol->value, 'label' => $rol->etiqueta()], UsuarioRequest::rolesAsignables()),
+            'rolesAsignables' => array_map(
+                fn (ClaveRol $rol): array => ['value' => $rol->value, 'label' => $rol->etiqueta()],
+                $unidadPropia ? [ClaveRol::UnidadAcademica] : UsuarioRequest::rolesAsignables(),
+            ),
+            'unidadPropia' => $unidadPropia ? ['id' => $unidadPropia->id, 'nombre' => $unidadPropia->nombre] : null,
             'unidades' => UnidadAcademica::query()
+                ->when($unidadPropia, fn ($consulta, UnidadAcademica $unidad) => $consulta->whereKey($unidad->id))
                 ->with(['carreras' => fn ($consulta) => $consulta->orderBy('nombre')->orderBy('nombre_extension')])
                 ->orderBy('nombre')
                 ->get()
@@ -116,7 +129,8 @@ class UsuarioController extends Controller
      */
     public function update(UsuarioRequest $request, User $usuario): RedirectResponse
     {
-        abort_if($usuario->id === $request->user()->id, 403, 'No puedes cambiar tu propio acceso.');
+        abort_if($usuario->is($request->user()), 403, 'No puedes cambiar tu propio acceso.');
+        abort_unless($request->user()->gestionaCuentaDe($usuario), 403, 'Solo puedes cambiar el acceso de los supervisores de tu unidad académica.');
         abort_if($usuario->esEstudiante(), 403, 'El rol de un estudiante depende de su registro académico.');
 
         DB::transaction(fn () => $this->asignarAcceso($usuario, $request->acceso()));
@@ -132,7 +146,8 @@ class UsuarioController extends Controller
      */
     public function correo(CorreoUsuarioRequest $request, User $usuario): RedirectResponse
     {
-        abort_if($usuario->id === $request->user()->id, 403, 'Cambia tu propio correo desde tu perfil.');
+        abort_if($usuario->is($request->user()), 403, 'Cambia tu propio correo desde tu perfil.');
+        abort_unless($request->user()->gestionaCuentaDe($usuario), 403, 'Solo puedes cambiar el correo de los supervisores de tu unidad académica.');
 
         $correo = $request->validated('email');
 

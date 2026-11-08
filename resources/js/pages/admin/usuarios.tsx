@@ -1,4 +1,4 @@
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, router, setLayoutProps, useForm } from '@inertiajs/react';
 import { Mail, Search, ShieldCheck, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
@@ -46,6 +46,7 @@ type Usuario = {
     carreras: { id: number; nombre: string }[];
     correo_verificado: boolean;
     editable: boolean;
+    correo_editable: boolean;
     propio: boolean;
 };
 
@@ -67,6 +68,8 @@ type Props = {
     filtros: { q: string; rol: string };
     roles: Opcion[];
     rolesAsignables: Opcion[];
+    /** Para la cuenta principal de una unidad académica: solo gestiona a los supervisores de esa unidad. */
+    unidadPropia: { id: number; nombre: string } | null;
     unidades: UnidadOpcion[];
 };
 
@@ -78,8 +81,16 @@ export default function Usuarios({
     filtros,
     roles,
     rolesAsignables,
+    unidadPropia,
     unidades,
 }: Props) {
+    const titulo = unidadPropia ? 'Supervisores' : 'Usuarios';
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Panel', href: dashboard() },
+            { title: titulo, href: index() },
+        ],
+    });
     const [texto, setTexto] = useState(filtros.q);
     const [editando, setEditando] = useState<Usuario | null>(null);
     const [creando, setCreando] = useState(false);
@@ -94,7 +105,7 @@ export default function Usuarios({
         name: '',
         email: '',
         rol: 'unidad_academica',
-        unidad_academica_id: '',
+        unidad_academica_id: unidadPropia?.id.toString() ?? '',
         carreras: [],
     });
 
@@ -167,20 +178,17 @@ export default function Usuarios({
 
     return (
         <>
-            <Head title="Usuarios" />
+            <Head title={titulo} />
             <div className="flex flex-1 flex-col gap-6 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            Usuarios
+                            {titulo}
                         </h1>
                         <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
-                            Crea las cuentas de las unidades académicas: cada
-                            una puede tener varios usuarios y, si les asignas
-                            carreras, solo ven y aprueban los EPS de esas
-                            carreras (por ejemplo, un supervisor por carrera).
-                            El rol de estudiante se obtiene al verificar el
-                            registro académico.
+                            {unidadPropia
+                                ? `Crea las cuentas de los supervisores de ${unidadPropia.nombre}: cada uno solo ve y aprueba los EPS de las carreras que le asignes. Si falta una carrera, agrégala en "Carreras".`
+                                : 'Crea las cuentas de las unidades académicas: cada una puede tener varios usuarios y, si les asignas carreras, solo ven y aprueban los EPS de esas carreras (por ejemplo, un supervisor por carrera). El rol de estudiante se obtiene al verificar el registro académico.'}
                         </p>
                     </div>
                     <Button
@@ -191,7 +199,7 @@ export default function Usuarios({
                         }}
                     >
                         <UserPlus />
-                        Crear cuenta
+                        {unidadPropia ? 'Crear supervisor' : 'Crear cuenta'}
                     </Button>
                 </div>
 
@@ -211,26 +219,31 @@ export default function Usuarios({
                             className="pl-9"
                         />
                     </div>
-                    <Select
-                        value={filtros.rol || TODOS}
-                        onValueChange={(valor) =>
-                            filtrar({ rol: valor === TODOS ? '' : valor })
-                        }
-                    >
-                        <SelectTrigger className="w-52">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value={TODOS}>
-                                Todos los roles
-                            </SelectItem>
-                            {roles.map((rol) => (
-                                <SelectItem key={rol.value} value={rol.value}>
-                                    {rol.label}
+                    {!unidadPropia && (
+                        <Select
+                            value={filtros.rol || TODOS}
+                            onValueChange={(valor) =>
+                                filtrar({ rol: valor === TODOS ? '' : valor })
+                            }
+                        >
+                            <SelectTrigger className="w-52">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={TODOS}>
+                                    Todos los roles
                                 </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                                {roles.map((rol) => (
+                                    <SelectItem
+                                        key={rol.value}
+                                        value={rol.value}
+                                    >
+                                        {rol.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                     <Button type="submit" variant="outline">
                         Buscar
                     </Button>
@@ -278,7 +291,7 @@ export default function Usuarios({
                                     )}
                                 </div>
                                 <div className="flex shrink-0 flex-wrap gap-2">
-                                    {!usuario.propio && (
+                                    {usuario.correo_editable && (
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -324,6 +337,7 @@ export default function Usuarios({
                             formulario={formulario}
                             rolesAsignables={rolesAsignables}
                             unidades={unidades}
+                            unidadFija={unidadPropia !== null}
                         />
 
                         <DialogFooter>
@@ -402,7 +416,9 @@ export default function Usuarios({
             <Dialog open={creando} onOpenChange={setCreando}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Crear cuenta</DialogTitle>
+                        <DialogTitle>
+                            {unidadPropia ? 'Crear supervisor' : 'Crear cuenta'}
+                        </DialogTitle>
                         <DialogDescription>
                             Le enviaremos un correo con el enlace para definir
                             su contraseña.
@@ -443,6 +459,7 @@ export default function Usuarios({
                             formulario={nueva}
                             rolesAsignables={rolesAsignables}
                             unidades={unidades}
+                            unidadFija={unidadPropia !== null}
                         />
 
                         <DialogFooter>
@@ -455,7 +472,9 @@ export default function Usuarios({
                             </Button>
                             <Button type="submit" disabled={nueva.processing}>
                                 {nueva.processing && <Spinner />}
-                                Crear cuenta
+                                {unidadPropia
+                                    ? 'Crear supervisor'
+                                    : 'Crear cuenta'}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -484,14 +503,20 @@ type FormularioAcceso = {
     setData: (campo: keyof Acceso, valor: string | string[]) => void;
 };
 
+/**
+ * Rol, unidad y carreras de la cuenta. Con `unidadFija` (cuenta principal de una unidad) el rol y la
+ * unidad ya están dados: solo se eligen las carreras, al menos una.
+ */
 function CamposAcceso({
     formulario,
     rolesAsignables,
     unidades,
+    unidadFija,
 }: {
     formulario: FormularioAcceso;
     rolesAsignables: Opcion[];
     unidades: UnidadOpcion[];
+    unidadFija: boolean;
 }) {
     const unidad = unidades.find(
         (opcion) => opcion.value === formulario.data.unidad_academica_id,
@@ -511,7 +536,7 @@ function CamposAcceso({
 
     return (
         <>
-            <div className="grid gap-2">
+            <div className={unidadFija ? 'hidden' : 'grid gap-2'}>
                 <Label htmlFor="rol">Rol</Label>
                 <Select
                     value={formulario.data.rol || undefined}
@@ -533,7 +558,7 @@ function CamposAcceso({
 
             {formulario.data.rol === 'unidad_academica' && (
                 <>
-                    <div className="grid gap-2">
+                    <div className={unidadFija ? 'hidden' : 'grid gap-2'}>
                         <Label htmlFor="unidad">Unidad académica</Label>
                         <Select
                             value={
@@ -579,13 +604,15 @@ function CamposAcceso({
                                 Carreras que puede ver y aprobar
                             </legend>
                             <p className="text-muted-foreground text-xs">
-                                Si no marcas ninguna, ve todas las carreras de
-                                la unidad.
+                                {unidadFija
+                                    ? 'Marca al menos una: solo verá y aprobará los EPS de esas carreras.'
+                                    : 'Si no marcas ninguna, ve todas las carreras de la unidad.'}
                             </p>
                             {unidad.carreras.length === 0 ? (
                                 <p className="text-muted-foreground text-xs">
-                                    Esta unidad aún no tiene carreras. Agrégalas
-                                    en Manejo de datos → Carreras.
+                                    {unidadFija
+                                        ? 'Tu unidad aún no tiene carreras. Agrégalas en "Carreras".'
+                                        : 'Esta unidad aún no tiene carreras. Agrégalas en Manejo de datos → Carreras.'}
                                 </p>
                             ) : (
                                 <ul className="max-h-56 space-y-2 overflow-y-auto rounded-md border p-3">

@@ -15,6 +15,8 @@ declare module '@inertiajs/core' {
             rol: string | null;
             estudiante: EstudianteSesion | null;
             solicitudesPendientes: number;
+            /** DIGEU o la cuenta principal de una unidad académica: crea supervisores y agrega carreras. */
+            gestionaSupervisores: boolean;
             /** Para una unidad académica: lo que ve en las consultas. */
             alcanceConsulta: string | null;
             sidebarOpen: boolean;

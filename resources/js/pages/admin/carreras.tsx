@@ -1,4 +1,4 @@
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, router, setLayoutProps, useForm } from '@inertiajs/react';
 import {
     CheckCircle2,
     GraduationCap,
@@ -68,6 +68,9 @@ type Props = {
     pagina: Pagina;
     filtros: Filtros;
     unidades: Opcion[];
+    /** Para la cuenta principal de una unidad académica: solo ve y agrega las carreras de su unidad. */
+    unidadPropia: string | null;
+    puedeEliminar: boolean;
     consulta: Consulta | null;
     errors: { carnet?: string };
 };
@@ -79,9 +82,20 @@ export default function Carreras({
     pagina,
     filtros,
     unidades,
+    unidadPropia,
+    puedeEliminar,
     consulta,
     errors,
 }: Props) {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Panel', href: dashboard() },
+            ...(unidadPropia
+                ? []
+                : [{ title: 'Manejo de datos', href: datos() }]),
+            { title: 'Carreras', href: index() },
+        ],
+    });
     const [texto, setTexto] = useState(filtros.q);
     const [carnet, setCarnet] = useState(filtros.carnet);
     const [consultando, setConsultando] = useState(false);
@@ -171,10 +185,9 @@ export default function Carreras({
                         Carreras
                     </h1>
                     <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
-                        Consulta el carné de un estudiante en el registro
-                        académico para agregar sus carreras. Las carreras se
-                        asignan a los supervisores de EPS de cada unidad
-                        académica para que solo vean y aprueben las suyas.
+                        {unidadPropia
+                            ? `Las carreras de ${unidadPropia} se agregan solas cuando un estudiante elige la carrera de su EPS. Para agregar otras, consulta el carné de un estudiante de la carrera. Luego asígnalas a tus supervisores en "Supervisores".`
+                            : 'Consulta el carné de un estudiante en el registro académico para agregar sus carreras. Las carreras se asignan a los supervisores de EPS de cada unidad académica para que solo vean y aprueben las suyas.'}
                     </p>
                 </div>
 
@@ -352,32 +365,36 @@ export default function Carreras({
                             className="pl-9"
                         />
                     </div>
-                    <Select
-                        value={filtros.unidad || TODAS}
-                        onValueChange={(valor) =>
-                            filtrar({ unidad: valor === TODAS ? '' : valor })
-                        }
-                    >
-                        <SelectTrigger
-                            className="w-72"
-                            aria-label="Unidad académica"
+                    {!unidadPropia && (
+                        <Select
+                            value={filtros.unidad || TODAS}
+                            onValueChange={(valor) =>
+                                filtrar({
+                                    unidad: valor === TODAS ? '' : valor,
+                                })
+                            }
                         >
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value={TODAS}>
-                                Todas las unidades
-                            </SelectItem>
-                            {unidades.map((unidad) => (
-                                <SelectItem
-                                    key={unidad.value}
-                                    value={unidad.value}
-                                >
-                                    {unidad.label}
+                            <SelectTrigger
+                                className="w-72"
+                                aria-label="Unidad académica"
+                            >
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={TODAS}>
+                                    Todas las unidades
                                 </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                                {unidades.map((unidad) => (
+                                    <SelectItem
+                                        key={unidad.value}
+                                        value={unidad.value}
+                                    >
+                                        {unidad.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                     <Button type="submit" variant="outline">
                         Buscar
                     </Button>
@@ -423,14 +440,16 @@ export default function Carreras({
                                         </p>
                                     </div>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setEliminando(carrera)}
-                                >
-                                    <Trash2 />
-                                    Eliminar
-                                </Button>
+                                {puedeEliminar && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setEliminando(carrera)}
+                                    >
+                                        <Trash2 />
+                                        Eliminar
+                                    </Button>
+                                )}
                             </li>
                         ))}
                     </ul>

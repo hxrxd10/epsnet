@@ -5,8 +5,8 @@ import municipios from './municipios'
 import instituciones from './instituciones'
 import unidades from './unidades'
 import carreras from './carreras'
-import usuarios from './usuarios'
 import catalogos from './catalogos'
+import usuarios from './usuarios'
 /**
 * @see \App\Http\Controllers\Admin\ManejoDatosController::datos
 * @see app/Http/Controllers/Admin/ManejoDatosController.php:21
@@ -96,8 +96,8 @@ const admin = {
     instituciones: Object.assign(instituciones, instituciones),
     unidades: Object.assign(unidades, unidades),
     carreras: Object.assign(carreras, carreras),
-    usuarios: Object.assign(usuarios, usuarios),
     catalogos: Object.assign(catalogos, catalogos),
+    usuarios: Object.assign(usuarios, usuarios),
 }
 
 export default admin

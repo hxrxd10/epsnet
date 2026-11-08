@@ -44,9 +44,12 @@ El sistema unifica el formato y consolida los datos en DIGEU sin interferir con 
 | Exportar PDF y Excel | Todo | Solo su alcance | No | No |
 | Bandeja de solicitudes | Todas | Solo su alcance | No | No |
 | Estudiantes y EPS (revisar y aprobar) | Todos | Solo su alcance | No | No |
-| Usuarios, manejo de datos y bitácora | Sí | No | No | No |
+| Supervisores y carreras | Todas las unidades | Solo la cuenta principal, en su unidad | No | No |
+| Manejo de datos y bitácora | Sí | No | No | No |
 
 **Alcance de una unidad académica:** ve los EPS de su unidad. Si DIGEU le asigna carreras, ve únicamente esas carreras. Una unidad puede tener varias cuentas; por ejemplo, un supervisor por carrera.
+
+**Cuenta principal de una unidad:** es la cuenta de unidad académica sin carreras asignadas. Además de ver toda su unidad, tiene en el menú **Supervisores** y **Carreras**: crea las cuentas de los supervisores de su unidad (cada uno con al menos una carrera), les cambia las carreras o corrige su correo, y agrega carreras de su unidad consultando un carné. No ve ni toca cuentas o carreras de otras unidades, ni puede eliminar carreras.
 
 **Cómo se obtiene cada rol:**
 

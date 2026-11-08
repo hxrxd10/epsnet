@@ -111,6 +111,44 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->carreras->isEmpty() || $this->carreras->contains(fn (Carrera $carrera): bool => $carrera->incluye($expediente));
     }
 
+    /**
+     * Cuenta principal de una unidad académica: tiene su unidad y ninguna carrera asignada, así que ve
+     * toda la unidad. Crea las cuentas de los supervisores de su unidad y agrega sus carreras.
+     */
+    public function esPrincipalDeUnidad(): bool
+    {
+        return $this->esUnidadAcademica() && $this->unidad_academica_id !== null && $this->carreras->isEmpty();
+    }
+
+    /**
+     * Si puede crear supervisores y agregar carreras: DIGEU en todas las unidades y la cuenta principal
+     * de una unidad académica, solo en la suya.
+     */
+    public function gestionaSupervisores(): bool
+    {
+        return $this->esAdministrador() || $this->esPrincipalDeUnidad();
+    }
+
+    /**
+     * Si puede cambiar el acceso o el correo de la cuenta: DIGEU, el de cualquiera; la cuenta principal,
+     * solo el de los supervisores de su unidad (los que tienen carreras asignadas). Nadie el suyo.
+     */
+    public function gestionaCuentaDe(User $cuenta): bool
+    {
+        if ($cuenta->is($this)) {
+            return false;
+        }
+
+        if ($this->esAdministrador()) {
+            return true;
+        }
+
+        return $this->esPrincipalDeUnidad()
+            && $cuenta->esUnidadAcademica()
+            && $cuenta->unidad_academica_id === $this->unidad_academica_id
+            && $cuenta->carreras->isNotEmpty();
+    }
+
     public function tieneRol(ClaveRol $clave): bool
     {
         return $this->rol?->clave === $clave->value;

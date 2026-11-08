@@ -22,10 +22,13 @@ class CarreraController extends Controller
 {
     /**
      * Portal de carreras: las ya registradas y, si se consultó un carné, sus carreras en el registro
-     * académico indicando cuáles son nuevas y cuáles ya están agregadas.
+     * académico indicando cuáles son nuevas y cuáles ya están agregadas. La cuenta principal de una
+     * unidad académica solo ve y agrega las de su unidad.
      */
     public function index(Request $request, RegistroAcademicoClient $registro): Response
     {
+        $unidadPropia = $this->unidadPropia($request);
+
         $filtros = $request->validate([
             'q' => ['nullable', 'string', 'max:100'],
             'unidad' => ['nullable', 'integer'],
@@ -41,7 +44,7 @@ class CarreraController extends Controller
                     ->orWhere('nombre_extension', 'like', "%{$texto}%")
                     ->orWhere('codigo_carrera', $texto),
             ))
-            ->when($filtros['unidad'] ?? null, fn (Builder $consulta, int|string $unidad) => $consulta->where('unidad_academica_id', $unidad))
+            ->when($unidadPropia?->id ?? $filtros['unidad'] ?? null, fn (Builder $consulta, int|string $unidad) => $consulta->where('unidad_academica_id', $unidad))
             ->orderBy('nombre')
             ->orderBy('nombre_extension')
             ->paginate(20)
@@ -65,13 +68,15 @@ class CarreraController extends Controller
                 'siguiente' => $carreras->nextPageUrl(),
             ],
             'filtros' => ['q' => $filtros['q'] ?? '', 'unidad' => (string) ($filtros['unidad'] ?? ''), 'carnet' => $filtros['carnet'] ?? ''],
-            'unidades' => UnidadAcademica::query()
+            'unidadPropia' => $unidadPropia?->nombre,
+            'puedeEliminar' => $request->user()->esAdministrador(),
+            'unidades' => $unidadPropia ? [] : UnidadAcademica::query()
                 ->whereHas('carreras')
                 ->orderBy('nombre')
                 ->get(['id', 'nombre'])
                 ->map(fn (UnidadAcademica $unidad): array => ['value' => (string) $unidad->id, 'label' => $unidad->nombre])
                 ->all(),
-            'consulta' => isset($filtros['carnet']) ? $this->consultar($registro, $filtros['carnet']) : null,
+            'consulta' => isset($filtros['carnet']) ? $this->consultar($registro, $filtros['carnet'], $unidadPropia) : null,
         ]);
     }
 
@@ -93,6 +98,12 @@ class CarreraController extends Controller
 
         if ($elegidas->isEmpty()) {
             throw ValidationException::withMessages(['claves' => 'Las carreras elegidas no son de ese carné.']);
+        }
+
+        $unidadPropia = $this->unidadPropia($request);
+
+        if ($unidadPropia !== null && $elegidas->contains(fn (DetalleAcademico $detalle): bool => ! $this->esDeLaUnidad($detalle, $unidadPropia))) {
+            throw ValidationException::withMessages(['claves' => "Solo puedes agregar carreras de {$unidadPropia->nombre}."]);
         }
 
         $nuevas = DB::transaction(fn (): int => $elegidas
@@ -133,7 +144,7 @@ class CarreraController extends Controller
      *
      * @return array{carnet: string, estudiante: string|null, error: string|null, carreras: list<array<string, mixed>>, nuevas: int}
      */
-    private function consultar(RegistroAcademicoClient $registro, string $carnet): array
+    private function consultar(RegistroAcademicoClient $registro, string $carnet, ?UnidadAcademica $unidadPropia): array
     {
         try {
             $datos = $this->datos($registro, $carnet);
@@ -145,9 +156,13 @@ class CarreraController extends Controller
             return ['carnet' => $carnet, 'estudiante' => null, 'error' => 'El registro académico no tiene información de ese carné.', 'carreras' => [], 'nuevas' => 0];
         }
 
-        $registradas = Carrera::query()
-            ->where(function (Builder $consulta) use ($datos): void {
-                foreach ($datos->carreras as $detalle) {
+        $detalles = $unidadPropia === null
+            ? $datos->carreras
+            : array_values(array_filter($datos->carreras, fn (DetalleAcademico $detalle): bool => $this->esDeLaUnidad($detalle, $unidadPropia)));
+
+        $registradas = $detalles === [] ? collect() : Carrera::query()
+            ->where(function (Builder $consulta) use ($detalles): void {
+                foreach ($detalles as $detalle) {
                     $consulta->orWhere(fn (Builder $deLaCarrera) => $deLaCarrera
                         ->where('codigo_unidad', $detalle->unidad)
                         ->where('codigo_extension', $detalle->extension)
@@ -164,15 +179,36 @@ class CarreraController extends Controller
             'unidad' => $detalle->nombreUnidad,
             'nivel' => $detalle->grado,
             'agregada' => $registradas->has($detalle->clave()),
-        ], $datos->carreras);
+        ], $detalles);
+
+        $sinCarreras = $unidadPropia === null
+            ? 'El carné no tiene carreras en el registro académico.'
+            : "El carné no tiene carreras de {$unidadPropia->nombre} en el registro académico.";
 
         return [
             'carnet' => $carnet,
             'estudiante' => trim(implode(' ', array_filter([$datos->nombre1, $datos->nombre2, $datos->nombre3, $datos->apellido1, $datos->apellido2]))),
-            'error' => $carreras === [] ? 'El carné no tiene carreras en el registro académico.' : null,
+            'error' => $carreras === [] ? $sinCarreras : null,
             'carreras' => $carreras,
             'nuevas' => count(array_filter($carreras, fn (array $carrera): bool => ! $carrera['agregada'])),
         ];
+    }
+
+    /**
+     * La unidad de la cuenta principal que gestiona las carreras; null para DIGEU, que ve todas.
+     */
+    private function unidadPropia(Request $request): ?UnidadAcademica
+    {
+        return $request->user()->esPrincipalDeUnidad() ? $request->user()->unidadAcademica : null;
+    }
+
+    /**
+     * Si la carrera del registro académico es de la unidad (se relacionan por el nombre de la unidad,
+     * como al registrarla).
+     */
+    private function esDeLaUnidad(DetalleAcademico $detalle, UnidadAcademica $unidad): bool
+    {
+        return $detalle->nombreUnidad === $unidad->nombre;
     }
 
     /**

@@ -118,10 +118,18 @@ const GUIAS: Record<string, Guia> = {
             {
                 titulo: 'Revisar a tus estudiantes',
                 pasos: [
-                    'DIGEU crea tu cuenta y te asigna tu unidad académica. Si te asigna carreras (por ejemplo, un supervisor por carrera en un centro universitario), solo ves y apruebas los EPS de esas carreras; si no, ves toda tu unidad.',
+                    'DIGEU o la cuenta principal de tu unidad crean tu cuenta y te asignan tu unidad académica. Si te asignan carreras (por ejemplo, un supervisor por carrera en un centro universitario), solo ves y apruebas los EPS de esas carreras; si no, ves toda tu unidad.',
                     'En "Estudiantes y EPS" ves a los estudiantes que te corresponden y el avance de cada EPS. Busca por nombre, carné o carrera y filtra por estado.',
                     'Los EPS que se realizan dentro del EPSUM llevan una etiqueta que lo indica.',
                     'Abre un EPS para revisar todo lo registrado en los seis ejes y descargar la orden de impresión.',
+                ],
+            },
+            {
+                titulo: 'Supervisores y carreras de tu unidad',
+                pasos: [
+                    'La cuenta principal de cada unidad (la que no tiene carreras asignadas y ve toda la unidad) tiene en el menú "Supervisores" y "Carreras".',
+                    'En "Supervisores" creas las cuentas de los supervisores de tu unidad con "Crear supervisor" y marcas las carreras que cada uno ve y aprueba (al menos una). La persona recibe un correo para definir su contraseña. También puedes cambiar sus carreras o corregir su correo.',
+                    'En "Carreras" ves las de tu unidad. Se agregan solas cuando un estudiante elige la carrera de su EPS; para agregar otras, consulta el carné de un estudiante de esa carrera. Solo puedes agregar carreras de tu unidad.',
                 ],
             },
             {
@@ -167,7 +175,7 @@ const GUIAS: Record<string, Guia> = {
                 titulo: 'Usuarios y estudiantes',
                 pasos: [
                     'En "Usuarios" creas las cuentas de las unidades académicas con "Crear cuenta": la persona recibe un correo para definir su contraseña. Una unidad puede tener varias cuentas.',
-                    'A cada cuenta de unidad académica le asignas su unidad y, si quieres, las carreras que puede ver y aprobar (por ejemplo, un supervisor por carrera). Sin carreras, ve toda su unidad.',
+                    'A cada cuenta de unidad académica le asignas su unidad y, si quieres, las carreras que puede ver y aprobar (por ejemplo, un supervisor por carrera). Sin carreras, ve toda su unidad y es la cuenta principal: puede crear los supervisores de su unidad y agregar sus carreras.',
                     'También puedes dar el rol de DIGEU o de unidad académica a quien ya se registró como invitado, con "Editar acceso".',
                     'Si alguien se equivocó de correo, usa "Cambiar correo": el enlace de verificación llega a la nueva dirección. Si olvidó su contraseña, puede restablecerla con ese correo en "¿Olvidaste tu contraseña?".',
                     'En "Estudiantes y EPS" ves a todos los estudiantes de todas las unidades, con filtros por unidad y estado, y puedes aprobar EPS (con el acepto de que lo descrito se ejecutó).',

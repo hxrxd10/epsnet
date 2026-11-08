@@ -15,7 +15,7 @@ Las marcas `[CAPTURA: ...]` indican dónde insertar una imagen. Toma las captura
 | Rol | Qué puede hacer | Cómo obtiene su cuenta |
 |---|---|---|
 | Estudiante | Registrar su EPS, enviarlo a aprobación y ver lo que consignó | Verificando registro académico y DPI |
-| Unidad académica | Revisar, aprobar y consultar los EPS de su alcance | La crea DIGEU |
+| Unidad académica | Revisar, aprobar y consultar los EPS de su alcance | La crea DIGEU o la cuenta principal de su unidad |
 | DIGEU | Administrar el sistema y consultar todo | La crea o asigna DIGEU |
 | Invitado | Ver panel y documentación; convertirse en estudiante | Registro público |
 
@@ -198,9 +198,9 @@ Si no aparece, pide a DIGEU que la agregue.
 
 ### 3.1 Tu acceso
 
-1. DIGEU crea tu cuenta y te asigna una unidad y, si corresponde, carreras.
+1. DIGEU o la cuenta principal de tu unidad crean tu cuenta y te asignan una unidad y, si corresponde, carreras.
 2. Recibirás un correo para definir tu contraseña.
-3. Si tienes carreras asignadas, solo verás esas carreras. Si no, verás toda la unidad.
+3. Si tienes carreras asignadas, solo verás esas carreras. Si no, verás toda la unidad y serás la cuenta principal (ver 3.6).
 
 ### 3.2 Bandeja de solicitudes
 
@@ -231,6 +231,30 @@ En **Estudiantes y EPS** puedes buscar por nombre, carné o carrera, y filtrar p
 ### 3.5 Consultas
 
 En estadísticas, ODS, repositorio e investigaciones verás el aviso **Solo ves los EPS de...**. Tus exportaciones respetan el mismo alcance.
+
+### 3.6 Supervisores y carreras (cuenta principal)
+
+La cuenta principal de cada unidad es la que no tiene carreras asignadas. En su menú aparecen **Supervisores** y **Carreras**.
+
+**Crear un supervisor**
+
+1. Abre **Supervisores** y selecciona **Crear supervisor**.
+2. Escribe el nombre y el correo.
+3. Marca las carreras que verá y aprobará. Debes marcar al menos una.
+4. La persona recibe un correo para definir su contraseña.
+
+Con **Editar acceso** cambias sus carreras y con **Cambiar correo** corriges su correo. Solo ves a los supervisores de tu unidad.
+
+**Agregar carreras**
+
+Las carreras de tu unidad se agregan solas cuando un estudiante elige la carrera de su EPS. Para agregar otra:
+
+1. Abre **Carreras** y escribe el carné de un estudiante de esa carrera.
+2. Marca las carreras nuevas y selecciona **Agregar las seleccionadas**.
+
+Solo aparecen y se pueden agregar las carreras de tu unidad. Para eliminar una carrera, pídelo a DIGEU.
+
+[CAPTURA: supervisores de la unidad]
 
 ## 4. Manual de DIGEU
 
